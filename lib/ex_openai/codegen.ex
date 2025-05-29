@@ -782,47 +782,38 @@ defmodule ExOpenAI.Codegen do
     ```
 
   """
-  def parse_path(
-        path,
-        %{
-          "post" =>
-            %{
-              "operationId" => id,
-              "summary" => summary,
-              "requestBody" => body,
-              "responses" => responses,
-              "x-oaiMeta" => _meta
-            } = args
-        },
-        component_mapping
-      ) do
-    %{
-      endpoint: path,
-      name: Macro.underscore(id),
-      summary: summary,
-      deprecated?: Map.has_key?(args, "deprecated"),
-      arguments: Map.get(args, "parameters", []) |> Enum.map(&parse_get_arguments(&1)),
-      method: :post,
-      request_body: parse_request_body(body, component_mapping),
-      group: extract_group_from_url(path),
-      response_type: extract_response_type(responses)
-    }
+  def parse_path(path, %{"post" => post_data}, component_mapping) when is_map(post_data) do
+    with {:ok, id} <- Map.fetch(post_data, "operationId"),
+         {:ok, summary} <- Map.fetch(post_data, "summary"),
+         {:ok, responses} <- Map.fetch(post_data, "responses"),
+         true <- Map.has_key?(post_data, "x-oaiMeta") do
+      body = Map.get(post_data, "requestBody")
+      %{
+        endpoint: path,
+        name: Macro.underscore(id),
+        summary: summary,
+        deprecated?: Map.has_key?(post_data, "deprecated"),
+        arguments: Map.get(post_data, "parameters", []) |> Enum.map(&parse_get_arguments(&1)),
+        method: :post,
+        request_body: parse_request_body(body, component_mapping),
+        group: extract_group_from_url(path),
+        response_type: extract_response_type(responses)
+      }
+    else
+      _ -> nil
+    end
   end
 
-  def parse_path(
-        path,
-        %{
-          "post" =>
-            %{
-              "operationId" => _id,
-              "summary" => _summary,
-              "responses" => _responses,
-              "x-oaiMeta" => _meta
-            } = args
-        },
-        component_mapping
-      ) do
-    parse_path(path, %{"post" => Map.put(args, "requestBody", nil)}, component_mapping)
+  def parse_path(path, %{"post" => post_data}, component_mapping) when is_map(post_data) and not is_map_key(post_data, "requestBody") do
+    with {:ok, _id} <- Map.fetch(post_data, "operationId"),
+         {:ok, _summary} <- Map.fetch(post_data, "summary"),
+         {:ok, _responses} <- Map.fetch(post_data, "responses"),
+         true <- Map.has_key?(post_data, "x-oaiMeta") do
+      updated_post = Map.put(post_data, "requestBody", nil)
+      parse_path(path, %{"post" => updated_post}, component_mapping)
+    else
+      _ -> nil
+    end
   end
 
   def parse_path(path, %{"delete" => args}, component_mapping) do
@@ -833,38 +824,33 @@ defmodule ExOpenAI.Codegen do
   end
 
   # "parse GET functions and generate function definition"
-  def parse_path(
-        path,
-        %{
-          "get" =>
-            %{
-              "operationId" => id,
-              "summary" => summary,
-              "responses" => responses,
-              "x-oaiMeta" => _meta
-            } = args
-        },
-        _component_mapping
-      ) do
-    # Get all parameters
-    # all_parameters = Map.get(args, "parameters", []) |> Enum.map(&parse_get_arguments(&1))
+  def parse_path(path, %{"get" => get_data}, _component_mapping) when is_map(get_data) do
+    with {:ok, id} <- Map.fetch(get_data, "operationId"),
+         {:ok, summary} <- Map.fetch(get_data, "summary"),
+         {:ok, responses} <- Map.fetch(get_data, "responses"),
+         true <- Map.has_key?(get_data, "x-oaiMeta") do
+      # Get all parameters
+      # all_parameters = Map.get(get_data, "parameters", []) |> Enum.map(&parse_get_arguments(&1))
 
-    # # Extract path parameters and query parameters separately
-    # path_parameters = filter_arguments_by_location(all_parameters, "path")
-    # query_parameters = filter_arguments_by_location(all_parameters, "query")
+      # # Extract path parameters and query parameters separately
+      # path_parameters = filter_arguments_by_location(all_parameters, "path")
+      # query_parameters = filter_arguments_by_location(all_parameters, "query")
 
-    %{
-      endpoint: path,
-      name: Macro.underscore(id),
-      summary: summary,
-      deprecated?: Map.has_key?(args, "deprecated"),
-      arguments: Map.get(args, "parameters", []) |> Enum.map(&parse_get_arguments(&1)),
-      # path_parameters: path_parameters,
-      # query_parameters: query_parameters,
-      method: :get,
-      group: extract_group_from_url(path),
-      response_type: extract_response_type(responses)
-    }
+      %{
+        endpoint: path,
+        name: Macro.underscore(id),
+        summary: summary,
+        deprecated?: Map.has_key?(get_data, "deprecated"),
+        arguments: Map.get(get_data, "parameters", []) |> Enum.map(&parse_get_arguments(&1)),
+        # path_parameters: path_parameters,
+        # query_parameters: query_parameters,
+        method: :get,
+        group: extract_group_from_url(path),
+        response_type: extract_response_type(responses)
+      }
+    else
+      _ -> nil
+    end
   end
 
   def parse_path(path, args, _component_mapping) do
