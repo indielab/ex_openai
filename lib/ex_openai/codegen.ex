@@ -7,24 +7,40 @@ defmodule ExOpenAI.Codegen do
   defmodule AstUnpacker do
     @moduledoc false
 
-    defmacro __using__(_opts) do
-      quote do
-        # Helper function to return the full AST representation of the type and all it's nested types
-        # This is used so that all atoms in the map are getting allocated recursively.
-        # Without this, we wouldn't be able to safely do String.to_existing_atom()
-        @doc false
-        def unpack_ast(partial_tree \\ %{}) do
+    # Cache for unpack_ast results to avoid repeated computation
+    @cache_table :ast_unpacker_cache
+    
+    def start_cache do
+      case :ets.whereis(@cache_table) do
+        :undefined -> :ets.new(@cache_table, [:named_table, :public, :set])
+        _ -> @cache_table
+      end
+    end
+
+    # Helper function to return the full AST representation of the type and all it's nested types
+    # This is used so that all atoms in the map are getting allocated recursively.
+    # Without this, we wouldn't be able to safely do String.to_existing_atom()
+    @doc false
+    def unpack_ast(module, typespec_ast, partial_tree \\ %{}) do
+      start_cache()
+      
+      # Check cache first
+      cache_key = {module, partial_tree[:resolved_mods] || []}
+      case :ets.lookup(@cache_table, cache_key) do
+        [{^cache_key, result}] -> 
+          result
+        [] ->
           resolved_mods = Map.get(partial_tree, :resolved_mods, [])
           partial_tree = Map.put(partial_tree, :resolved_mods, resolved_mods)
 
-          case Enum.member?(resolved_mods, __MODULE__) do
+          result = case Enum.member?(resolved_mods, module) do
             true ->
               # IO.puts("already resolved, skipping")
               partial_tree
 
             false ->
               res =
-                @typespec
+                typespec_ast
                 # walk through the AST and find all "ExOpenAI.Components"
                 # unpack their AST recursively and merge it all together into
                 # the accumulator
@@ -34,10 +50,9 @@ defmodule ExOpenAI.Codegen do
                          mod <- Module.concat(alias),
                          ats <- Atom.to_string(mod),
                          true <- String.contains?(ats, "ExOpenAI.Components") do
-                      tree =
-                        mod.unpack_ast(%{
-                          resolved_mods: acc.resolved_mods ++ [__MODULE__]
-                        })
+                      tree = unpack_ast(mod, mod.__typespec__(), %{
+                        resolved_mods: acc.resolved_mods ++ [module]
+                      })
 
                       {:ok, tree}
                     end
@@ -52,11 +67,25 @@ defmodule ExOpenAI.Codegen do
               {ast, acc} = res
 
               acc
-              |> Map.put(__MODULE__, ast)
+              |> Map.put(module, ast)
           end
-        end
+          
+          # Cache the result
+          :ets.insert(@cache_table, {cache_key, result})
+          result
+      end
+    end
 
-        # unpack_ast end
+    defmacro __using__(_opts) do
+      quote do
+        # Expose typespec for the new AstUnpacker API
+        def __typespec__, do: @typespec
+        
+        # Legacy function for backward compatibility - delegates to the optimized version
+        @doc false
+        def unpack_ast(partial_tree \\ %{}) do
+          ExOpenAI.Codegen.AstUnpacker.unpack_ast(__MODULE__, @typespec, partial_tree)
+        end
       end
     end
   end
