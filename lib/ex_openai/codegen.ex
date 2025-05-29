@@ -858,11 +858,16 @@ defmodule ExOpenAI.Codegen do
     nil
   end
 
+  # Mark YAML file as external resource to track changes
+  @external_resource "#{__DIR__}/docs/docs.yaml"
+  
+  # Pre-parse YAML at compile time and store as module attribute
+  @raw_yaml File.read!("#{__DIR__}/docs/docs.yaml") |> YamlElixir.read_from_string!()
+
   @spec get_documentation() :: %{components: any(), functions: list()}
   def get_documentation do
-    {:ok, yml} =
-      File.read!("#{__DIR__}/docs/docs.yaml")
-      |> YamlElixir.read_from_string()
+    # Use pre-parsed YAML to avoid runtime parsing
+    yml = @raw_yaml
 
     component_mapping =
       yml["components"]["schemas"]
