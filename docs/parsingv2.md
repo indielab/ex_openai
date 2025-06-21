@@ -79,4 +79,5 @@ Becomes a typespec:
   - `anyOf`: same as oneOf, generates union types
   - `allOf`: currently returns `any()` (TODO: intersection types)
   - `enum`: generates atom union types
-- References: currently returns `any()` (TODO: resolve refs)
+- References: resolves `#/components/schemas/ComponentName` to `ExOpenAI.Components.ComponentName.t()`
+  - Other reference patterns still return `any()`

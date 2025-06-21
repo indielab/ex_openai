@@ -212,8 +212,8 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
       ast = TypespecGenerator.schema_to_typespec(schema)
       typespec_string = Macro.to_string(ast)
 
-      # References should be any() for now
-      assert typespec_string =~ "optional(:ranking_options) => any()"
+      # References should resolve to module types
+      assert typespec_string =~ "optional(:ranking_options) => ExOpenAI.Components.FileSearchRankingOptions.t()"
     end
 
     test "converts AssistantToolsFileSearch schema from testdata" do
@@ -231,7 +231,7 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
       # Check nested file_search object is present and contains expected fields
       assert typespec_string =~ "optional(:file_search) => %{"
       assert typespec_string =~ "optional(:max_num_results) => integer()"
-      assert typespec_string =~ "optional(:ranking_options) => any()"
+      assert typespec_string =~ "optional(:ranking_options) => ExOpenAI.Components.FileSearchRankingOptions.t()"
     end
 
     test "handles unknown types as any()" do
@@ -327,10 +327,33 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
       ast = TypespecGenerator.schema_to_typespec(schema)
       typespec_string = Macro.to_string(ast)
 
-      # References are any() for now
-      assert typespec_string == "String.t() | list(any())"
+      # References should resolve to component types
+      assert typespec_string == "String.t() | list(ExOpenAI.Components.ChatCompletionRequestUserMessageContentPart.t())"
     end
 
+    test "handles direct ref schemas" do
+      schema = %Schema{
+        ref: "#/components/schemas/ChatCompletionRequestMessage"
+      }
+      
+      ast = TypespecGenerator.schema_to_typespec(schema)
+      typespec_string = Macro.to_string(ast)
+      
+      assert typespec_string == "ExOpenAI.Components.ChatCompletionRequestMessage.t()"
+    end
+    
+    test "handles refs with non-component patterns" do
+      schema = %Schema{
+        ref: "#/some/other/pattern/Thing"
+      }
+      
+      ast = TypespecGenerator.schema_to_typespec(schema)
+      typespec_string = Macro.to_string(ast)
+      
+      # Non-component refs still return any()
+      assert typespec_string == "any()"
+    end
+    
     test "handles nullable with oneOf" do
       schema = %Schema{
         type: nil,
@@ -355,7 +378,7 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
       typespec_string = Macro.to_string(ast)
 
       # Match the exact expected output
-      expected = "%{\n  required(:content) => String.t() | list(any()),\n  optional(:name) => String.t(),\n  required(:role) => :user\n}"
+      expected = "%{\n  required(:content) =>\n    String.t() | list(ExOpenAI.Components.ChatCompletionRequestUserMessageContentPart.t()),\n  optional(:name) => String.t(),\n  required(:role) => :user\n}"
       
       assert typespec_string == expected
     end

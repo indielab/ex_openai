@@ -156,9 +156,20 @@ defmodule ExOpenAI.Codegen.TypespecGenerator do
     end
   end
 
-  # Handle references - for now just return any()
+  # Handle references to component schemas
+  defp get_base_type(%Schema{ref: "#/components/schemas/" <> component_name}) when is_binary(component_name) do
+    # Convert component name to module atom
+    module = Module.concat([ExOpenAI, Components, String.to_atom(component_name)])
+    
+    # Generate a remote type reference
+    quote do
+      unquote(module).t()
+    end
+  end
+  
+  # Handle other reference patterns - fallback to any()
   defp get_base_type(%Schema{ref: ref}) when is_binary(ref) do
-    # TODO: In the future, resolve the reference to the actual type
+    # TODO: Handle other reference patterns if needed
     quote do: any()
   end
   
