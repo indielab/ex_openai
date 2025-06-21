@@ -67,4 +67,16 @@ Becomes a typespec:
 }
 ```
 
-This handles basic types, nullable fields, enums, arrays, nested objects, and references.
+### Supported patterns
+
+- Basic types: string, integer, number, boolean
+- Nullable fields: adds `| nil` to the type
+- Enums: converted to atom unions (e.g., `:active | :inactive`)
+- Arrays: converted to `list(T)`
+- Objects: converted to maps with required/optional keys
+- Type combinators for schemas with `type: nil`:
+  - `oneOf`: generates union types (e.g., `String.t() | list(any())`)
+  - `anyOf`: same as oneOf, generates union types
+  - `allOf`: currently returns `any()` (TODO: intersection types)
+  - `enum`: generates atom union types
+- References: currently returns `any()` (TODO: resolve refs)

@@ -99,6 +99,63 @@ defmodule ExOpenAI.Codegen.TypespecGenerator do
     end
   end
 
+  # Handle schemas with type: nil but oneOf set
+  defp get_base_type(%Schema{type: nil, one_of: one_of}) when is_list(one_of) and one_of != [] do
+    # Generate union type from all oneOf options
+    types = Enum.map(one_of, &schema_to_typespec/1)
+    
+    # Build union type
+    case types do
+      [single] -> single
+      [first | rest] ->
+        Enum.reduce(rest, first, fn type, acc ->
+          quote do
+            unquote(acc) | unquote(type)
+          end
+        end)
+    end
+  end
+
+  # Handle schemas with type: nil but anyOf set
+  defp get_base_type(%Schema{type: nil, any_of: any_of}) when is_list(any_of) and any_of != [] do
+    # Generate union type from all anyOf options
+    types = Enum.map(any_of, &schema_to_typespec/1)
+    
+    # Build union type
+    case types do
+      [single] -> single
+      [first | rest] ->
+        Enum.reduce(rest, first, fn type, acc ->
+          quote do
+            unquote(acc) | unquote(type)
+          end
+        end)
+    end
+  end
+
+  # Handle schemas with type: nil but allOf set
+  defp get_base_type(%Schema{type: nil, all_of: all_of}) when is_list(all_of) and all_of != [] do
+    # TODO: Implement proper allOf handling (intersection types)
+    # For now, return any()
+    quote do: any()
+  end
+
+  # Handle schemas with type: nil but enum set
+  defp get_base_type(%Schema{type: nil, enum: enum}) when is_list(enum) and enum != [] do
+    # Convert enum values to atom union type
+    case enum do
+      [single] -> quote do: unquote(String.to_atom(single))
+      multiple ->
+        [first | rest] = Enum.map(multiple, &String.to_atom/1)
+        
+        Enum.reduce(rest, quote(do: unquote(first)), fn atom, acc ->
+          quote do
+            unquote(acc) | unquote(atom)
+          end
+        end)
+    end
+  end
+
   # Handle references - for now just return any()
   defp get_base_type(%Schema{ref: ref}) when is_binary(ref) do
     # TODO: In the future, resolve the reference to the actual type
