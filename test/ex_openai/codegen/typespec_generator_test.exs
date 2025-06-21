@@ -4,50 +4,69 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
   alias ExOpenAI.Codegen.TypespecGenerator
   alias ExOpenAI.Codegen.DocsParser.Schema
   
+  # Helper to compare AST
+  defp assert_ast_equal(actual_ast, expected_ast) do
+    # For most cases, direct string comparison works
+    assert Macro.to_string(actual_ast) == Macro.to_string(expected_ast)
+  end
+  
+  # Helper for comparing map typespecs where order doesn't matter
+  defp assert_map_typespec_equal(actual_ast, expected_properties) do
+    actual_string = Macro.to_string(actual_ast)
+    
+    # Check it's a map
+    assert actual_string =~ ~r/^%\{.*\}$/s
+    
+    # Check each expected property is present
+    Enum.each(expected_properties, fn property_string ->
+      assert actual_string =~ property_string
+    end)
+  end
+  
   describe "schema_to_typespec/1" do
     test "converts simple string type" do
       schema = %Schema{type: "string"}
       
       ast = TypespecGenerator.schema_to_typespec(schema)
-      typespec_string = Macro.to_string(ast)
+      expected = quote do: String.t()
       
-      assert typespec_string == "String.t()"
+      assert_ast_equal(ast, expected)
     end
     
     test "converts integer type" do
       schema = %Schema{type: "integer"}
       
       ast = TypespecGenerator.schema_to_typespec(schema)
-      typespec_string = Macro.to_string(ast)
+      expected = quote do: integer()
       
-      assert typespec_string == "integer()"
+      assert_ast_equal(ast, expected)
     end
     
     test "converts number type" do
       schema = %Schema{type: "number"}
       
       ast = TypespecGenerator.schema_to_typespec(schema)
-      typespec_string = Macro.to_string(ast)
+      expected = quote do: number()
       
-      assert typespec_string == "number()"
+      assert_ast_equal(ast, expected)
     end
     
     test "converts boolean type" do
       schema = %Schema{type: "boolean"}
       
       ast = TypespecGenerator.schema_to_typespec(schema)
-      typespec_string = Macro.to_string(ast)
+      expected = quote do: boolean()
       
-      assert typespec_string == "boolean()"
+      assert_ast_equal(ast, expected)
     end
     
     test "handles nullable types" do
       schema = %Schema{type: "string", nullable: true}
       
       ast = TypespecGenerator.schema_to_typespec(schema)
-      typespec_string = Macro.to_string(ast)
+      expected = quote do: String.t() | nil
       
-      assert typespec_string == "String.t() | nil"
+      assert_ast_equal(ast, expected)
     end
     
     test "converts string enum to union type" do
@@ -129,14 +148,13 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
       }
       
       ast = TypespecGenerator.schema_to_typespec(schema)
-      typespec_string = Macro.to_string(ast)
       
-      # The order might vary, so let's check for individual parts
-      assert typespec_string =~ "%{"
-      assert typespec_string =~ "}"
-      assert typespec_string =~ "required(:name) => String.t()"
-      assert typespec_string =~ "optional(:age) => integer()"
-      assert typespec_string =~ "optional(:active) => boolean()"
+      # Check each property is present with correct type
+      assert_map_typespec_equal(ast, [
+        "required(:name) => String.t()",
+        "optional(:age) => integer()",
+        "optional(:active) => boolean()"
+      ])
     end
     
     test "converts nested objects" do
@@ -195,6 +213,24 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
       typespec_string = Macro.to_string(ast)
       
       # References should be any() for now
+      assert typespec_string =~ "optional(:ranking_options) => any()"
+    end
+    
+    test "converts AssistantToolsFileSearch schema from testdata" do
+      # Load the actual schema from testdata
+      {schema, _} = Code.eval_file("test/testdata/AssistantToolsFileSearch.exs")
+      
+      ast = TypespecGenerator.schema_to_typespec(schema)
+      typespec_string = Macro.to_string(ast)
+      
+      # Check main structure
+      assert_map_typespec_equal(ast, [
+        "required(:type) => :file_search"
+      ])
+      
+      # Check nested file_search object is present and contains expected fields
+      assert typespec_string =~ "optional(:file_search) => %{"
+      assert typespec_string =~ "optional(:max_num_results) => integer()"
       assert typespec_string =~ "optional(:ranking_options) => any()"
     end
     
