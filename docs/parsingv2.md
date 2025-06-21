@@ -42,3 +42,29 @@ In OpenAPI, properties are full JSON Schemas themselves - there's no distinction
 - All schema attributes (type, format, required, etc.)
 
 This is why `Schema.properties` is typed as `%{String.t() => Schema.t()}` - each property is itself a complete schema that can be arbitrarily complex.
+
+## Step 2: Convert Schema structs to Elixir typespecs
+
+The `TypespecGenerator` module takes a `Schema.t()` and converts it into an Elixir typespec AST.
+
+For example, a schema like:
+```elixir
+%Schema{
+  type: "object",
+  properties: %{
+    "name" => %Schema{type: "string"},
+    "age" => %Schema{type: "integer"}
+  },
+  required: ["name"]
+}
+```
+
+Becomes a typespec:
+```elixir
+%{
+  required(:name) => String.t(),
+  optional(:age) => integer()
+}
+```
+
+This handles basic types, nullable fields, enums, arrays, nested objects, and references.
