@@ -68,13 +68,43 @@ defmodule ExOpenAI.Codegen.TypespecGenerator do
     quote do: map()
   end
 
-  defp get_base_type(%Schema{type: "object", properties: properties, required: _required}) 
+  defp get_base_type(%Schema{type: "object", properties: properties, required: required}) 
        when is_map(properties) do
     # Object with specific properties
-    # For now, return a simple map - we'll enhance this later
-    quote do: map()
+    # Convert to struct-like typespec with required/optional keys
+    required_list = required || []
+    
+    property_specs = 
+      properties
+      |> Enum.map(fn {prop_name, prop_schema} ->
+        prop_atom = String.to_atom(prop_name)
+        prop_type = schema_to_typespec(prop_schema)
+        
+        if prop_name in required_list do
+          # Required property
+          quote do
+            {required(unquote(prop_atom)), unquote(prop_type)}
+          end
+        else
+          # Optional property
+          quote do
+            {optional(unquote(prop_atom)), unquote(prop_type)}
+          end
+        end
+      end)
+    
+    # Build the map typespec
+    quote do
+      %{unquote_splicing(property_specs)}
+    end
   end
 
+  # Handle references - for now just return any()
+  defp get_base_type(%Schema{ref: ref}) when is_binary(ref) do
+    # TODO: In the future, resolve the reference to the actual type
+    quote do: any()
+  end
+  
   # Fallback for unhandled cases
   defp get_base_type(%Schema{}) do
     quote do: any()
