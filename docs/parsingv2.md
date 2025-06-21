@@ -47,6 +47,10 @@ This is why `Schema.properties` is typed as `%{String.t() => Schema.t()}` - each
 
 The `TypespecGenerator` module takes a `Schema.t()` and converts it into an Elixir typespec AST.
 
+## Step 3: Generate complete Elixir modules
+
+The `ComponentModuleGenerator` combines the parsed schemas and typespecs to generate complete Elixir modules.
+
 For example, a schema like:
 ```elixir
 %Schema{
@@ -81,3 +85,33 @@ Becomes a typespec:
   - `enum`: generates atom union types
 - References: resolves `#/components/schemas/ComponentName` to `ExOpenAI.Components.ComponentName.t()`
   - Other reference patterns still return `any()`
+
+## Step 3: Generate complete Elixir modules
+
+The `ComponentModuleGenerator` combines the parsed schemas and typespecs to generate complete Elixir modules.
+
+For object schemas, it generates:
+- A `defstruct` with all property fields
+- A `@type t()` specification with proper types for each field
+- Optional fields automatically include `| nil` in their type
+- `@moduledoc` from the schema description
+
+For non-object schemas (enums, unions, etc.), it generates:
+- A type alias `@type t()` with the appropriate type
+- No struct definition
+
+Example generated module:
+```elixir
+defmodule ExOpenAI.Components.ChatCompletionRequestUserMessage do
+  @moduledoc "Messages sent by an end user..."
+  
+  @type t() :: %{
+    __struct__: __MODULE__,
+    content: String.t() | list(ExOpenAI.Components.ChatCompletionRequestUserMessageContentPart.t()),
+    name: String.t() | nil,
+    role: :user
+  }
+  
+  defstruct [:content, :name, :role]
+end
+```
