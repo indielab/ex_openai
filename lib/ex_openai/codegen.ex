@@ -9,7 +9,7 @@ defmodule ExOpenAI.Codegen do
 
     # Cache for unpack_ast results to avoid repeated computation
     @cache_table :ast_unpacker_cache
-    
+
     def start_cache do
       case :ets.whereis(@cache_table) do
         :undefined -> :ets.new(@cache_table, [:named_table, :public, :set])
@@ -23,53 +23,57 @@ defmodule ExOpenAI.Codegen do
     @doc false
     def unpack_ast(module, typespec_ast, partial_tree \\ %{}) do
       start_cache()
-      
+
       # Check cache first
       cache_key = {module, partial_tree[:resolved_mods] || []}
+
       case :ets.lookup(@cache_table, cache_key) do
-        [{^cache_key, result}] -> 
+        [{^cache_key, result}] ->
           result
+
         [] ->
           resolved_mods = Map.get(partial_tree, :resolved_mods, [])
           partial_tree = Map.put(partial_tree, :resolved_mods, resolved_mods)
 
-          result = case Enum.member?(resolved_mods, module) do
-            true ->
-              # IO.puts("already resolved, skipping")
-              partial_tree
+          result =
+            case Enum.member?(resolved_mods, module) do
+              true ->
+                # IO.puts("already resolved, skipping")
+                partial_tree
 
-            false ->
-              res =
-                typespec_ast
-                # walk through the AST and find all "ExOpenAI.Components"
-                # unpack their AST recursively and merge it all together into
-                # the accumulator
-                |> Macro.prewalk(partial_tree, fn args, acc ->
-                  r =
-                    with {:__aliases__, [alias: false], alias} <- args,
-                         mod <- Module.concat(alias),
-                         ats <- Atom.to_string(mod),
-                         true <- String.contains?(ats, "ExOpenAI.Components") do
-                      tree = unpack_ast(mod, mod.__typespec__(), %{
-                        resolved_mods: acc.resolved_mods ++ [module]
-                      })
+              false ->
+                res =
+                  typespec_ast
+                  # walk through the AST and find all "ExOpenAI.Components"
+                  # unpack their AST recursively and merge it all together into
+                  # the accumulator
+                  |> Macro.prewalk(partial_tree, fn args, acc ->
+                    r =
+                      with {:__aliases__, [alias: false], alias} <- args,
+                           mod <- Module.concat(alias),
+                           ats <- Atom.to_string(mod),
+                           true <- String.contains?(ats, "ExOpenAI.Components") do
+                        tree =
+                          unpack_ast(mod, mod.__typespec__(), %{
+                            resolved_mods: acc.resolved_mods ++ [module]
+                          })
 
-                      {:ok, tree}
+                        {:ok, tree}
+                      end
+
+                    # merge back into accumulator, otherwise just return AST as is
+                    case r do
+                      {:ok, res} -> {args, Map.merge(acc, res)}
+                      _ -> {args, acc}
                     end
+                  end)
 
-                  # merge back into accumulator, otherwise just return AST as is
-                  case r do
-                    {:ok, res} -> {args, Map.merge(acc, res)}
-                    _ -> {args, acc}
-                  end
-                end)
+                {ast, acc} = res
 
-              {ast, acc} = res
+                acc
+                |> Map.put(module, ast)
+            end
 
-              acc
-              |> Map.put(module, ast)
-          end
-          
           # Cache the result
           :ets.insert(@cache_table, {cache_key, result})
           result
@@ -80,7 +84,7 @@ defmodule ExOpenAI.Codegen do
       quote do
         # Expose typespec for the new AstUnpacker API
         def __typespec__, do: @typespec
-        
+
         # Legacy function for backward compatibility - delegates to the optimized version
         @doc false
         def unpack_ast(partial_tree \\ %{}) do
@@ -661,54 +665,57 @@ defmodule ExOpenAI.Codegen do
   @type response_type :: atom() | component_ref | one_of_type | nil
 
   @spec extract_response_type(%{required(String.t()) => map()}) :: response_type
-  defp extract_response_type(%{"200" => %{"content" => content}}) do
-    return_types =
-      content
-      # [["application/json", %{}]]
-      |> Map.to_list()
+  defp extract_response_type(response_map) do
+    {_status_code, map_content} = response_map |> Map.to_list() |> List.first()
 
-      # iterate over all the items, which can be multiple
-      # application/json:
-      # 	schema:
-      # 		$ref: "#/components/schemas/Response"
-      # text/event-stream:
-      # 	schema:
-      # 		$ref: "#/components/schemas/ResponseStreamEvent"
-      |> Enum.map(fn {_content_type, %{} = content} ->
-        # IO.inspect(content, label: "Content")
-        # IO.inspect(content_type, label: "Content type")
-        content
-        |> Map.get("schema")
-        |> case do
-          %{"$ref" => ref} ->
-            {:component, String.replace(ref, "#/components/schemas/", "")}
+    case map_content do
+      %{"content" => content} ->
+        return_types =
+          content
+          # [["application/json", %{}]]
+          |> Map.to_list()
 
-          %{"type" => type} ->
-            String.to_atom(type)
+          # iterate over all the items, which can be multiple
+          # application/json:
+          # 	schema:
+          # 		$ref: "#/components/schemas/Response"
+          # text/event-stream:
+          # 	schema:
+          # 		$ref: "#/components/schemas/ResponseStreamEvent"
+          |> Enum.map(fn {_content_type, %{} = content} ->
+            # IO.inspect(content, label: "Content")
+            # IO.inspect(content_type, label: "Content type")
+            content
+            |> Map.get("schema")
+            |> case do
+              %{"$ref" => ref} ->
+                {:component, String.replace(ref, "#/components/schemas/", "")}
 
-          %{"oneOf" => list} ->
-            {:oneOf,
-             Enum.map(list, fn %{"$ref" => ref} ->
-               {:component, String.replace(ref, "#/components/schemas/", "")}
-             end)}
+              %{"type" => type} ->
+                String.to_atom(type)
+
+              %{"oneOf" => list} ->
+                {:oneOf,
+                 Enum.map(list, fn %{"$ref" => ref} ->
+                   {:component, String.replace(ref, "#/components/schemas/", "")}
+                 end)}
+            end
+          end)
+
+        # if return_types is more than one, we'll squash them together into a oneOf type
+        # otherwise just return the first one
+        case return_types do
+          [first] ->
+            first
+
+          _ ->
+            {:oneOf, return_types}
         end
-      end)
 
-    # if return_types is more than one, we'll squash them together into a oneOf type
-    # otherwise just return the first one
-    case return_types do
-      [first] ->
-        first
-
-      _ ->
-        {:oneOf, return_types}
+      _res200 ->
+        # Case for empty response, aka nothing to return
+        nil
     end
-  end
-
-  # Case for empty response, aka nothing to return
-  @spec extract_response_type(%{required(String.t()) => map()}) :: nil
-  defp extract_response_type(%{"200" => _res200} = _res) do
-    nil
   end
 
   def filter_arguments_by_location(arguments, location) do
@@ -788,6 +795,7 @@ defmodule ExOpenAI.Codegen do
          {:ok, responses} <- Map.fetch(post_data, "responses"),
          true <- Map.has_key?(post_data, "x-oaiMeta") do
       body = Map.get(post_data, "requestBody")
+
       %{
         endpoint: path,
         name: Macro.underscore(id),
@@ -804,7 +812,8 @@ defmodule ExOpenAI.Codegen do
     end
   end
 
-  def parse_path(path, %{"post" => post_data}, component_mapping) when is_map(post_data) and not is_map_key(post_data, "requestBody") do
+  def parse_path(path, %{"post" => post_data}, component_mapping)
+      when is_map(post_data) and not is_map_key(post_data, "requestBody") do
     with {:ok, _id} <- Map.fetch(post_data, "operationId"),
          {:ok, _summary} <- Map.fetch(post_data, "summary"),
          {:ok, _responses} <- Map.fetch(post_data, "responses"),
@@ -860,7 +869,7 @@ defmodule ExOpenAI.Codegen do
 
   # Mark YAML file as external resource to track changes
   @external_resource "#{__DIR__}/docs/docs.yaml"
-  
+
   # Pre-parse YAML at compile time and store as module attribute
   @raw_yaml File.read!("#{__DIR__}/docs/docs.yaml") |> YamlElixir.read_from_string!()
 
@@ -916,6 +925,7 @@ defmodule ExOpenAI.Codegen do
   def type_to_spec("oneOf"), do: quote(do: any())
   def type_to_spec("allOf"), do: quote(do: any())
   def type_to_spec("anyOf"), do: quote(do: any())
+  def type_to_spec("null"), do: quote(do: nil)
 
   def type_to_spec({:oneOf, {:enum, keys}}) do
     keys
