@@ -368,9 +368,6 @@ defmodule ExOpenAI.Codegen.DocsParserTest do
       # Check the main schema
       create_image_edit = result.components["CreateImageEditRequest"]
 
-      IO.inspect(create_image_edit)
-      assert false
-
       assert %Schema{} = create_image_edit
       assert create_image_edit.type == "object"
       assert create_image_edit.required == ["prompt", "image"]
@@ -499,6 +496,7 @@ defmodule ExOpenAI.Codegen.DocsParserTest do
 
       # Check that we have many schemas
       assert map_size(result.components) > 100
+
 
       # Check that we have many paths
       assert map_size(result.paths) > 50
