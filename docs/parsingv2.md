@@ -1,0 +1,44 @@
+# How parsing works
+
+## Step 1: Turn yaml into Elixir structs
+
+This happens in `docs_parser.ex`
+
+It turns
+
+```yml
+      components:
+        schemas:
+          AddUploadPartRequest:
+            type: object
+            additionalProperties: false
+            properties:
+              data:
+                type: string
+                format: binary
+      paths:
+        /assistants:
+          get:
+            operationId: listAssistants
+            tags:
+              - Assistants
+            summary: Returns a list of assistants.
+            parameters:
+              - name: limit
+                in: query
+                required: false
+                schema:
+                  type: integer
+                  default: 20
+```
+
+Into Elixir structs `ExOpenAI.Codegen.DocsParser.Schema` and `ExOpenAI.Codegen.DocsParser.Path`. No transformation has happened at this stage, the Elixir structs represent the schema 1:1, just as properly typed structs
+
+### Why properties use the same Schema struct
+
+In OpenAPI, properties are full JSON Schemas themselves - there's no distinction between a "top-level schema" and a "property schema". Both can have:
+- Nested properties
+- Type combinators (anyOf, oneOf, allOf)
+- All schema attributes (type, format, required, etc.)
+
+This is why `Schema.properties` is typed as `%{String.t() => Schema.t()}` - each property is itself a complete schema that can be arbitrarily complex.

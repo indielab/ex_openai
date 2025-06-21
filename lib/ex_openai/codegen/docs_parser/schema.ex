@@ -6,15 +6,15 @@ defmodule ExOpenAI.Codegen.DocsParser.Schema do
     name: String.t(),
     type: String.t() | nil,
     description: String.t() | nil,
-    properties: %{String.t() => map()} | nil,
+    properties: %{String.t() => t()} | nil,
     required: [String.t()] | nil,
     enum: [any()] | nil,
-    all_of: [map()] | nil,
-    one_of: [map()] | nil,
-    any_of: [map()] | nil,
+    all_of: [t()] | nil,
+    one_of: [t()] | nil,
+    any_of: [t()] | nil,
     ref: String.t() | nil,
     format: String.t() | nil,
-    items: map() | nil,
+    items: t() | nil,
     additional_properties: boolean() | map() | nil,
     example: any() | nil,
     default: any() | nil,
@@ -72,15 +72,15 @@ defmodule ExOpenAI.Codegen.DocsParser.Schema do
       name: name,
       type: data["type"],
       description: data["description"],
-      properties: data["properties"],
+      properties: parse_properties(data["properties"]),
       required: data["required"],
       enum: data["enum"],
-      all_of: data["allOf"],
-      one_of: data["oneOf"],
-      any_of: data["anyOf"],
+      all_of: parse_schema_array(data["allOf"]),
+      one_of: parse_schema_array(data["oneOf"]),
+      any_of: parse_schema_array(data["anyOf"]),
       ref: data["$ref"],
       format: data["format"],
-      items: data["items"],
+      items: parse_items(data["items"]),
       additional_properties: data["additionalProperties"],
       example: data["example"],
       default: data["default"],
@@ -91,5 +91,27 @@ defmodule ExOpenAI.Codegen.DocsParser.Schema do
       deprecated: data["deprecated"],
       raw: data
     }
+  end
+
+  # Parse properties recursively
+  defp parse_properties(nil), do: nil
+  defp parse_properties(properties) when is_map(properties) do
+    Map.new(properties, fn {prop_name, prop_data} ->
+      {prop_name, parse_schema(prop_name, prop_data)}
+    end)
+  end
+
+  # Parse items (for array types)
+  defp parse_items(nil), do: nil
+  defp parse_items(items) when is_map(items) do
+    parse_schema("items", items)
+  end
+
+  # Parse arrays of schemas (for allOf, oneOf, anyOf)
+  defp parse_schema_array(nil), do: nil
+  defp parse_schema_array(schemas) when is_list(schemas) do
+    Enum.with_index(schemas, fn schema, index ->
+      parse_schema("#{index}", schema)
+    end)
   end
 end
