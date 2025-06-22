@@ -25,7 +25,6 @@ defmodule ExOpenAI.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {ExOpenAI, []},
       extra_applications: [:hackney, :httpoison, :jason, :logger, :yaml_elixir]
     ]
   end
