@@ -16,22 +16,20 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
   @spec generate_body(Operation.t(), String.t(), [atom()]) :: Macro.t()
   def generate_body(%Operation{} = operation, path, arg_names) do
     # Extract parameter information
-    {path_params, query_params, body_params} = categorize_parameters(operation)
+    {path_params, query_params, _body_params} = categorize_parameters(operation)
 
     # Determine HTTP method and content type
     http_method = determine_http_method(operation)
     content_type = determine_content_type(operation)
 
-
-    # Generate the actual function body
-    # We need to be careful with variable hygiene here
-    
-    # Build URL replacement logic
+    # Build URL replacement statements
     url_replacements = path_params
     |> Enum.map(fn param ->
       param_name = String.to_atom(param.name)
       pattern = "{#{param.name}}"
-      {pattern, param_name}
+      quote do
+        url = String.replace(url, unquote(pattern), to_string(unquote(Macro.var(param_name, nil))))
+      end
     end)
     
     # Extract query parameter names
@@ -44,57 +42,46 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
       name != :opts and name not in path_param_names
     end)
     
+    # Build body parameter assignments
+    body_param_assignments = body_arg_names
+    |> Enum.map(fn name ->
+      quote do
+        {unquote(name), unquote(Macro.var(name, nil))}
+      end
+    end)
+    
+    # Generate AST variable for opts
+    opts_var = Macro.var(:opts, nil)
+    
     quote do
+      # Debug logging
+      IO.puts("Function called with args: #{inspect(binding())}")
+      
       # Start with the base URL
       url = unquote(path)
       
       # Replace path parameters
-      unquote(
-        url_replacements
-        |> Enum.map(fn {pattern, param_name} ->
-          quote do
-            url = String.replace(url, unquote(pattern), to_string(unquote(Macro.var(param_name, nil))))
-          end
-        end)
-      )
+      unquote_splicing(url_replacements)
       
       # Build query string from opts
-      query_string = unquote(
-        if length(query_param_names) > 0 do
-          quote do
-            query_params = Keyword.take(Macro.var(:opts, nil), unquote(query_param_names))
-            if length(query_params) > 0 do
-              "?" <> URI.encode_query(query_params)
-            else
-              ""
-            end
-          end
-        else
-          quote(do: "")
-        end
-      )
+      query_params = Keyword.take(unquote(opts_var), unquote(query_param_names))
+      IO.puts("Query params extracted: #{inspect(query_params)}")
+      
+      query_string = if length(query_params) > 0 do
+        "?" <> URI.encode_query(query_params)
+      else
+        ""
+      end
       
       # Append query string
       url = url <> query_string
+      IO.puts("Final URL: #{url}")
       
       # Build body parameters
-      body_params = unquote(
-        if http_method in [:post, :put, :patch] and length(body_arg_names) > 0 do
-          # Create keyword list from body arguments
-          body_param_list = body_arg_names
-          |> Enum.map(fn name ->
-            quote do
-              {unquote(name), unquote(Macro.var(name, nil))}
-            end
-          end)
-          
-          quote do
-            [unquote_splicing(body_param_list)]
-          end
-        else
-          quote(do: [])
-        end
-      )
+      body_params = [unquote_splicing(body_param_assignments)]
+      
+      IO.puts("Body params: #{inspect(body_params)}")
+      IO.puts("HTTP method: #{unquote(http_method)}")
       
       # Simple convert function for now
       convert_response = fn response -> response end
@@ -105,14 +92,14 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
         url,
         body_params,
         unquote(content_type),
-        Macro.var(:opts, nil),
+        unquote(opts_var),
         convert_response
       )
     end
   end
 
   # Categorize parameters by their location (path, query, body)
-  defp categorize_parameters(%Operation{parameters: params}) do
+  def categorize_parameters(%Operation{parameters: params}) do
     params = params || []
 
     path_params = Enum.filter(params, &(&1.in == "path"))
@@ -124,16 +111,16 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
   end
 
   # Determine HTTP method from operation
-  defp determine_http_method(%Operation{method: method}) do
+  def determine_http_method(%Operation{method: method}) do
     String.to_atom(method)
   end
 
   # Determine content type from request body
-  defp determine_content_type(%Operation{request_body: nil}) do
+  def determine_content_type(%Operation{request_body: nil}) do
     :"application/json"
   end
 
-  defp determine_content_type(%Operation{request_body: request_body}) do
+  def determine_content_type(%Operation{request_body: request_body}) do
     case request_body.content do
       %{"multipart/form-data" => _} -> :"multipart/form-data"
       _ -> :"application/json"

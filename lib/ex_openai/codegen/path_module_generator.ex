@@ -90,13 +90,84 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   defp generate_function(%Operation{operation_id: op_id} = operation, schemas, path) do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names} = build_function_args(operation, schemas)
+    
+    IO.puts("Generating function: #{function_name}")
+    IO.puts("Args: #{inspect(args)}")
+    IO.puts("Arg names: #{inspect(arg_names)}")
 
-    # Generate the function body
-    body_ast = FunctionBodyGenerator.generate_body(operation, path, arg_names)
-
+    # Generate the function body inline to avoid hygiene issues
+    {path_params, query_params, _} = FunctionBodyGenerator.categorize_parameters(operation)
+    http_method = FunctionBodyGenerator.determine_http_method(operation)
+    content_type = FunctionBodyGenerator.determine_content_type(operation)
+    
+    # Build the data we need for the function body
+    path_param_names = Enum.map(path_params, fn p -> String.to_atom(p.name) end)
+    query_param_names = Enum.map(query_params, fn p -> String.to_atom(p.name) end)
+    body_arg_names = arg_names |> Enum.filter(fn name -> 
+      name != :opts and name not in path_param_names
+    end)
+    
     quote do
       def unquote(function_name)(unquote_splicing(args)) do
-        unquote(body_ast)
+        # Debug logging
+        IO.puts("Function called with args: #{inspect(binding())}")
+        
+        # Start with the base URL
+        url = unquote(path)
+        
+        # Replace path parameters
+        unquote(
+          path_params
+          |> Enum.map(fn param ->
+            param_name = String.to_atom(param.name)
+            pattern = "{#{param.name}}"
+            quote do
+              url = String.replace(url, unquote(pattern), to_string(unquote(Macro.var(param_name, nil))))
+            end
+          end)
+        )
+        
+        # Build query string from opts
+        query_params = Keyword.take(opts, unquote(query_param_names))
+        IO.puts("Query params extracted: #{inspect(query_params)}")
+        
+        query_string = if length(query_params) > 0 do
+          "?" <> URI.encode_query(query_params)
+        else
+          ""
+        end
+        
+        # Append query string
+        url = url <> query_string
+        IO.puts("Final URL: #{url}")
+        
+        # Build body parameters
+        body_params = [
+          unquote_splicing(
+            body_arg_names
+            |> Enum.map(fn name ->
+              quote do
+                {unquote(name), unquote(Macro.var(name, nil))}
+              end
+            end)
+          )
+        ]
+        
+        IO.puts("Body params: #{inspect(body_params)}")
+        IO.puts("HTTP method: #{unquote(http_method)}")
+        
+        # Simple convert function for now
+        convert_response = fn response -> response end
+        
+        # Make the HTTP call
+        ExOpenAI.Config.http_client().api_call(
+          unquote(http_method),
+          url,
+          body_params,
+          unquote(content_type),
+          opts,
+          convert_response
+        )
       end
     end
   end
