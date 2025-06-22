@@ -118,7 +118,7 @@ end
 
 ## Step 4: Generate API modules from Paths
 
-The `PathModuleGenerator` takes parsed Path structs and generates API client modules.
+The `PathModuleGenerator` takes parsed Path structs and generates API client modules with proper function signatures.
 
 ### Module naming and grouping
 - Paths are grouped by their operation tags (e.g., all operations tagged "Chat" go into `ExOpenAI.Chat`)
@@ -132,6 +132,14 @@ The `PathModuleGenerator` takes parsed Path structs and generates API client mod
   - `getAPIKey` → `get_api_key`
   - `updateXMLConfig` → `update_xml_config`
 
+### Argument parsing
+- Operations with only optional parameters: `def function_name(opts \\ [])`
+- Operations with required request body fields:
+  - Required fields become positional arguments (sorted alphabetically)
+  - Optional fields go in the `opts` keyword list
+  - Example: `def create_chat_completion(messages, model, opts \\ [])`
+- The generator resolves schema references and handles `allOf` to merge required fields
+
 ### Example
 
 From a path like:
@@ -139,8 +147,29 @@ From a path like:
 %Path{
   path: "/chat/completions",
   operations: %{
-    "get" => %Operation{operation_id: "listChatCompletions", tags: ["Chat"]},
-    "post" => %Operation{operation_id: "createChatCompletion", tags: ["Chat"]}
+    "get" => %Operation{
+      operation_id: "listChatCompletions", 
+      tags: ["Chat"],
+      parameters: [%{required: false, name: "limit"}, ...]
+    },
+    "post" => %Operation{
+      operation_id: "createChatCompletion", 
+      tags: ["Chat"],
+      request_body: %{
+        required: true,
+        content: %{"application/json" => %{"schema" => %{"$ref" => "#/components/schemas/CreateChatCompletionRequest"}}}
+      }
+    }
+  }
+}
+```
+
+With schema:
+```elixir
+%{
+  "CreateChatCompletionRequest" => %Schema{
+    properties: %{"messages" => ..., "model" => ..., "temperature" => ...},
+    required: ["messages", "model"]
   }
 }
 ```
@@ -150,14 +179,14 @@ Generates:
 defmodule ExOpenAI.Chat do
   @moduledoc false
   
-  def list_chat_completions() do
+  def list_chat_completions(opts \\ []) do
     # TODO: Implement
-    :ok
+    {opts, :ok}
   end
   
-  def create_chat_completion() do
+  def create_chat_completion(messages, model, opts \\ []) do
     # TODO: Implement
-    :ok
+    {messages, model, opts, :ok}
   end
 end
 ```
