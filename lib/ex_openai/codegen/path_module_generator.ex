@@ -6,7 +6,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   for each operation.
   """
 
-  alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody}
+  alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody, Parameter}
 
   @doc """
   Generates modules from a list of Path structs.
@@ -117,34 +117,53 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
   # Build function arguments based on operation parameters and request body
   defp build_function_args(%Operation{parameters: params, request_body: request_body}, schemas) do
-    # Check if all parameters are optional
-    all_params_optional = params == nil || Enum.all?(params || [], fn p -> !p.required end)
+    # Extract path parameters (always required)
+    path_params = extract_path_parameters(params)
     
-    case request_body do
-      nil when all_params_optional ->
-        # Only optional parameters, use opts
-        {[quote(do: opts \\ [])], [quote(do: opts)]}
-      
-      nil ->
-        # Has required parameters (not implemented yet)
-        {[], []}
-      
+    # Extract request body required fields
+    body_params = case request_body do
       %RequestBody{required: true, content: content} ->
-        # Has required request body, need to extract required fields
-        required_args = extract_required_args(content, schemas)
-        args = required_args ++ [quote(do: opts \\ [])]
-        arg_names = Enum.map(required_args, fn arg -> 
-          case arg do
-            {name, _, _} -> quote(do: unquote(name))
-            _ -> arg
-          end
-        end) ++ [quote(do: opts)]
-        {args, arg_names}
-      
+        extract_required_args(content, schemas)
       _ ->
-        # Optional request body
-        {[quote(do: opts \\ [])], [quote(do: opts)]}
+        []
     end
+    
+    # Combine all required parameters and sort alphabetically
+    all_required = (path_params ++ body_params) |> Enum.sort_by(fn
+      {name, _, _} -> name
+      _ -> nil
+    end)
+    
+    # Check if we have any non-path required parameters
+    has_required_query_params = params != nil && Enum.any?(params, fn p -> 
+      p.in != "path" && p.required
+    end)
+    
+    if all_required == [] && !has_required_query_params do
+      # Only optional parameters, use opts
+      {[quote(do: opts \\ [])], [quote(do: opts)]}
+    else
+      # Has required parameters
+      args = all_required ++ [quote(do: opts \\ [])]
+      arg_names = Enum.map(all_required, fn arg -> 
+        case arg do
+          {name, _, _} -> quote(do: unquote(name))
+          _ -> arg
+        end
+      end) ++ [quote(do: opts)]
+      {args, arg_names}
+    end
+  end
+
+  # Extract path parameters from the parameters list
+  defp extract_path_parameters(nil), do: []
+  defp extract_path_parameters(params) when is_list(params) do
+    params
+    |> Enum.filter(fn param -> param.in == "path" end)
+    |> Enum.map(fn param ->
+      name = String.to_atom(param.name)
+      Macro.var(name, nil)
+    end)
   end
 
   # Extract required arguments from request body content

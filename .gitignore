@@ -27,3 +27,4 @@ openai-*.tar
 .aider*
 
 openai/components/
+openai/paths/

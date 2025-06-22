@@ -355,8 +355,16 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
               operation_id: "listChatCompletions",
               tags: ["Chat"],
               parameters: [
-                %{required: false, name: "limit"},
-                %{required: false, name: "after"}
+                %ExOpenAI.Codegen.DocsParser.Parameter{
+                  name: "limit",
+                  in: "query",
+                  required: false
+                },
+                %ExOpenAI.Codegen.DocsParser.Parameter{
+                  name: "after",
+                  in: "query",
+                  required: false
+                }
               ]
             }
           }
@@ -421,6 +429,85 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       
       # Should include both required fields from allOf schemas
       assert module_string =~ "def create_test(base_field, specific_field, opts \\\\ []) do"
+    end
+    
+    test "handles path parameters" do
+      paths = [
+        %Path{
+          path: "/chat/completions/{completion_id}",
+          operations: %{
+            "delete" => %Operation{
+              method: "delete",
+              operation_id: "deleteChatCompletion",
+              tags: ["Chat"],
+              parameters: [
+                %ExOpenAI.Codegen.DocsParser.Parameter{
+                  name: "completion_id",
+                  in: "path",
+                  description: "The ID of the chat completion to delete.",
+                  schema: %{"type" => "string"},
+                  required: true
+                }
+              ]
+            }
+          }
+        }
+      ]
+      
+      [ast] = PathModuleGenerator.generate_modules(paths)
+      module_string = Macro.to_string(ast)
+      
+      assert module_string =~ "def delete_chat_completion(completion_id, opts \\\\ []) do"
+    end
+    
+    test "handles path parameters with request body" do
+      paths = [
+        %Path{
+          path: "/items/{item_id}",
+          operations: %{
+            "put" => %Operation{
+              method: "put",
+              operation_id: "updateItem",
+              tags: ["Items"],
+              parameters: [
+                %ExOpenAI.Codegen.DocsParser.Parameter{
+                  name: "item_id",
+                  in: "path",
+                  required: true
+                }
+              ],
+              request_body: %RequestBody{
+                required: true,
+                content: %{
+                  "application/json" => %{
+                    "schema" => %{
+                      "$ref" => "#/components/schemas/UpdateItemRequest"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+      
+      schemas = %{
+        "UpdateItemRequest" => %Schema{
+          type: "object",
+          properties: %{
+            "name" => %Schema{type: "string"},
+            "price" => %Schema{type: "number"},
+            "description" => %Schema{type: "string"}
+          },
+          required: ["name", "price"]
+        }
+      }
+      
+      [ast] = PathModuleGenerator.generate_modules(paths, schemas)
+      module_string = Macro.to_string(ast)
+      
+      # Should have path param and required body fields sorted alphabetically
+      assert module_string =~ "def update_item(item_id, name, price, opts \\\\ []) do"
     end
   end
 end
