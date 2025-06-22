@@ -2,30 +2,31 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   @moduledoc """
   Generates Elixir modules from parsed OpenAPI Path structs.
   
-  Groups paths by their tag and generates modules with function stubs
+  Groups paths by their first path segment and generates modules with functions
   for each operation.
   """
 
   alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody, Parameter}
+  alias ExOpenAI.Codegen.FunctionBodyGenerator
 
   @doc """
   Generates modules from a list of Path structs.
   
-  Groups paths by their tag and returns a list of module ASTs.
+  Groups paths by their first path segment and returns a list of module ASTs.
   """
   @spec generate_modules([Path.t()], %{String.t() => Schema.t()}) :: [Macro.t()]
   def generate_modules(paths, schemas \\ %{}) when is_list(paths) do
     paths
-    |> group_paths_by_tag()
-    |> Enum.map(fn {tag, paths} -> generate_module(tag, paths, schemas) end)
+    |> group_paths_by_prefix()
+    |> Enum.map(fn {prefix, paths} -> generate_module(prefix, paths, schemas) end)
   end
 
   @doc """
-  Generates a single module from paths that share the same tag.
+  Generates a single module from paths that share the same prefix.
   """
   @spec generate_module(String.t() | nil, [Path.t()], %{String.t() => Schema.t()}) :: Macro.t()
-  def generate_module(tag, paths, schemas \\ %{}) when is_list(paths) do
-    module_name = determine_module_name(tag, paths)
+  def generate_module(prefix, paths, schemas \\ %{}) when is_list(paths) do
+    module_name = determine_module_name(prefix, paths)
     functions = extract_all_functions(paths, schemas)
     
     quote do
@@ -37,57 +38,38 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     end
   end
 
-  # Group paths by their tag
-  defp group_paths_by_tag(paths) do
+  # Group paths by their first path segment
+  defp group_paths_by_prefix(paths) do
     paths
-    |> Enum.flat_map(fn path ->
-      # Get all unique tags from all operations in this path
-      tags = path.operations
-             |> Map.values()
-             |> Enum.flat_map(fn op -> op.tags || [] end)
-             |> Enum.uniq()
-      
-      # If no tags, use nil as the key
-      if tags == [] do
-        [{nil, path}]
-      else
-        # Create an entry for each tag
-        Enum.map(tags, fn tag -> {tag, path} end)
+    |> Enum.group_by(fn path ->
+      # Extract the first segment of the path
+      # e.g., "/chat/completions" -> "chat"
+      # e.g., "/organization/admin_api_keys" -> "organization"
+      case String.split(path.path, "/", trim: true) do
+        [] -> nil
+        [first | _] -> first
       end
     end)
-    |> Enum.group_by(
-      fn {tag, _path} -> tag end,
-      fn {_tag, path} -> path end
-    )
   end
 
-  # Determine module name from tag or operation
-  defp determine_module_name(tag, _paths) when is_binary(tag) do
-    String.to_atom("Elixir.ExOpenAI.#{tag}")
+  # Determine module name from path prefix
+  defp determine_module_name(prefix, _paths) when is_binary(prefix) do
+    # Convert path prefix to valid module name
+    # e.g., "chat" -> "Chat"
+    # e.g., "fine_tuning" -> "FineTuning"
+    # e.g., "organization" -> "Organization"
+    module_part = prefix
+    |> String.replace("_", " ")
+    |> String.split(" ")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join("")
+    
+    String.to_atom("Elixir.ExOpenAI.#{module_part}")
   end
   
-  defp determine_module_name(nil, paths) do
-    # Try to derive from first operation_id
-    first_op = paths
-               |> List.first()
-               |> Map.get(:operations)
-               |> Map.values()
-               |> List.first()
-    
-    case first_op do
-      %Operation{operation_id: op_id} when is_binary(op_id) ->
-        # Extract module name from operation_id
-        # e.g., "ListContainers" -> "Containers"
-        module_part = op_id
-                     |> String.replace(~r/^(list|create|get|update|delete|modify)/i, "")
-                     |> String.trim()
-        
-        String.to_atom("Elixir.ExOpenAI.#{module_part}")
-      
-      _ ->
-        # Fallback to Unknown
-        String.to_atom("Elixir.ExOpenAI.Unknown")
-    end
+  defp determine_module_name(nil, _paths) do
+    # Fallback to Root for paths without prefix (shouldn't happen)
+    String.to_atom("Elixir.ExOpenAI.Root")
   end
 
   # Extract all functions from all paths
@@ -96,21 +78,23 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     |> Enum.flat_map(fn path ->
       path.operations
       |> Map.values()
-      |> Enum.map(&generate_function(&1, schemas))
+      |> Enum.map(&generate_function(&1, schemas, path.path))
       |> Enum.reject(&is_nil/1)
     end)
   end
 
   # Generate a function from an operation
-  defp generate_function(%Operation{operation_id: nil}, _schemas), do: nil
-  defp generate_function(%Operation{operation_id: op_id} = operation, schemas) do
+  defp generate_function(%Operation{operation_id: nil}, _schemas, _path), do: nil
+  defp generate_function(%Operation{operation_id: op_id} = operation, schemas, path) do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names} = build_function_args(operation, schemas)
     
+    # Generate the function body
+    body_ast = FunctionBodyGenerator.generate_body(operation, path, arg_names)
+    
     quote do
       def unquote(function_name)(unquote_splicing(args)) do
-        # TODO: Implement
-        {unquote_splicing(arg_names), :ok}
+        unquote(body_ast)
       end
     end
   end
@@ -134,25 +118,16 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
       _ -> nil
     end)
     
-    # Check if we have any non-path required parameters
-    has_required_query_params = params != nil && Enum.any?(params, fn p -> 
-      p.in != "path" && p.required
-    end)
+    # Always have opts as the last parameter
+    args = all_required ++ [quote(do: opts \\ [])]
+    arg_names = Enum.map(all_required, fn arg -> 
+      case arg do
+        {name, _, _} -> quote(do: unquote(name))
+        _ -> arg
+      end
+    end) ++ [quote(do: opts)]
     
-    if all_required == [] && !has_required_query_params do
-      # Only optional parameters, use opts
-      {[quote(do: opts \\ [])], [quote(do: opts)]}
-    else
-      # Has required parameters
-      args = all_required ++ [quote(do: opts \\ [])]
-      arg_names = Enum.map(all_required, fn arg -> 
-        case arg do
-          {name, _, _} -> quote(do: unquote(name))
-          _ -> arg
-        end
-      end) ++ [quote(do: opts)]
-      {args, arg_names}
-    end
+    {args, arg_names}
   end
 
   # Extract path parameters from the parameters list
@@ -233,6 +208,8 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   # Convert operationId from camelCase to snake_case
   defp operation_id_to_function_name(operation_id) do
     operation_id
+    # First replace hyphens with underscores
+    |> String.replace("-", "_")
     # Handle transitions from lowercase to uppercase
     |> String.replace(~r/([a-z\d])([A-Z])/, "\\1_\\2")
     # Handle transitions from multiple uppercase letters to lowercase

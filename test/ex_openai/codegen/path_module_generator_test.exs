@@ -53,7 +53,7 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       assert module_string =~ "def create_assistant(opts \\\\ []) do"
     end
     
-    test "groups multiple paths with same tag into one module" do
+    test "groups multiple paths with same prefix into one module" do
       paths = [
         %Path{
           path: "/images/generations",
@@ -100,7 +100,7 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       assert module_string =~ "def create_image_variation(opts \\\\ []) do"
     end
     
-    test "handles paths with nil tags" do
+    test "handles paths grouped by prefix regardless of tags" do
       paths = [
         %Path{
           path: "/containers",
@@ -122,7 +122,7 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
       
-      # Should derive module name from operation_id
+      # Should derive module name from path prefix
       assert module_string =~ "defmodule ExOpenAI.Containers do"
       assert module_string =~ "def list_containers(opts \\\\ []) do"
       assert module_string =~ "def create_container(opts \\\\ []) do"
@@ -188,16 +188,21 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       assert module_string =~ "def update_xml_config(opts \\\\ []) do"
     end
     
-    test "handles paths with operations having different tags" do
+    test "paths with same prefix go into same module regardless of tags" do
       paths = [
         %Path{
-          path: "/multi",
+          path: "/multi/items",
           operations: %{
             "get" => %Operation{
               method: "get",
               operation_id: "listItems",
               tags: ["Items"]
-            },
+            }
+          }
+        },
+        %Path{
+          path: "/multi/products",
+          operations: %{
             "post" => %Operation{
               method: "post",
               operation_id: "createProduct",
@@ -209,18 +214,16 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       
       modules = PathModuleGenerator.generate_modules(paths)
       
-      # Should generate two modules
-      assert length(modules) == 2
+      # Should generate only one module based on prefix
+      assert length(modules) == 1
       
-      module_strings = Enum.map(modules, &Macro.to_string/1)
+      [ast] = modules
+      module_string = Macro.to_string(ast)
       
-      # Check Items module
-      items_module = Enum.find(module_strings, &(&1 =~ "ExOpenAI.Items"))
-      assert items_module =~ "def list_items(opts \\\\ []) do"
-      
-      # Check Products module
-      products_module = Enum.find(module_strings, &(&1 =~ "ExOpenAI.Products"))
-      assert products_module =~ "def create_product(opts \\\\ []) do"
+      # Both operations should be in the Multi module
+      assert module_string =~ "defmodule ExOpenAI.Multi do"
+      assert module_string =~ "def list_items(opts \\\\ []) do"
+      assert module_string =~ "def create_product(opts \\\\ []) do"
     end
     
     test "real example with chat completions" do
@@ -508,6 +511,53 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       
       # Should have path param and required body fields sorted alphabetically
       assert module_string =~ "def update_item(item_id, name, price, opts \\\\ []) do"
+    end
+    
+    test "handles operation IDs with hyphens like admin-api-keys-delete" do
+      paths = [
+        %Path{
+          path: "/organization/admin_api_keys/{key_id}",
+          operations: %{
+            "get" => %Operation{
+              method: "get",
+              operation_id: "admin-api-keys-get",
+              tags: ["administration"],
+              parameters: [
+                %ExOpenAI.Codegen.DocsParser.Parameter{
+                  name: "key_id",
+                  in: "path",
+                  required: true
+                }
+              ]
+            },
+            "delete" => %Operation{
+              method: "delete",
+              operation_id: "admin-api-keys-delete",
+              tags: ["administration"],
+              parameters: [
+                %ExOpenAI.Codegen.DocsParser.Parameter{
+                  name: "key_id",
+                  in: "path",
+                  required: true
+                }
+              ]
+            }
+          }
+        }
+      ]
+      
+      [ast] = PathModuleGenerator.generate_modules(paths)
+      module_string = Macro.to_string(ast)
+      
+      # Module name should be based on path prefix
+      assert module_string =~ "defmodule ExOpenAI.Organization do"
+      
+      # Function names should have hyphens converted to underscores
+      assert module_string =~ "def admin_api_keys_get(key_id, opts \\\\ []) do"
+      assert module_string =~ "def admin_api_keys_delete(key_id, opts \\\\ []) do"
+      
+      # Should not have hyphens in function names
+      refute module_string =~ "admin-api-keys"
     end
   end
 end
