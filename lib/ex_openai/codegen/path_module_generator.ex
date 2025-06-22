@@ -1,7 +1,7 @@
 defmodule ExOpenAI.Codegen.PathModuleGenerator do
   @moduledoc """
   Generates Elixir modules from parsed OpenAPI Path structs.
-  
+
   Groups paths by their first path segment and generates modules with functions
   for each operation.
   """
@@ -11,7 +11,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
   @doc """
   Generates modules from a list of Path structs.
-  
+
   Groups paths by their first path segment and returns a list of module ASTs.
   """
   @spec generate_modules([Path.t()], %{String.t() => Schema.t()}) :: [Macro.t()]
@@ -28,11 +28,11 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   def generate_module(prefix, paths, schemas \\ %{}) when is_list(paths) do
     module_name = determine_module_name(prefix, paths)
     functions = extract_all_functions(paths, schemas)
-    
+
     quote do
       defmodule unquote(module_name) do
         @moduledoc false
-        
+
         unquote_splicing(functions)
       end
     end
@@ -58,15 +58,16 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     # e.g., "chat" -> "Chat"
     # e.g., "fine_tuning" -> "FineTuning"
     # e.g., "organization" -> "Organization"
-    module_part = prefix
-    |> String.replace("_", " ")
-    |> String.split(" ")
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join("")
-    
+    module_part =
+      prefix
+      |> String.replace("_", " ")
+      |> String.split(" ")
+      |> Enum.map(&String.capitalize/1)
+      |> Enum.join("")
+
     String.to_atom("Elixir.ExOpenAI.#{module_part}")
   end
-  
+
   defp determine_module_name(nil, _paths) do
     # Fallback to Root for paths without prefix (shouldn't happen)
     String.to_atom("Elixir.ExOpenAI.Root")
@@ -85,13 +86,14 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
   # Generate a function from an operation
   defp generate_function(%Operation{operation_id: nil}, _schemas, _path), do: nil
+
   defp generate_function(%Operation{operation_id: op_id} = operation, schemas, path) do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names} = build_function_args(operation, schemas)
-    
+
     # Generate the function body
     body_ast = FunctionBodyGenerator.generate_body(operation, path, arg_names)
-    
+
     quote do
       def unquote(function_name)(unquote_splicing(args)) do
         unquote(body_ast)
@@ -103,35 +105,44 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   defp build_function_args(%Operation{parameters: params, request_body: request_body}, schemas) do
     # Extract path parameters (always required)
     path_params = extract_path_parameters(params)
-    
+
     # Extract request body required fields
-    body_params = case request_body do
-      %RequestBody{required: true, content: content} ->
-        extract_required_args(content, schemas)
-      _ ->
-        []
-    end
-    
+    body_params =
+      case request_body do
+        %RequestBody{required: true, content: content} ->
+          extract_required_args(content, schemas)
+
+        _ ->
+          []
+      end
+
     # Combine all required parameters and sort alphabetically
-    all_required = (path_params ++ body_params) |> Enum.sort_by(fn
-      {name, _, _} -> name
-      _ -> nil
-    end)
-    
+    all_required =
+      (path_params ++ body_params)
+      |> Enum.sort_by(fn
+        {name, _, _} -> name
+        _ -> nil
+      end)
+
     # Always have opts as the last parameter
     args = all_required ++ [quote(do: opts \\ [])]
-    arg_names = Enum.map(all_required, fn arg -> 
-      case arg do
-        {name, _, _} -> quote(do: unquote(name))
-        _ -> arg
-      end
-    end) ++ [quote(do: opts)]
-    
-    {args, arg_names}
+
+    # Extract just the atom names for passing to body generator
+    arg_atoms =
+      (Enum.map(all_required, fn arg ->
+         case arg do
+           {name, _, _} -> name
+           _ -> nil
+         end
+       end) ++ [:opts])
+      |> Enum.filter(&(&1 != nil))
+
+    {args, arg_atoms}
   end
 
   # Extract path parameters from the parameters list
   defp extract_path_parameters(nil), do: []
+
   defp extract_path_parameters(params) when is_list(params) do
     params
     |> Enum.filter(fn param -> param.in == "path" end)
@@ -144,11 +155,12 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   # Extract required arguments from request body content
   defp extract_required_args(content, schemas) do
     # Get the schema reference from the content
-    schema_ref = case content do
-      %{"application/json" => %{"schema" => %{"$ref" => ref}}} -> ref
-      _ -> nil
-    end
-    
+    schema_ref =
+      case content do
+        %{"application/json" => %{"schema" => %{"$ref" => ref}}} -> ref
+        _ -> nil
+      end
+
     case schema_ref do
       "#/components/schemas/" <> schema_name ->
         # Resolve the schema and extract required fields
@@ -156,53 +168,60 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
           %Schema{} = schema ->
             resolved_schema = resolve_schema(schema, schemas)
             extract_required_fields(resolved_schema)
+
           _ ->
             []
         end
+
       _ ->
         []
     end
   end
 
   # Resolve a schema, handling allOf merging
-  defp resolve_schema(%Schema{all_of: all_of} = schema, schemas) when is_list(all_of) and all_of != [] do
+  defp resolve_schema(%Schema{all_of: all_of} = schema, schemas)
+       when is_list(all_of) and all_of != [] do
     # Merge all schemas in allOf
-    merged = Enum.reduce(all_of, %{properties: %{}, required: []}, fn
-      %Schema{ref: "#/components/schemas/" <> name}, acc ->
-        case Map.get(schemas, name) do
-          %Schema{} = ref_schema ->
-            resolved = resolve_schema(ref_schema, schemas)
-            %{
-              properties: Map.merge(acc.properties, resolved.properties || %{}),
-              required: (acc.required ++ (resolved.required || [])) |> Enum.uniq()
-            }
-          _ ->
-            acc
-        end
-      
-      %Schema{properties: props, required: req}, acc ->
-        %{
-          properties: Map.merge(acc.properties, props || %{}),
-          required: (acc.required ++ (req || [])) |> Enum.uniq()
-        }
-    end)
-    
+    merged =
+      Enum.reduce(all_of, %{properties: %{}, required: []}, fn
+        %Schema{ref: "#/components/schemas/" <> name}, acc ->
+          case Map.get(schemas, name) do
+            %Schema{} = ref_schema ->
+              resolved = resolve_schema(ref_schema, schemas)
+
+              %{
+                properties: Map.merge(acc.properties, resolved.properties || %{}),
+                required: (acc.required ++ (resolved.required || [])) |> Enum.uniq()
+              }
+
+            _ ->
+              acc
+          end
+
+        %Schema{properties: props, required: req}, acc ->
+          %{
+            properties: Map.merge(acc.properties, props || %{}),
+            required: (acc.required ++ (req || [])) |> Enum.uniq()
+          }
+      end)
+
     %Schema{
       properties: Map.merge(merged.properties, schema.properties || %{}),
       required: (merged.required ++ (schema.required || [])) |> Enum.uniq()
     }
   end
-  
+
   defp resolve_schema(schema, _schemas), do: schema
 
   # Extract required field names as function arguments
   defp extract_required_fields(%Schema{required: required}) when is_list(required) do
     required
-    |> Enum.sort()  # Sort for consistent ordering
+    # Sort for consistent ordering
+    |> Enum.sort()
     |> Enum.map(&String.to_atom/1)
     |> Enum.map(fn name -> Macro.var(name, nil) end)
   end
-  
+
   defp extract_required_fields(_), do: []
 
   # Convert operationId from camelCase to snake_case
