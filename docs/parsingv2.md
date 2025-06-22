@@ -86,7 +86,7 @@ Becomes a typespec:
 - References: resolves `#/components/schemas/ComponentName` to `ExOpenAI.Components.ComponentName.t()`
   - Other reference patterns still return `any()`
 
-## Step 3: Generate complete Elixir modules
+## Step 3: Generate complete Elixir modules for Components
 
 The `ComponentModuleGenerator` combines the parsed schemas and typespecs to generate complete Elixir modules.
 
@@ -113,5 +113,51 @@ defmodule ExOpenAI.Components.ChatCompletionRequestUserMessage do
   }
   
   defstruct [:content, :name, :role]
+end
+```
+
+## Step 4: Generate API modules from Paths
+
+The `PathModuleGenerator` takes parsed Path structs and generates API client modules.
+
+### Module naming and grouping
+- Paths are grouped by their operation tags (e.g., all operations tagged "Chat" go into `ExOpenAI.Chat`)
+- If no tags are present, the module name is derived from the operation ID
+- Multiple paths can contribute functions to the same module if they share tags
+
+### Function generation
+- Each operation becomes a function named after its `operationId`
+- Operation IDs are converted from camelCase to snake_case:
+  - `createChatCompletion` → `create_chat_completion`
+  - `getAPIKey` → `get_api_key`
+  - `updateXMLConfig` → `update_xml_config`
+
+### Example
+
+From a path like:
+```elixir
+%Path{
+  path: "/chat/completions",
+  operations: %{
+    "get" => %Operation{operation_id: "listChatCompletions", tags: ["Chat"]},
+    "post" => %Operation{operation_id: "createChatCompletion", tags: ["Chat"]}
+  }
+}
+```
+
+Generates:
+```elixir
+defmodule ExOpenAI.Chat do
+  @moduledoc false
+  
+  def list_chat_completions() do
+    # TODO: Implement
+    :ok
+  end
+  
+  def create_chat_completion() do
+    # TODO: Implement
+    :ok
+  end
 end
 ```
