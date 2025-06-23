@@ -82,8 +82,15 @@ defmodule ExOpenAI.Codegen.SchemaResolver do
   def get_request_body_schema(nil, _schemas), do: nil
   
   def get_request_body_schema(request_body, schemas) do
-    case request_body.content do
-      %{"application/json" => %{"schema" => %{"$ref" => "#/components/schemas/" <> schema_name}}} ->
+    # Try to find schema reference from either application/json or multipart/form-data
+    schema_ref = case request_body.content do
+      %{"application/json" => %{"schema" => %{"$ref" => ref}}} -> ref
+      %{"multipart/form-data" => %{"schema" => %{"$ref" => ref}}} -> ref
+      _ -> nil
+    end
+    
+    case schema_ref do
+      "#/components/schemas/" <> schema_name ->
         case Map.get(schemas, schema_name) do
           %Schema{} = schema -> resolve_schema(schema, schemas)
           _ -> nil

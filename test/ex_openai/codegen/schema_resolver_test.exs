@@ -124,7 +124,17 @@ defmodule ExOpenAI.Codegen.SchemaResolverTest do
       assert resolved == schema
     end
     
-    test "returns nil for non-json content type" do
+    test "extracts and resolves schema from multipart/form-data" do
+      schema = %Schema{
+        properties: %{
+          "file" => %Schema{type: "string", format: "binary"},
+          "model" => %Schema{type: "string"}
+        },
+        required: ["file", "model"]
+      }
+      
+      schemas = %{"Upload" => schema}
+      
       request_body = %{
         content: %{
           "multipart/form-data" => %{
@@ -133,7 +143,9 @@ defmodule ExOpenAI.Codegen.SchemaResolverTest do
         }
       }
       
-      assert SchemaResolver.get_request_body_schema(request_body, %{}) == nil
+      resolved = SchemaResolver.get_request_body_schema(request_body, schemas)
+      
+      assert resolved == schema
     end
     
     test "returns nil when schema not found in schemas map" do

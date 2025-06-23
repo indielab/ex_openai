@@ -221,10 +221,11 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
   # Extract required arguments from request body content
   defp extract_required_args(content, schemas) do
-    # Get the schema reference from the content
+    # Get the schema reference from the content (supports both JSON and multipart)
     schema_ref =
       case content do
         %{"application/json" => %{"schema" => %{"$ref" => ref}}} -> ref
+        %{"multipart/form-data" => %{"schema" => %{"$ref" => ref}}} -> ref
         _ -> nil
       end
 
