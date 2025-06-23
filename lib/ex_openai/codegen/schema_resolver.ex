@@ -55,9 +55,13 @@ defmodule ExOpenAI.Codegen.SchemaResolver do
           }
       end)
 
+    # Create a new schema with merged properties and mark it as object type
     %Schema{
+      schema |  # Start with the original schema to preserve other fields
+      type: "object",  # allOf merges always result in object type
       properties: Map.merge(merged.properties, schema.properties || %{}),
-      required: (merged.required ++ (schema.required || [])) |> Enum.uniq()
+      required: (merged.required ++ (schema.required || [])) |> Enum.uniq(),
+      all_of: nil  # Clear allOf since we've resolved it
     }
   end
 

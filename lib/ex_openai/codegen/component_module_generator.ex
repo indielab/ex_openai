@@ -4,7 +4,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
   """
 
   alias ExOpenAI.Codegen.DocsParser.Schema
-  alias ExOpenAI.Codegen.TypespecGenerator
+  alias ExOpenAI.Codegen.{TypespecGenerator, SchemaResolver}
   
   require Logger
 
@@ -12,12 +12,28 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
   Generates an Elixir module from a Schema struct.
 
   Takes a parsed Schema and returns the AST for a module definition.
+  For allOf schemas, it first resolves/merges them before checking if they're objects.
   """
-  @spec generate_module(Schema.t()) :: Macro.t()
-  def generate_module(%Schema{name: name, type: "object"} = schema) do
-    module_name = String.to_atom("Elixir.ExOpenAI.Components.#{name}")
+  @spec generate_module(Schema.t(), %{String.t() => Schema.t()}) :: Macro.t()
+  def generate_module(%Schema{name: name} = schema, schemas \\ %{}) do
+    # First resolve the schema - this handles allOf merging
+    resolved_schema = SchemaResolver.resolve_schema(schema, schemas)
+    
+    # Keep the original name from the input schema
+    resolved_schema = %{resolved_schema | name: name}
+    
+    # Now check if the resolved schema is an object type with actual properties
+    # Objects with only additionalProperties are map types, not structs
+    if resolved_schema.type == "object" && is_map(resolved_schema.properties) && map_size(resolved_schema.properties) > 0 do
+      generate_object_module(resolved_schema)
+    else
+      generate_type_alias_module(resolved_schema)
+    end
+  end
 
-    # Note: typespec is generated differently for structs vs type aliases
+  # Generate module for object-type schemas (with struct and from_json)
+  defp generate_object_module(%Schema{name: name} = schema) do
+    module_name = String.to_atom("Elixir.ExOpenAI.Components.#{name}")
 
     # Extract property names for the struct definition
     struct_fields = get_struct_fields(schema)
@@ -43,7 +59,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
   end
 
   # For non-object schemas, generate a simple module with just a type alias
-  def generate_module(%Schema{name: name} = schema) do
+  defp generate_type_alias_module(%Schema{name: name} = schema) do
     module_name = String.to_atom("Elixir.ExOpenAI.Components.#{name}")
 
     # Generate the typespec for the schema
