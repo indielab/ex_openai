@@ -94,7 +94,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     
     # Generate documentation and spec
     doc_ast = FunctionDocGenerator.generate_doc(operation)
-    spec_ast = FunctionDocGenerator.generate_spec(operation, function_name, arg_names)
+    spec_ast = FunctionDocGenerator.generate_spec(operation, function_name, arg_names, schemas)
 
     # Generate the function body inline to avoid hygiene issues
     {path_params, query_params, _} = FunctionBodyGenerator.categorize_parameters(operation)
