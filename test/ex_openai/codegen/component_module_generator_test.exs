@@ -22,7 +22,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGeneratorTest do
       
       # Check module structure
       assert module_string =~ "defmodule ExOpenAI.Components.TestModel do"
-      assert module_string =~ "@moduledoc \"A test model\""
+      assert module_string =~ "@moduledoc \"A test model\\n\\n## Fields"
       assert module_string =~ "@type t() :: %{__struct__: __MODULE__,"
       assert module_string =~ "defstruct [:count, :id]"
       
@@ -43,7 +43,9 @@ defmodule ExOpenAI.Codegen.ComponentModuleGeneratorTest do
       ast = ComponentModuleGenerator.generate_module(schema)
       module_string = Macro.to_string(ast)
       
-      assert module_string =~ "@moduledoc false"
+      assert module_string =~ "@moduledoc \"Module for representing the OpenAI schema NoDescription."
+      assert module_string =~ "## Fields"
+      assert module_string =~ "`:field` - **optional**"
     end
     
     test "generates module for object with nullable properties" do
@@ -100,7 +102,8 @@ defmodule ExOpenAI.Codegen.ComponentModuleGeneratorTest do
       
       # Check it's a type alias, not a struct
       assert module_string =~ "defmodule ExOpenAI.Components.StatusEnum do"
-      assert module_string =~ "@moduledoc \"Status values\""
+      assert module_string =~ "@moduledoc \"Status values\\n\\n## Type"
+      assert module_string =~ "## Allowed Values"
       assert module_string =~ "@type t() :: (:pending | :active) | :inactive"
       refute module_string =~ "defstruct"
     end
@@ -156,6 +159,87 @@ defmodule ExOpenAI.Codegen.ComponentModuleGeneratorTest do
       assert module_string =~ "String.t() | list(ExOpenAI.Components.ChatCompletionRequestUserMessageContentPart.t())"
       assert module_string =~ "name: String.t() | nil"
       assert module_string =~ "role: :user"
+    end
+  end
+  
+  describe "generate_comprehensive_moduledoc/1" do
+    test "generates documentation with all field details" do
+      schema = %Schema{
+        name: "TestComponent",
+        type: "object",
+        description: "A comprehensive test component.",
+        properties: %{
+          "id" => %Schema{
+            name: "id",
+            type: "string",
+            description: "The unique identifier.",
+            format: "uuid"
+          },
+          "count" => %Schema{
+            name: "count",
+            type: "integer",
+            description: "The count value.",
+            raw: %{"minimum" => 0, "maximum" => 100, "default" => 10}
+          },
+          "status" => %Schema{
+            name: "status",
+            type: "string",
+            description: "The current status.",
+            enum: ["active", "inactive", "pending"]
+          },
+          "tags" => %Schema{
+            name: "tags",
+            type: "array",
+            items: %Schema{type: "string"},
+            raw: %{"minItems" => 1, "maxItems" => 10}
+          }
+        },
+        required: ["id", "status"]
+      }
+
+      doc = ComponentModuleGenerator.generate_comprehensive_moduledoc(schema)
+      
+      assert doc =~ "A comprehensive test component."
+      assert doc =~ "## Fields"
+      
+      # Check id field
+      assert doc =~ "`:id` - **required**"
+      assert doc =~ "The unique identifier."
+      assert doc =~ "Format: `uuid`"
+      
+      # Check count field
+      assert doc =~ "`:count` - **optional**"
+      assert doc =~ "The count value."
+      assert doc =~ "Default: `10`"
+      assert doc =~ "Constraints: minimum: 0, maximum: 100"
+      
+      # Check status field
+      assert doc =~ "`:status` - **required**"
+      assert doc =~ "The current status."
+      assert doc =~ "Allowed values: `\"active\"`, `\"inactive\"`, `\"pending\"`"
+      
+      # Check tags field
+      assert doc =~ "`:tags` - **optional**"
+      assert doc =~ "Constraints: minItems: 1, maxItems: 10"
+    end
+    
+    test "generates documentation for non-object schemas" do
+      schema = %Schema{
+        name: "ModelEnum",
+        type: "string",
+        description: "Available AI models.",
+        enum: ["gpt-4", "gpt-3.5-turbo"],
+        raw: %{"minLength" => 3}
+      }
+
+      doc = ComponentModuleGenerator.generate_comprehensive_moduledoc(schema)
+      
+      assert doc =~ "Available AI models."
+      assert doc =~ "## Type"
+      assert doc =~ "## Allowed Values"
+      assert doc =~ "`\"gpt-4\"`, `\"gpt-3.5-turbo\"`"
+      assert doc =~ "## Constraints"
+      assert doc =~ "minLength: 3"
     end
   end
 end
