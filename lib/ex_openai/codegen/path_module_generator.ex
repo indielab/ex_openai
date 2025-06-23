@@ -7,7 +7,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   """
 
   alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody}
-  alias ExOpenAI.Codegen.{FunctionBodyGenerator, FunctionDocGenerator, SchemaResolver, ResponseConverter}
+  alias ExOpenAI.Codegen.{FunctionBodyGenerator, FunctionDocGenerator, SchemaResolver}
 
   @doc """
   Generates modules from a list of Path structs.
@@ -91,8 +91,8 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names, optional_param_names} = build_function_args(operation, schemas)
     
-    # Get the response schema for this operation
-    response_schema = get_response_schema(operation, "200", schemas)
+    # Get the response schema reference for this operation
+    response_schema_ref = get_response_schema(operation, "200", schemas)
 
     # Generate documentation and spec
     doc_ast = FunctionDocGenerator.generate_doc(operation, schemas)
@@ -176,7 +176,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
         # Create the convert_response function with the response schema
         convert_response = fn response -> 
-          ExOpenAI.Codegen.ResponseConverter.convert_response(response, unquote(Macro.escape(response_schema)))
+          ExOpenAI.Codegen.ResponseConverter.convert_response(response, unquote(Macro.escape(response_schema_ref)))
         end
 
         # Make the HTTP call
