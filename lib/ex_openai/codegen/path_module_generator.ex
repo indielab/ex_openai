@@ -7,7 +7,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   """
 
   alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody}
-  alias ExOpenAI.Codegen.{FunctionBodyGenerator, FunctionDocGenerator, SchemaResolver}
+  alias ExOpenAI.Codegen.{FunctionBodyGenerator, FunctionDocGenerator, SchemaResolver, ResponseConverter}
 
   @doc """
   Generates modules from a list of Path structs.
@@ -90,6 +90,9 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   defp generate_function(%Operation{operation_id: op_id} = operation, schemas, path) do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names, optional_param_names} = build_function_args(operation, schemas)
+    
+    # Get the response schema for this operation
+    response_schema = get_response_schema(operation, "200", schemas)
 
     # Generate documentation and spec
     doc_ast = FunctionDocGenerator.generate_doc(operation, schemas)
@@ -171,16 +174,10 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         # Strip optional parameters that were added to body_params from opts
         opts = Keyword.drop(opts, unquote(optional_param_names))
 
-        # Debug output
-        # IO.puts("body_arg_names: #{inspect(unquote(body_arg_names))}")
-        # IO.puts("optional_param_names: #{inspect(unquote(optional_param_names))}")
-        # IO.puts("body_params: #{inspect(body_params)}")
-        # IO.puts("http_method: #{inspect(unquote(http_method))}")
-        # IO.puts("url: #{inspect(url)}")
-        # IO.puts("opts: #{inspect(opts)}")
-
-        # Simple convert function for now
-        convert_response = fn response -> response end
+        # Create the convert_response function with the response schema
+        convert_response = fn response -> 
+          ExOpenAI.Codegen.ResponseConverter.convert_response(response, unquote(Macro.escape(response_schema)))
+        end
 
         # Make the HTTP call
         ExOpenAI.Config.http_client().api_call(
@@ -367,5 +364,17 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     |> String.replace(~r/([A-Z]+)([A-Z][a-z])/, "\\1_\\2")
     |> String.downcase()
     |> String.to_atom()
+  end
+  
+  # Extract and resolve the response schema for a given status code
+  defp get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
+  defp get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
+    case Map.get(responses, status_code) do
+      %{content: %{"application/json" => %{"schema" => %{"$ref" => ref}}}} ->
+        # Return a schema with the ref so TypespecGenerator can create proper component reference
+        %Schema{ref: ref}
+        
+      _ -> nil
+    end
   end
 end
