@@ -6,8 +6,9 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   for each operation.
   """
 
-  alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody, Parameter}
+  alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody}
   alias ExOpenAI.Codegen.FunctionBodyGenerator
+  alias ExOpenAI.Codegen.FunctionDocGenerator
 
   @doc """
   Generates modules from a list of Path structs.
@@ -91,6 +92,9 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names} = build_function_args(operation, schemas)
     
+    # Generate documentation and spec
+    doc_ast = FunctionDocGenerator.generate_doc(operation)
+    spec_ast = FunctionDocGenerator.generate_spec(operation, function_name, arg_names)
 
     # Generate the function body inline to avoid hygiene issues
     {path_params, query_params, _} = FunctionBodyGenerator.categorize_parameters(operation)
@@ -105,6 +109,8 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     end)
     
     quote do
+      unquote(doc_ast)
+      unquote(spec_ast)
       def unquote(function_name)(unquote_splicing(args)) do
         
         # Start with the base URL

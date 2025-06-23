@@ -5,7 +5,7 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
   Handles URL building, parameter extraction, and HTTP client calls.
   """
 
-  alias ExOpenAI.Codegen.DocsParser.{Operation, Parameter}
+  alias ExOpenAI.Codegen.DocsParser.Operation
 
   @doc """
   Generates the function body AST for an operation.
