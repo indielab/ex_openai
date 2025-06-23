@@ -9,8 +9,8 @@ documentation.components
   # Add the name to the schema for the generator
   schema_with_name = Map.put(schema, :name, name)
   
-  # Generate the module AST
-  ExOpenAI.Codegen.ComponentModuleGenerator.generate_module(schema_with_name)
+  # Generate the module AST, passing the full schemas map for resolution
+  ExOpenAI.Codegen.ComponentModuleGenerator.generate_module(schema_with_name, documentation.components)
 end)
 |> Enum.each(&Code.eval_quoted(&1))
 
