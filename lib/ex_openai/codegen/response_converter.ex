@@ -84,47 +84,69 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
           []
       end
 
-    # walk through all of the keys of response, and see if we can get the type for it with extract_field_from_type_def
-    # Walk through all keys of the response map and extract their types
-    case response do
-      {:ok, res} when is_map(res) ->
-        field_types =
-          res
-          |> Map.keys()
-          |> Enum.map(fn key ->
-            # Convert string key to atom for lookup
-            atom_key =
-              if is_binary(key) do
-                try do
-                  String.to_existing_atom(key)
-                rescue
-                  ArgumentError -> String.to_atom(key)
-                end
-              else
-                key
-              end
-
-            # Extract type for this field from the typespec
-            field_type = get_field_type_from_ast(return_type_spec, atom_key)
-
-            IO.puts("Found type for #{inspect(atom_key)} -- #{inspect(field_type)}")
-
-            {atom_key, field_type}
-          end)
-          |> Enum.into(%{})
-
-        IO.inspect(field_types, label: "Field Types")
-
-      _ ->
-        nil
-    end
-
     case response do
       {:ok, ref} when is_reference(ref) ->
         {:ok, ref}
 
       {:ok, res} when is_map(res) ->
-        convert_map_response(res, response_schema)
+        # Check if we have a valid schema that would result in a struct
+        has_valid_schema = case response_schema do
+          %Schema{ref: "#/components/schemas/" <> component_name} ->
+            module = ref_to_module(component_name)
+            module_exists?(module) and count_matching_keys(res, get_struct_keys(module)) > 0
+          
+          %Schema{one_of: schemas} when is_list(schemas) and schemas != [] ->
+            find_best_matching_schema(res, schemas) != nil
+            
+          %Schema{any_of: schemas} when is_list(schemas) and schemas != [] ->
+            find_best_matching_schema(res, schemas) != nil
+            
+          _ -> false
+        end
+
+        if has_valid_schema do
+          # Convert all fields using their types
+          converted_map =
+            res
+            |> Enum.map(fn {key, value} ->
+              # Convert string key to atom for lookup
+              atom_key =
+                if is_binary(key) do
+                  try do
+                    String.to_existing_atom(key)
+                  rescue
+                    ArgumentError -> String.to_atom(key)
+                  end
+                else
+                  key
+                end
+
+              # Extract type for this field from the typespec
+              field_type = get_field_type_from_ast(return_type_spec, atom_key)
+
+              # Convert the value based on its type
+              converted_value = parse_remote_type(field_type, value)
+
+              {atom_key, converted_value}
+            end)
+            |> Enum.into(%{})
+
+          # Now create the struct
+          case response_schema do
+            %Schema{ref: "#/components/schemas/" <> component_name} ->
+              module = ref_to_module(component_name)
+              {:ok, struct(module, converted_map)}
+
+            %Schema{one_of: _} ->
+              convert_map_response(converted_map, response_schema)
+
+            %Schema{any_of: _} ->
+              convert_map_response(converted_map, response_schema)
+          end
+        else
+          # No valid schema match, return original
+          {:ok, res}
+        end
 
       e ->
         e
@@ -141,10 +163,8 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
       matching_keys = count_matching_keys(res, keys)
 
       if matching_keys > 0 do
-        # Convert to atoms and then to struct
-        atomized = keys_to_atoms(res)
-        converted = convert_values_for_struct(atomized, component_name)
-        {:ok, struct(module, converted)}
+        # Values are already converted, just create the struct
+        {:ok, struct(module, res)}
       else
         {:ok, res}
       end
@@ -159,10 +179,9 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     best_match = find_best_matching_schema(res, schemas)
 
     case best_match do
-      {module, _count, component_name} ->
-        atomized = keys_to_atoms(res)
-        converted = convert_values_for_struct(atomized, component_name)
-        {:ok, struct(module, converted)}
+      {module, _count, _component_name} ->
+        # Values are already converted, just create the struct
+        {:ok, struct(module, res)}
 
       nil ->
         {:ok, res}
@@ -175,10 +194,9 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     best_match = find_best_matching_schema(res, schemas)
 
     case best_match do
-      {module, _count, component_name} ->
-        atomized = keys_to_atoms(res)
-        converted = convert_values_for_struct(atomized, component_name)
-        {:ok, struct(module, converted)}
+      {module, _count, _component_name} ->
+        # Values are already converted, just create the struct
+        {:ok, struct(module, res)}
 
       nil ->
         {:ok, res}
@@ -260,31 +278,6 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
 
   defp keys_to_atoms(value), do: value
 
-  # Convert values based on expected types for specific struct fields
-  defp convert_values_for_struct(map, component_name) do
-    # For now, handle common conversions
-    # In the future, this could use the actual schema information
-    map
-    |> Enum.map(fn {key, value} ->
-      converted_value =
-        case {component_name, key} do
-          # Response component specific conversions
-          {"Response", :object} when is_binary(value) ->
-            String.to_atom(value)
-
-          {"Response", :status} when is_binary(value) ->
-            String.to_atom(value)
-
-          # Don't convert other fields automatically
-          _ ->
-            value
-        end
-
-      {key, converted_value}
-    end)
-    |> Enum.into(%{})
-  end
-
   @doc """
   Parses a value based on its typespec, converting nested maps to structs when needed.
 
@@ -322,9 +315,14 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   def parse_remote_type({:type, _, :string, []}, value), do: value
   def parse_remote_type({:type, _, :map, _}, value), do: value
 
-  # Atom literals
-  def parse_remote_type({:atom, _, _atom_value}, value) when is_binary(value) do
-    String.to_atom(value)
+  # Atom literals - only convert if the atom matches expected values
+  def parse_remote_type({:atom, _, atom_value}, value) when is_binary(value) do
+    # Only convert strings that match the expected atom
+    if String.to_atom(value) == atom_value do
+      atom_value
+    else
+      value
+    end
   end
   def parse_remote_type({:atom, _, _atom_value}, value), do: value
 

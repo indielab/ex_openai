@@ -206,30 +206,64 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
             assert response.object == :response
             assert response.status == :completed
 
-            # Check nested structs if they exist
+            # These conversions MUST work if the component modules exist
             if Code.ensure_loaded?(ExOpenAI.Components.Reasoning) and
                  function_exported?(ExOpenAI.Components.Reasoning, :__struct__, 0) do
-              assert is_struct(response.reasoning, ExOpenAI.Components.Reasoning)
+              assert is_struct(response.reasoning, ExOpenAI.Components.Reasoning),
+                     "reasoning field must be converted to ExOpenAI.Components.Reasoning struct"
               assert response.reasoning.effort == nil
               assert response.reasoning.summary == nil
+            else
+              flunk("ExOpenAI.Components.Reasoning module not loaded, cannot test nested struct conversion")
             end
 
             if Code.ensure_loaded?(ExOpenAI.Components.Metadata) and
                  function_exported?(ExOpenAI.Components.Metadata, :__struct__, 0) do
-              assert is_struct(response.metadata, ExOpenAI.Components.Metadata)
+              assert is_struct(response.metadata, ExOpenAI.Components.Metadata),
+                     "metadata field must be converted to ExOpenAI.Components.Metadata struct"
+            else
+              flunk("ExOpenAI.Components.Metadata module not loaded, cannot test nested struct conversion")
             end
 
             if Code.ensure_loaded?(ExOpenAI.Components.ResponseUsage) and
                  function_exported?(ExOpenAI.Components.ResponseUsage, :__struct__, 0) do
-              assert is_struct(response.usage, ExOpenAI.Components.ResponseUsage)
+              assert is_struct(response.usage, ExOpenAI.Components.ResponseUsage),
+                     "usage field must be converted to ExOpenAI.Components.ResponseUsage struct"
               assert response.usage.input_tokens == 11
               assert response.usage.output_tokens == 19
               assert response.usage.total_tokens == 30
+            else
+              flunk("ExOpenAI.Components.ResponseUsage module not loaded, cannot test nested struct conversion")
+            end
+
+            # Output list conversion is MANDATORY if OutputItem exists
+            if Code.ensure_loaded?(ExOpenAI.Components.OutputItem) and
+                 function_exported?(ExOpenAI.Components.OutputItem, :__struct__, 0) do
+              assert is_list(response.output),
+                     "output field must be a list"
+              assert length(response.output) == 1,
+                     "output list must contain 1 item"
+              
+              output_item = List.first(response.output)
+              assert is_struct(output_item, ExOpenAI.Components.OutputItem),
+                     "output list items must be converted to ExOpenAI.Components.OutputItem structs"
+              assert output_item.id == "msg_68593161dcc0819a8e0ee42deab92f32046391d626b27379"
+              assert output_item.role == "assistant"
+              assert output_item.status == "completed"
+              assert output_item.type == "message"
+              
+              # Check the content field if it's also converted to structs
+              assert is_list(output_item.content),
+                     "content field must be a list"
+              assert length(output_item.content) == 1,
+                     "content list must contain 1 item"
+            else
+              flunk("ExOpenAI.Components.OutputItem module not loaded, cannot test list of structs conversion")
             end
 
           {:ok, map} when is_map(map) ->
-            # Fallback if Response component doesn't exist
-            assert map["id"] == "resp_685931611e18819a97e356931916df60046391d626b27379"
+            # This should only happen if Response component doesn't exist
+            flunk("Expected conversion to ExOpenAI.Components.Response struct, got plain map: #{inspect(map)}")
         end
       end
     end
