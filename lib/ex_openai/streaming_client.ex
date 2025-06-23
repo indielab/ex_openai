@@ -289,19 +289,15 @@ defmodule ExOpenAI.StreamingClient do
     # Try to parse the string as JSON
     case Jason.decode(str) do
       {:ok, decoded} ->
-        # If it's a complete JSON with an error field, return it
-        if is_map(decoded) && Map.has_key?(decoded, "error") do
-          {:ok, decoded}
-        else
-          :incomplete
-        end
+        # Return any successfully parsed JSON
+        {:ok, decoded}
 
       {:error, _} ->
         :incomplete
     end
   end
 
-  # Process a complete JSON object (typically an error)
+  # Process a complete JSON object
   defp process_complete_json(json_obj, state) do
     if Map.has_key?(json_obj, "error") do
       error_data = Map.get(json_obj, "error")
