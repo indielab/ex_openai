@@ -7,8 +7,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   """
 
   alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody}
-  alias ExOpenAI.Codegen.FunctionBodyGenerator
-  alias ExOpenAI.Codegen.FunctionDocGenerator
+  alias ExOpenAI.Codegen.{FunctionBodyGenerator, FunctionDocGenerator, SchemaResolver}
 
   @doc """
   Generates modules from a list of Path structs.
@@ -234,7 +233,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         # Resolve the schema and extract required fields
         case Map.get(schemas, schema_name) do
           %Schema{} = schema ->
-            resolved_schema = resolve_schema(schema, schemas)
+            resolved_schema = SchemaResolver.resolve_schema(schema, schemas)
             extract_required_fields(resolved_schema)
 
           _ ->
@@ -246,40 +245,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     end
   end
 
-  # Resolve a schema, handling allOf merging
-  defp resolve_schema(%Schema{all_of: all_of} = schema, schemas)
-       when is_list(all_of) and all_of != [] do
-    # Merge all schemas in allOf
-    merged =
-      Enum.reduce(all_of, %{properties: %{}, required: []}, fn
-        %Schema{ref: "#/components/schemas/" <> name}, acc ->
-          case Map.get(schemas, name) do
-            %Schema{} = ref_schema ->
-              resolved = resolve_schema(ref_schema, schemas)
-
-              %{
-                properties: Map.merge(acc.properties, resolved.properties || %{}),
-                required: (acc.required ++ (resolved.required || [])) |> Enum.uniq()
-              }
-
-            _ ->
-              acc
-          end
-
-        %Schema{properties: props, required: req}, acc ->
-          %{
-            properties: Map.merge(acc.properties, props || %{}),
-            required: (acc.required ++ (req || [])) |> Enum.uniq()
-          }
-      end)
-
-    %Schema{
-      properties: Map.merge(merged.properties, schema.properties || %{}),
-      required: (merged.required ++ (schema.required || [])) |> Enum.uniq()
-    }
-  end
-
-  defp resolve_schema(schema, _schemas), do: schema
 
   # Extract required field names as function arguments
   defp extract_required_fields(%Schema{required: required}) when is_list(required) do

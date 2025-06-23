@@ -4,7 +4,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   """
 
   alias ExOpenAI.Codegen.DocsParser.{Operation, Schema}
-  alias ExOpenAI.Codegen.TypespecGenerator
+  alias ExOpenAI.Codegen.{TypespecGenerator, SchemaResolver}
 
   @doc """
   Generates @doc attribute for an operation.
@@ -86,40 +86,47 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     |> Enum.join("\n")
   end
 
-  # Build parameter type specifications
-  defp build_param_specs(%Operation{} = operation, arg_names, schemas) do
+  @doc """
+  Builds parameter type specifications for a function.
+  
+  Takes an operation and its argument names, and generates proper typespecs
+  for each parameter. This includes:
+  
+  - Path parameters (from operation.parameters where in="path")
+  - Required body parameters (from request body schema)
+  - Optional parameters in the opts keyword list
+  
+  ## Parameters
+  
+    * `operation` - The Operation struct containing parameter definitions
+    * `arg_names` - List of argument names (atoms) for the function
+    * `schemas` - Map of component schemas for type resolution
+    
+  ## Returns
+  
+  A list of AST nodes representing the typespec for each parameter.
+  
+  ## Example
+  
+      iex> operation = %Operation{
+      ...>   parameters: [%{name: "id", in: "path", schema: %{"type" => "string"}}],
+      ...>   request_body: %{content: %{"application/json" => %{...}}}
+      ...> }
+      iex> build_param_specs(operation, [:id, :name, :opts], schemas)
+      [{:"::", [], [{:id, [], nil}, {:remote_type, [], [...]}]}, ...]
+  
+  """
+  @spec build_param_specs(Operation.t(), [atom()], %{String.t() => Schema.t()}) :: [Macro.t()]
+  def build_param_specs(%Operation{} = operation, arg_names, schemas) do
     # Remove :opts from arg_names for now, we'll add it specially
     positional_args = Enum.filter(arg_names, &(&1 != :opts))
     
     # Get the resolved schema for the request body
-    body_schema = get_request_body_schema(operation, schemas)
+    body_schema = SchemaResolver.get_request_body_schema(operation.request_body, schemas)
     
     # Build specs for positional arguments
     positional_specs = Enum.map(positional_args, fn arg_name ->
-      # Check if this is a path parameter
-      path_param = find_path_parameter(operation, arg_name)
-      
-      type_spec = cond do
-        # Path parameter
-        path_param != nil ->
-          derive_type_from_parameter(path_param)
-          
-        # Body parameter - look it up in the resolved schema
-        body_schema != nil && body_schema.properties != nil ->
-          case Map.get(body_schema.properties, Atom.to_string(arg_name)) do
-            %Schema{} = prop_schema ->
-              TypespecGenerator.schema_to_typespec(prop_schema)
-            _ ->
-              quote do: any()
-          end
-          
-        true ->
-          quote do: any()
-      end
-      
-      quote do
-        unquote(Macro.var(arg_name, nil)) :: unquote(type_spec)
-      end
+      build_positional_param_spec(operation, arg_name, body_schema)
     end)
     
     # Build opts spec with specific optional parameters
@@ -128,54 +135,71 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     positional_specs ++ [opts_spec]
   end
   
-  # Get the resolved request body schema
-  defp get_request_body_schema(%Operation{request_body: nil}, _schemas), do: nil
+  @doc """
+  Builds the typespec for a single positional parameter.
   
-  defp get_request_body_schema(%Operation{request_body: request_body}, schemas) do
-    case request_body.content do
-      %{"application/json" => %{"schema" => %{"$ref" => "#/components/schemas/" <> schema_name}}} ->
-        case Map.get(schemas, schema_name) do
-          %Schema{} = schema -> resolve_schema(schema, schemas)
-          _ -> nil
-        end
-      _ -> nil
+  Determines whether the parameter is a path parameter or body parameter
+  and generates the appropriate typespec.
+  
+  ## Parameters
+  
+    * `operation` - The Operation struct
+    * `arg_name` - The parameter name as an atom
+    * `body_schema` - The resolved request body schema (may be nil)
+    
+  ## Returns
+  
+  An AST node representing the parameter typespec.
+  """
+  @spec build_positional_param_spec(Operation.t(), atom(), Schema.t() | nil) :: Macro.t()
+  def build_positional_param_spec(operation, arg_name, body_schema) do
+    type_spec = determine_param_type(operation, arg_name, body_schema)
+    
+    quote do
+      unquote(Macro.var(arg_name, nil)) :: unquote(type_spec)
     end
   end
   
-  # Resolve a schema, handling allOf merging (copied from PathModuleGenerator)
-  defp resolve_schema(%Schema{all_of: all_of} = schema, schemas)
-       when is_list(all_of) and all_of != [] do
-    # Merge all schemas in allOf
-    merged =
-      Enum.reduce(all_of, %{properties: %{}, required: []}, fn
-        %Schema{ref: "#/components/schemas/" <> name}, acc ->
-          case Map.get(schemas, name) do
-            %Schema{} = ref_schema ->
-              resolved = resolve_schema(ref_schema, schemas)
-
-              %{
-                properties: Map.merge(acc.properties, resolved.properties || %{}),
-                required: (acc.required ++ (resolved.required || [])) |> Enum.uniq()
-              }
-
-            _ ->
-              acc
-          end
-
-        %Schema{properties: props, required: req}, acc ->
-          %{
-            properties: Map.merge(acc.properties, props || %{}),
-            required: (acc.required ++ (req || [])) |> Enum.uniq()
-          }
-      end)
-
-    %Schema{
-      properties: Map.merge(merged.properties, schema.properties || %{}),
-      required: (merged.required ++ (schema.required || [])) |> Enum.uniq()
-    }
+  @doc """
+  Determines the type specification for a parameter.
+  
+  Checks if the parameter is a path parameter first, then checks if it's
+  a body parameter. Returns the appropriate typespec AST.
+  
+  ## Parameters
+  
+    * `operation` - The Operation struct containing parameter definitions
+    * `arg_name` - The parameter name as an atom
+    * `body_schema` - The resolved request body schema (may be nil)
+    
+  ## Returns
+  
+  An AST node representing the type (e.g., `String.t()`, `integer()`, etc.)
+  """
+  @spec determine_param_type(Operation.t(), atom(), Schema.t() | nil) :: Macro.t()
+  def determine_param_type(operation, arg_name, body_schema) do
+    # Check if this is a path parameter
+    path_param = find_path_parameter(operation, arg_name)
+    
+    cond do
+      # Path parameter
+      path_param != nil ->
+        derive_type_from_parameter(path_param)
+        
+      # Body parameter - look it up in the resolved schema
+      body_schema != nil && body_schema.properties != nil ->
+        case Map.get(body_schema.properties, Atom.to_string(arg_name)) do
+          %Schema{} = prop_schema ->
+            TypespecGenerator.schema_to_typespec(prop_schema)
+          _ ->
+            quote do: any()
+        end
+        
+      true ->
+        quote do: any()
+    end
   end
-
-  defp resolve_schema(schema, _schemas), do: schema
+  
   
   # Find a path parameter by name
   defp find_path_parameter(%Operation{parameters: nil}, _name), do: nil
