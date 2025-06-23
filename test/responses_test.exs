@@ -13,7 +13,8 @@ defmodule ExOpenAI.ResponsesTest do
         match_requests_on: [:query, :request_body]
       )
 
-    {:ok, res} = ExOpenAI.Responses.create_response("tell me a joke", "gpt-4o-mini")
+    {:ok, res} =
+      ExOpenAI.Responses.create_response(prompt: "tell me a joke", model: "gpt-4o-mini")
 
     assert res.model == "gpt-4o-mini-2024-07-18"
     assert res.object == "response"
@@ -38,8 +39,8 @@ defmodule ExOpenAI.ResponsesTest do
 
     {:ok, another_one} =
       ExOpenAI.Responses.create_response(
-        "Please tell me what I asked you to do in my previous message ok??",
-        "gpt-4o-mini",
+        prompt: "Please tell me what I asked you to do in my previous message ok??",
+        model: "gpt-4o-mini",
         previous_response_id: res.id
       )
 
