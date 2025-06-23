@@ -121,72 +121,80 @@ end
 The `PathModuleGenerator` takes parsed Path structs and generates API client modules with proper function signatures.
 
 ### Module naming and grouping
-- Paths are grouped by their operation tags (e.g., all operations tagged "Chat" go into `ExOpenAI.Chat`)
-- If no tags are present, the module name is derived from the operation ID
-- Multiple paths can contribute functions to the same module if they share tags
+- Paths are grouped by their first path segment (e.g., `/chat/completions` → `ExOpenAI.Chat`)
+- This avoids issues with hyphenated tags like "admin-api-keys-delete"
+- Multiple paths with the same prefix contribute functions to the same module
 
 ### Function generation
 - Each operation becomes a function named after its `operationId`
 - Operation IDs are converted from camelCase to snake_case:
   - `createChatCompletion` → `create_chat_completion`
   - `getAPIKey` → `get_api_key`
-  - `updateXMLConfig` → `update_xml_config`
+  - `admin-api-keys-delete` → `admin_api_keys_delete`
 
 ### Argument parsing
-- Operations with only optional parameters: `def function_name(opts \\ [])`
-- Operations with required request body fields:
-  - Required fields become positional arguments (sorted alphabetically)
-  - Optional fields go in the `opts` keyword list
-  - Example: `def create_chat_completion(messages, model, opts \\ [])`
-- The generator resolves schema references and handles `allOf` to merge required fields
+- Path parameters (e.g., `{model_id}`) become required positional arguments
+- Required request body fields become positional arguments (sorted alphabetically)
+- All functions have `opts \\ []` as the last parameter for optional fields and query parameters
+- Examples:
+  - `def list_assistants(opts \\ [])`
+  - `def delete_assistant(assistant_id, opts \\ [])`
+  - `def create_chat_completion(messages, model, opts \\ [])`
+
+### Function body generation
+The `FunctionBodyGenerator` creates the actual HTTP call implementation:
+- Path parameters are replaced in the URL using `String.replace`
+- Query parameters are extracted from `opts` and encoded as a query string
+- Body parameters are collected into a keyword list for POST/PUT/PATCH requests
+- The appropriate HTTP method is called via `ExOpenAI.Config.http_client().api_call/6`
 
 ### Example
 
 From a path like:
 ```elixir
 %Path{
-  path: "/chat/completions",
+  path: "/assistants/{assistant_id}",
   operations: %{
-    "get" => %Operation{
-      operation_id: "listChatCompletions", 
-      tags: ["Chat"],
-      parameters: [%{required: false, name: "limit"}, ...]
-    },
-    "post" => %Operation{
-      operation_id: "createChatCompletion", 
-      tags: ["Chat"],
-      request_body: %{
-        required: true,
-        content: %{"application/json" => %{"schema" => %{"$ref" => "#/components/schemas/CreateChatCompletionRequest"}}}
-      }
+    "delete" => %Operation{
+      operation_id: "deleteAssistant",
+      method: "delete",
+      parameters: [
+        %Parameter{name: "assistant_id", in: "path", required: true}
+      ]
     }
-  }
-}
-```
-
-With schema:
-```elixir
-%{
-  "CreateChatCompletionRequest" => %Schema{
-    properties: %{"messages" => ..., "model" => ..., "temperature" => ...},
-    required: ["messages", "model"]
   }
 }
 ```
 
 Generates:
 ```elixir
-defmodule ExOpenAI.Chat do
+defmodule ExOpenAI.Assistants do
   @moduledoc false
   
-  def list_chat_completions(opts \\ []) do
-    # TODO: Implement
-    {opts, :ok}
-  end
-  
-  def create_chat_completion(messages, model, opts \\ []) do
-    # TODO: Implement
-    {messages, model, opts, :ok}
+  def delete_assistant(assistant_id, opts \\ []) do
+    url = "/assistants/{assistant_id}"
+    url = String.replace(url, "{assistant_id}", to_string(assistant_id))
+    
+    query_params = Keyword.take(opts, [])
+    query_string = if length(query_params) > 0 do
+      "?" <> URI.encode_query(query_params)
+    else
+      ""
+    end
+    
+    url = url <> query_string
+    body_params = []
+    
+    convert_response = fn response -> response end
+    
+    ExOpenAI.Config.http_client().api_call(
+      :delete,
+      url,
+      body_params,
+      :"application/json",
+      opts,
+      convert_response
+    )
   end
 end
 ```

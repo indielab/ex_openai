@@ -91,9 +91,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names} = build_function_args(operation, schemas)
     
-    IO.puts("Generating function: #{function_name}")
-    IO.puts("Args: #{inspect(args)}")
-    IO.puts("Arg names: #{inspect(arg_names)}")
 
     # Generate the function body inline to avoid hygiene issues
     {path_params, query_params, _} = FunctionBodyGenerator.categorize_parameters(operation)
@@ -109,8 +106,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     
     quote do
       def unquote(function_name)(unquote_splicing(args)) do
-        # Debug logging
-        IO.puts("Function called with args: #{inspect(binding())}")
         
         # Start with the base URL
         url = unquote(path)
@@ -129,7 +124,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         
         # Build query string from opts
         query_params = Keyword.take(opts, unquote(query_param_names))
-        IO.puts("Query params extracted: #{inspect(query_params)}")
         
         query_string = if length(query_params) > 0 do
           "?" <> URI.encode_query(query_params)
@@ -139,7 +133,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         
         # Append query string
         url = url <> query_string
-        IO.puts("Final URL: #{url}")
         
         # Build body parameters
         body_params = [
@@ -153,8 +146,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
           )
         ]
         
-        IO.puts("Body params: #{inspect(body_params)}")
-        IO.puts("HTTP method: #{unquote(http_method)}")
         
         # Simple convert function for now
         convert_response = fn response -> response end
