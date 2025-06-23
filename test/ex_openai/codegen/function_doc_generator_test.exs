@@ -178,4 +178,143 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
       assert Macro.to_string(opts_spec) == "opts :: keyword()"
     end
   end
+  
+  describe "build_return_spec/3" do
+    test "returns component type for successful response" do
+      operation = %Operation{
+        responses: %{
+          "200" => %{
+            content: %{
+              "application/json" => %{
+                "schema" => %{
+                  "$ref" => "#/components/schemas/CreateChatCompletionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      schemas = %{
+        "CreateChatCompletionResponse" => %Schema{
+          type: "object",
+          properties: %{
+            "id" => %Schema{type: "string"},
+            "choices" => %Schema{type: "array"}
+          }
+        }
+      }
+      
+      return_spec = FunctionDocGenerator.build_return_spec(
+        operation,
+        :create_chat_completion,
+        schemas
+      )
+      
+      spec_string = Macro.to_string(return_spec)
+      assert spec_string =~ "{:ok, "
+      assert spec_string =~ "ExOpenAI.Components.CreateChatCompletionResponse.t()"
+      assert spec_string =~ "} | {:error, any()}"
+    end
+    
+    test "returns pid type for streaming endpoints" do
+      operation = %Operation{
+        responses: %{
+          "200" => %{
+            content: %{
+              "text/event-stream" => %{
+                "schema" => %{
+                  "$ref" => "#/components/schemas/CreateChatCompletionStreamResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      return_spec = FunctionDocGenerator.build_return_spec(
+        operation,
+        :create_chat_completion_stream,
+        %{}
+      )
+      
+      assert Macro.to_string(return_spec) == "{:ok, pid()} | {:error, any()}"
+    end
+    
+    test "returns generic map when no response schema found" do
+      operation = %Operation{
+        responses: %{
+          "204" => %{
+            description: "No Content"
+          }
+        }
+      }
+      
+      return_spec = FunctionDocGenerator.build_return_spec(
+        operation,
+        :delete_something,
+        %{}
+      )
+      
+      assert Macro.to_string(return_spec) == "{:ok, map()} | {:error, any()}"
+    end
+    
+    test "handles nil responses gracefully" do
+      operation = %Operation{
+        responses: nil
+      }
+      
+      return_spec = FunctionDocGenerator.build_return_spec(
+        operation,
+        :some_function,
+        %{}
+      )
+      
+      assert Macro.to_string(return_spec) == "{:ok, map()} | {:error, any()}"
+    end
+    
+    test "resolves response schemas with allOf" do
+      operation = %Operation{
+        responses: %{
+          "200" => %{
+            content: %{
+              "application/json" => %{
+                "schema" => %{
+                  "$ref" => "#/components/schemas/ExtendedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      schemas = %{
+        "BaseResponse" => %Schema{
+          properties: %{
+            "id" => %Schema{type: "string"},
+            "created" => %Schema{type: "integer"}
+          }
+        },
+        "ExtendedResponse" => %Schema{
+          all_of: [
+            %Schema{ref: "#/components/schemas/BaseResponse"},
+            %Schema{
+              properties: %{
+                "data" => %Schema{type: "string"}
+              }
+            }
+          ]
+        }
+      }
+      
+      return_spec = FunctionDocGenerator.build_return_spec(
+        operation,
+        :get_extended,
+        schemas
+      )
+      
+      spec_string = Macro.to_string(return_spec)
+      assert spec_string =~ "ExOpenAI.Components.ExtendedResponse.t()"
+    end
+  end
 end

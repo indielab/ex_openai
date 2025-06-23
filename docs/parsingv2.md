@@ -141,6 +141,27 @@ The `PathModuleGenerator` takes parsed Path structs and generates API client mod
   - `def delete_assistant(assistant_id, opts \\ [])`
   - `def create_chat_completion(messages, model, opts \\ [])`
 
+### Type specifications
+Functions include full `@spec` declarations with proper types:
+- Path parameters use their schema types (e.g., `String.t()`, `integer()`)
+- Body parameters reference the appropriate component types
+- Optional parameters in `opts` are typed as a union of specific options
+- Return types reference the appropriate response component types
+- Example:
+  ```elixir
+  @spec create_chat_completion(
+    messages :: list(ExOpenAI.Components.ChatCompletionRequestMessage.t()),
+    model :: ExOpenAI.Components.ModelIdsShared.t(),
+    opts :: [
+      {:stream, boolean()} |
+      {:max_tokens, integer()} |
+      {:temperature, number()} |
+      ...
+    ]
+  ) :: {:ok, ExOpenAI.Components.CreateChatCompletionResponse.t()} | {:error, any()}
+  ```
+- Streaming endpoints return `{:ok, pid()} | {:error, any()}`
+
 ### Function body generation
 The `FunctionBodyGenerator` creates the actual HTTP call implementation:
 - Path parameters are replaced in the URL using `String.replace`

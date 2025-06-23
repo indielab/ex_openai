@@ -28,7 +28,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   @spec generate_spec(Operation.t(), atom(), [atom()], %{String.t() => Schema.t()}) :: Macro.t()
   def generate_spec(%Operation{} = operation, function_name, arg_names, schemas) do
     param_specs = build_param_specs(operation, arg_names, schemas)
-    return_spec = build_return_spec(operation, function_name)
+    return_spec = build_return_spec(operation, function_name, schemas)
     
     quote do
       @spec unquote(function_name)(unquote_splicing(param_specs)) :: unquote(return_spec)
@@ -288,22 +288,65 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     |> Enum.into([])
   end
 
-  # Build return type specification
-  defp build_return_spec(%Operation{} = _operation, function_name) do
+  @doc """
+  Builds the return type specification for a function.
+  
+  Determines the appropriate return type based on:
+  - Response schemas defined in the operation
+  - Whether the function is a streaming endpoint (ends with "_stream")
+  
+  ## Parameters
+  
+    * `operation` - The Operation struct containing response definitions
+    * `function_name` - The function name (used to detect streaming endpoints)
+    * `schemas` - Map of component schemas for type resolution
+    
+  ## Returns
+  
+  An AST node representing the return type, typically:
+  - `{:ok, ComponentType.t()} | {:error, any()}` for normal endpoints
+  - `{:ok, pid()} | {:error, any()}` for streaming endpoints
+  """
+  @spec build_return_spec(Operation.t(), atom(), %{String.t() => Schema.t()}) :: Macro.t()
+  def build_return_spec(%Operation{} = operation, function_name, schemas) do
     # Check if this is a streaming endpoint
     is_streaming = function_name
                    |> Atom.to_string()
                    |> String.ends_with?("_stream")
     
     if is_streaming do
+      # For streaming endpoints, we return a PID
+      # Note: We could potentially use the text/event-stream schema here
       quote do
         {:ok, pid()} | {:error, any()}
       end
     else
-      # TODO: Derive proper return type from response schemas
-      quote do
-        {:ok, map()} | {:error, any()}
+      # For non-streaming endpoints, derive type from response schema
+      case get_response_schema(operation, "200", schemas) do
+        %Schema{} = response_schema ->
+          response_type = TypespecGenerator.schema_to_typespec(response_schema)
+          quote do
+            {:ok, unquote(response_type)} | {:error, any()}
+          end
+          
+        nil ->
+          # Fallback to generic map if no schema found
+          quote do
+            {:ok, map()} | {:error, any()}
+          end
       end
+    end
+  end
+  
+  # Extract and resolve the response schema for a given status code
+  defp get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
+  defp get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
+    case Map.get(responses, status_code) do
+      %{content: %{"application/json" => %{"schema" => %{"$ref" => ref}}}} ->
+        # Return a schema with the ref so TypespecGenerator can create proper component reference
+        %Schema{ref: ref}
+        
+      _ -> nil
     end
   end
 end
