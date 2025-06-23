@@ -14,7 +14,7 @@ defmodule ExOpenAI.ResponsesTest do
       )
 
     {:ok, res} =
-      ExOpenAI.Responses.create_response(prompt: "tell me a joke", model: "gpt-4o-mini")
+      ExOpenAI.Responses.create_response(input: "tell me a joke", model: "gpt-4o-mini")
 
     assert res.model == "gpt-4o-mini-2024-07-18"
     assert res.object == "response"
@@ -39,7 +39,7 @@ defmodule ExOpenAI.ResponsesTest do
 
     {:ok, another_one} =
       ExOpenAI.Responses.create_response(
-        prompt: "Please tell me what I asked you to do in my previous message ok??",
+        input: "Please tell me what I asked you to do in my previous message ok??",
         model: "gpt-4o-mini",
         previous_response_id: res.id
       )
