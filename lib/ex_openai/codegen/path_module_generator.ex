@@ -171,8 +171,13 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         optional_body_params = Keyword.take(opts, unquote(optional_param_names))
         body_params = body_params ++ optional_body_params
 
-        # Strip optional parameters that were added to body_params from opts
-        opts = Keyword.drop(opts, unquote(optional_param_names))
+        # Keep :stream in opts for streaming client while still sending it in body
+        optional_params_to_drop =
+          unquote(optional_param_names)
+          |> Enum.reject(&(&1 == :stream))
+
+        # Strip optional parameters (except :stream) that were added to body_params from opts
+        opts = Keyword.drop(opts, optional_params_to_drop)
 
         # Create the convert_response function with the response schema
         convert_response = fn response -> 
