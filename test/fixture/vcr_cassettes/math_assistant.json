@@ -5,7 +5,7 @@
         "recv_timeout": 30000
       },
       "body": "{\"name\":\"Math Teacher\",\"tools\":[{\"type\":\"code_interpreter\"}],\"model\":\"gpt-4o\"}",
-      "url": "https://api.openai.com/v1/assistants?",
+      "url": "https://api.openai.com/v1/assistants",
       "headers": {
         "Authorization": "***",
         "OpenAI-Organization": "***",
@@ -45,7 +45,7 @@
         "recv_timeout": 30000
       },
       "body": "{}",
-      "url": "https://api.openai.com/v1/threads?",
+      "url": "https://api.openai.com/v1/threads",
       "headers": {
         "Authorization": "***",
         "OpenAI-Organization": "***",
@@ -85,7 +85,7 @@
         "recv_timeout": 30000
       },
       "body": "{\"role\":\"user\",\"content\":\"I need to solve the equation `3x + 11 = 14`. Can you help me?\"}",
-      "url": "https://api.openai.com/v1/threads/thread_DhBICESO7TvfyhBUXiqCPnFl/messages?",
+      "url": "https://api.openai.com/v1/threads/thread_DhBICESO7TvfyhBUXiqCPnFl/messages",
       "headers": {
         "Authorization": "***",
         "OpenAI-Organization": "***",
@@ -125,7 +125,7 @@
         "recv_timeout": 30000
       },
       "body": "{\"assistant_id\":\"asst_pF5jY1T3YTFO9zfVgLCLJXen\"}",
-      "url": "https://api.openai.com/v1/threads/thread_DhBICESO7TvfyhBUXiqCPnFl/runs?",
+      "url": "https://api.openai.com/v1/threads/thread_DhBICESO7TvfyhBUXiqCPnFl/runs",
       "headers": {
         "Authorization": "***",
         "OpenAI-Organization": "***",
@@ -165,7 +165,7 @@
         "recv_timeout": 30000
       },
       "body": "",
-      "url": "https://api.openai.com/v1/threads/thread_DhBICESO7TvfyhBUXiqCPnFl/messages?",
+      "url": "https://api.openai.com/v1/threads/thread_DhBICESO7TvfyhBUXiqCPnFl/messages",
       "headers": {
         "Authorization": "***",
         "OpenAI-Organization": "***",

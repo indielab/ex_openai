@@ -28,3 +28,4 @@ openai-*.tar
 
 openai/components/
 openai/paths/
+fnox.toml

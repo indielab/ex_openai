@@ -12,7 +12,7 @@
         "recv_timeout": 50000
       },
       "request_body": "",
-      "url": "https://api.openai.com/v1/models?"
+      "url": "https://api.openai.com/v1/models"
     },
     "response": {
       "binary": false,

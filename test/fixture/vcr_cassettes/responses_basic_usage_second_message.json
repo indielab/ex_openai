@@ -3,7 +3,7 @@
     "request": {
       "options": [],
       "body": "{\"input\":\"Please tell me what I asked you to do in my previous message ok??\",\"model\":\"gpt-4o-mini\",\"previous_response_id\":\"resp_67d2a82e377c81929d2d0a90d7be62680d257b2afabb8523\"}",
-      "url": "https://api.openai.com/v1/responses?",
+      "url": "https://api.openai.com/v1/responses",
       "headers": {
         "Authorization": "***",
         "Content-type": "application/json"
@@ -37,7 +37,7 @@
     "request": {
       "options": [],
       "body": "",
-      "url": "https://api.openai.com/v1/responses/resp_67d2afcfd41081929d3cbe871a7645580d257b2afabb8523?",
+      "url": "https://api.openai.com/v1/responses/resp_67d2afcfd41081929d3cbe871a7645580d257b2afabb8523",
       "headers": {
         "Authorization": "***",
         "Content-type": "application/json"

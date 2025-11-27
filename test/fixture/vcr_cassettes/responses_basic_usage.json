@@ -3,7 +3,7 @@
     "request": {
       "options": [],
       "body": "{\"input\":\"tell me a joke\",\"model\":\"gpt-4o-mini\"}",
-      "url": "https://api.openai.com/v1/responses?",
+      "url": "https://api.openai.com/v1/responses",
       "headers": {
         "Authorization": "***",
         "Content-type": "application/json"
@@ -37,7 +37,7 @@
     "request": {
       "options": [],
       "body": "",
-      "url": "https://api.openai.com/v1/responses/resp_67d2a82e377c81929d2d0a90d7be62680d257b2afabb8523?",
+      "url": "https://api.openai.com/v1/responses/resp_67d2a82e377c81929d2d0a90d7be62680d257b2afabb8523",
       "headers": {
         "Authorization": "***",
         "Content-type": "application/json"

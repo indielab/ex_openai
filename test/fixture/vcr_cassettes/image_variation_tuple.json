@@ -12,7 +12,7 @@
         "recv_timeout": 50000
       },
       "request_body": "",
-      "url": "https://api.openai.com/v1/images/variations?"
+      "url": "https://api.openai.com/v1/images/variations"
     },
     "response": {
       "binary": false,
