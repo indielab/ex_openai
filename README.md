@@ -138,6 +138,11 @@ audio_data = File.read!("path/to/audio.wav")
 - [Configuration Options](docs/configuration.md)
 - [Examples](docs/examples.md)
 
+## Known Limitations
+
+- Streaming responses are returned with atomized keys but without full struct typing; deltas are not accumulated into final typed structs yet.
+  - See `docs/streaming.md` for a sample streaming session and current behavior.
+
 ## Contributing
 
 Contributions are welcome! If you find a bug or want to add a feature, please open an issue or submit a PR.

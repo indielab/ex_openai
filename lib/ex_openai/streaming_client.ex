@@ -57,6 +57,32 @@ defmodule ExOpenAI.StreamingClient do
     callback_fx.(data)
   end
 
+  @doc """
+  Recursively atomizes map keys (string keys become atoms), walking lists and maps.
+  Intended for streaming fallback when we skip full struct conversion.
+  """
+  def atomize_keys(map) when is_map(map) do
+    map
+    |> Enum.map(fn
+      {key, value} when is_binary(key) ->
+        atom_key =
+          try do
+            String.to_existing_atom(key)
+          rescue
+            ArgumentError -> String.to_atom(key)
+          end
+
+        {atom_key, atomize_keys(value)}
+
+      {key, value} ->
+        {key, atomize_keys(value)}
+    end)
+    |> Enum.into(%{})
+  end
+
+  def atomize_keys(list) when is_list(list), do: Enum.map(list, &atomize_keys/1)
+  def atomize_keys(value), do: value
+
   def handle_chunk(
         chunk,
         %{stream_to: pid_or_fx, convert_response_fx: convert_fx}

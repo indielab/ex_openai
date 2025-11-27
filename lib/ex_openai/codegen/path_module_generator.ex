@@ -179,10 +179,23 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         # Strip optional parameters (except :stream) that were added to body_params from opts
         opts = Keyword.drop(opts, optional_params_to_drop)
 
-        # Create the convert_response function with the response schema
-        convert_response = fn response -> 
-          ExOpenAI.Codegen.ResponseConverter.convert_response(response, unquote(Macro.escape(response_schema_ref)))
-        end
+        # Choose convert_response based on streaming flag:
+        # - streaming: atomize keys but skip full struct conversion (streaming chunks differ from final schema)
+        # - non-streaming: use full response converter with schema
+        convert_response =
+          if Keyword.get(opts, :stream, false) do
+            fn
+              {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
+              other -> other
+            end
+          else
+            fn response ->
+              ExOpenAI.Codegen.ResponseConverter.convert_response(
+                response,
+                unquote(Macro.escape(response_schema_ref))
+              )
+            end
+          end
 
         # Make the HTTP call
         ExOpenAI.Config.http_client().api_call(
