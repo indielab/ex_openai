@@ -2,6 +2,7 @@ defmodule Mix.Tasks.DumpOpenaiComponents do
   @moduledoc """
   Writes all OpenAPI components as Elixir files to disk
   """
+  @shortdoc "Dump OpenAI components and paths to disk"
 
   use Mix.Task
 

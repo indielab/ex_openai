@@ -2,6 +2,7 @@ defmodule Mix.Tasks.UpdateOpenaiDocs do
   @moduledoc """
   Updates OpenAI API documentation files
   """
+  @shortdoc "Download the latest OpenAI docs"
 
   use Mix.Task
 
