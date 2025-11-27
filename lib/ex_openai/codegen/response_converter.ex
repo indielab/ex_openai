@@ -57,8 +57,7 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
           module_name = Module.concat(module_parts)
 
           if module_exists?(module_name) do
-            {:ok, specs} = Code.Typespec.fetch_types(module_name)
-            specs
+            fetch_types(module_name)
           else
             []
           end
@@ -66,16 +65,14 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
         {{:., [], [module, :t]}, [], []} ->
           # Handle typespec format like {{:., [], [ExOpenAI.Components.Response, :t]}, [], []}
           if module_exists?(module) do
-            {:ok, specs} = Code.Typespec.fetch_types(module)
-            specs
+            fetch_types(module)
           else
             []
           end
 
         module when is_atom(module) ->
           if module_exists?(module) do
-            {:ok, specs} = Code.Typespec.fetch_types(module)
-            specs
+            fetch_types(module)
           else
             []
           end
@@ -249,6 +246,13 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     |> Enum.filter(&(&1 != :__struct__))
   end
 
+  defp fetch_types(module) do
+    case Code.Typespec.fetch_types(module) do
+      {:ok, specs} -> specs
+      :error -> []
+    end
+  end
+
   # Count how many keys from the response match the struct keys
   defp count_matching_keys(res, struct_keys) do
     res
@@ -315,19 +319,30 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   def parse_remote_type({:type, _, :string, []}, value), do: value
   def parse_remote_type({:type, _, :map, fields} = _type, value) when is_map(value) do
     # Schema-driven map conversion:
-    # - Only runs when typespec defines exact fields (map_field_exact).
+    # - Only runs when typespec defines fields (map_field_exact or map_field_assoc).
     # - Looks up each field by atom or string key in the source map.
     # - Recursively parses the value using the field's type (which triggers struct conversion for component refs).
     # - Skips __struct__ to avoid clobbering struct identity.
     #
     # This is intentionally conservative to avoid blindly atomizing unknown keys.
-    if is_list(fields) and Enum.all?(fields, &match?({:type, _, :map_field_exact, _}, &1)) do
-      fields
-      |> Enum.reduce(%{}, fn
-        {:type, _, :map_field_exact, [{:atom, _, :__struct__}, _field_type]}, acc ->
+    cond do
+      is_list(fields) and fields == [] ->
+        value
+
+      is_list(fields) and
+          Enum.all?(fields, fn field ->
+            match?({:type, _, :map_field_exact, _}, field) or
+              match?({:type, _, :map_field_assoc, _}, field)
+          end) ->
+        fields
+        |> Enum.reduce(%{}, fn
+          {:type, _, :map_field_exact, [{:atom, _, :__struct__}, _field_type]}, acc ->
+            acc
+        {:type, _, :map_field_assoc, [{:atom, _, :__struct__}, _field_type]}, acc ->
           acc
 
-        {:type, _, :map_field_exact, [{:atom, _, key}, field_type]}, acc ->
+        {:type, _, map_field_kind, [{:atom, _, key}, field_type]}, acc
+        when map_field_kind in [:map_field_exact, :map_field_assoc] ->
           raw_val =
             case Map.fetch(value, key) do
               {:ok, v} ->
@@ -342,8 +357,8 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
 
           Map.put(acc, key, parse_remote_type(field_type, raw_val))
       end)
-    else
-      value
+      true ->
+        value
     end
   end
   def parse_remote_type({:type, _, :map, _}, value), do: value
