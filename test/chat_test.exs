@@ -33,15 +33,15 @@ defmodule ExOpenAI.ChatTest do
 
       assert Enum.count(res.choices) == 1
 
-      assert List.first(res.choices) == %{
-               finish_reason: "stop",
+      assert %{
+               finish_reason: :stop,
                index: 0,
-               message: %{
+               message: %ExOpenAI.Components.ChatCompletionResponseMessage{
                  content:
                    "The color of the sky is usually blue, but it can also be gray, pink, orange, red, or purple depending on the time of day and weather conditions.",
-                 role: "assistant"
+                 role: :assistant
                }
-             }
+             } = List.first(res.choices)
     end
   end
 end

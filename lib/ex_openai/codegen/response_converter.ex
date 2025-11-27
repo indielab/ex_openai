@@ -313,6 +313,39 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   def parse_remote_type({:type, _, :integer, []}, value), do: value
   def parse_remote_type({:type, _, :binary, []}, value), do: value
   def parse_remote_type({:type, _, :string, []}, value), do: value
+  def parse_remote_type({:type, _, :map, fields} = _type, value) when is_map(value) do
+    # Schema-driven map conversion:
+    # - Only runs when typespec defines exact fields (map_field_exact).
+    # - Looks up each field by atom or string key in the source map.
+    # - Recursively parses the value using the field's type (which triggers struct conversion for component refs).
+    # - Skips __struct__ to avoid clobbering struct identity.
+    #
+    # This is intentionally conservative to avoid blindly atomizing unknown keys.
+    if is_list(fields) and Enum.all?(fields, &match?({:type, _, :map_field_exact, _}, &1)) do
+      fields
+      |> Enum.reduce(%{}, fn
+        {:type, _, :map_field_exact, [{:atom, _, :__struct__}, _field_type]}, acc ->
+          acc
+
+        {:type, _, :map_field_exact, [{:atom, _, key}, field_type]}, acc ->
+          raw_val =
+            case Map.fetch(value, key) do
+              {:ok, v} ->
+                v
+
+              :error ->
+                case Map.fetch(value, Atom.to_string(key)) do
+                  {:ok, v} -> v
+                  :error -> nil
+                end
+            end
+
+          Map.put(acc, key, parse_remote_type(field_type, raw_val))
+      end)
+    else
+      value
+    end
+  end
   def parse_remote_type({:type, _, :map, _}, value), do: value
 
   # Atom literals - only convert if the atom matches expected values
