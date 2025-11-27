@@ -367,14 +367,34 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   end
   
   # Extract and resolve the response schema for a given status code
-  defp get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
-  defp get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
+  def get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
+  def get_response_schema(%Operation{responses: responses}, status_code, schemas) do
     case Map.get(responses, status_code) do
       %{content: %{"application/json" => %{"schema" => %{"$ref" => ref}}}} ->
-        # Return a schema with the ref so TypespecGenerator can create proper component reference
         %Schema{ref: ref}
-        
-      _ -> nil
+
+      %{content: %{"application/json" => %{"schema" => %{"oneOf" => one_of}}}} when is_list(one_of) ->
+        %Schema{
+          one_of:
+            Enum.map(one_of, fn
+              %{"$ref" => ref} -> %Schema{ref: ref}
+              %{"type" => _} = schema_map -> ExOpenAI.Codegen.DocsParser.parse_schema(schema_map, schemas)
+              _ -> %Schema{}
+            end)
+        }
+
+      %{content: %{"application/json" => %{"schema" => %{"anyOf" => any_of}}}} when is_list(any_of) ->
+        %Schema{
+          any_of:
+            Enum.map(any_of, fn
+              %{"$ref" => ref} -> %Schema{ref: ref}
+              %{"type" => _} = schema_map -> ExOpenAI.Codegen.DocsParser.parse_schema(schema_map, schemas)
+              _ -> %Schema{}
+            end)
+        }
+
+      _ ->
+        nil
     end
   end
 end
