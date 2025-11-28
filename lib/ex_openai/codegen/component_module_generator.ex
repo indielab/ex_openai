@@ -22,9 +22,17 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     # Keep the original name from the input schema
     resolved_schema = %{resolved_schema | name: name}
     
-    # Now check if the resolved schema is an object type with actual properties
-    # Objects with only additionalProperties are map types, not structs
-    if resolved_schema.type == "object" && is_map(resolved_schema.properties) && map_size(resolved_schema.properties) > 0 do
+    # Now check if the resolved schema is an object type with actual properties.
+    # Some schemas omit `type: "object"` but still define `properties` – we
+    # treat those as objects as well to generate proper struct modules.
+    # Objects with only additionalProperties are map types, not structs.
+    is_object_type =
+      resolved_schema.type == "object" or
+        (is_nil(resolved_schema.type) and is_map(resolved_schema.properties) and
+           map_size(resolved_schema.properties) > 0)
+
+    if is_object_type and is_map(resolved_schema.properties) and
+         map_size(resolved_schema.properties) > 0 do
       generate_object_module(resolved_schema)
     else
       generate_type_alias_module(resolved_schema)
