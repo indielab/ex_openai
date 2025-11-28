@@ -17,27 +17,29 @@
     "response": {
       "binary": false,
       "type": "ok",
-      "body": "{\n  \"error\": {\n    \"code\": null,\n    \"message\": \"Invalid authorization header\",\n    \"param\": null,\n    \"type\": \"server_error\"\n  }\n}\n",
+      "body": "{\n  \"created\": 1764320768,\n  \"data\": [\n    {\n      \"url\": \"https://oaidalleapiprodscus.blob.core.windows.net/private/org-PEX6yimM3dFikgcBrrK0hy4E/user-WlYtzNyXDDhbIAlOM2IQ8hPu/img-3orEAByBV4eZbXzHCiDRp5Ug.png?st=2025-11-28T08%3A06%3A08Z&se=2025-11-28T10%3A06%3A08Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-11-28T09%3A06%3A08Z&ske=2025-11-29T09%3A06%3A08Z&sks=b&skv=2024-08-04&sig=3zGSN9NF5b64yKAdeZmFGAlOI447GsEkOmec81Y4TbM%3D\"\n    }\n  ]\n}\n",
       "headers": {
-        "Date": "Thu, 27 Nov 2025 11:11:43 GMT",
+        "Date": "Fri, 28 Nov 2025 09:06:08 GMT",
         "Content-Type": "application/json",
-        "Content-Length": "132",
+        "Content-Length": "545",
         "Connection": "keep-alive",
-        "access-control-allow-origin": "*",
         "openai-version": "2020-10-01",
-        "x-request-id": "req_3954a7809442f45f02ac69b125ae8478",
-        "openai-processing-ms": "9",
-        "x-envoy-upstream-service-time": "13",
+        "openai-organization": "***",
+        "openai-project": "proj_rJ5fxI0uFV6QPNLclcdwofsq",
+        "x-request-id": "req_0013d6161b83540d892c9ae000bf996a",
+        "openai-processing-ms": "12276",
+        "access-control-allow-origin": "*",
+        "x-envoy-upstream-service-time": "12283",
         "x-openai-proxy-wasm": "v0.1",
         "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
         "cf-cache-status": "DYNAMIC",
         "Set-Cookie": "***",
         "X-Content-Type-Options": "nosniff",
         "Server": "cloudflare",
-        "CF-RAY": "9a512fb0c98b4ba7-BKK",
+        "CF-RAY": "9a58b4d38e608957-BKK",
         "alt-svc": "h3=\":443\"; ma=86400"
       },
-      "status_code": 401
+      "status_code": 200
     }
   }
 ]

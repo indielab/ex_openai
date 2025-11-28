@@ -192,8 +192,23 @@ defmodule ExOpenAI.Client do
   end
 
   defp multipart_param({name, content}) do
-    # This clause handles regular form fields, not file uploads
-    {Atom.to_string(name), content}
+    strname = Atom.to_string(name)
+
+    cond do
+      # Treat raw binary (non-UTF8 text) as a file upload without an explicit filename.
+      # This is used for fields like `image` that are documented as `format: binary`
+      # in the OpenAPI schema.
+      is_bitstring(content) and not String.valid?(content) ->
+        filename = strname
+        mime_type = MIME.from_path(filename) || "application/octet-stream"
+
+        {"file", content, {"form-data", [name: strname, filename: filename]},
+         [{"Content-Type", mime_type}]}
+
+      # Regular form fields (e.g. strings, numbers) are sent as simple key/value parts.
+      true ->
+        {strname, content}
+    end
   end
 
   def api_multipart_post(url, params \\ [], request_options \\ [], convert_response) do
