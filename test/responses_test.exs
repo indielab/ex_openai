@@ -17,12 +17,12 @@ defmodule ExOpenAI.ResponsesTest do
       ExOpenAI.Responses.create_response(input: "tell me a joke", model: "gpt-4o-mini")
 
     assert res.model == "gpt-4o-mini-2024-07-18"
-    assert res.object == "response"
-    assert res.status == "completed"
+    assert res.object == :response
+    assert res.status == :completed
 
     output = List.first(res.output)
-    assert output.type == "message"
-    assert output.role == "assistant"
+    assert output.type == :message
+    assert output.role == :assistant
 
     {:ok, get_res} = ExOpenAI.Responses.get_response(res.id)
 

@@ -1,38 +1,51 @@
 [
   {
     "request": {
-      "body": "{\"logit_bias\":{\"8043\":-100},\"messages\":[{\"content\":\"Hello!\",\"role\":\"user\"},{\"content\":\"What's up?\",\"role\":\"assistant\"},{\"content\":\"What ist the color of the sky?\",\"role\":\"user\"}],\"model\":\"gpt-3.5-turbo\"}",
-      "headers": {
-        "OpenAI-Organization": "***",
-        "Authorization": "***",
-        "Content-type": "application/json"
-      },
-      "method": "post",
       "options": {
         "recv_timeout": 50000
       },
-      "request_body": "",
-      "url": "https://api.openai.com/v1/chat/completions"
+      "body": "{\"messages\":[{\"role\":\"user\",\"content\":\"Hello!\"},{\"role\":\"assistant\",\"content\":\"What's up?\"},{\"role\":\"user\",\"content\":\"What ist the color of the sky?\"}],\"logit_bias\":{\"8043\":-100},\"model\":\"gpt-3.5-turbo\"}",
+      "url": "https://api.openai.com/v1/chat/completions",
+      "headers": {
+        "Authorization": "***",
+        "Content-type": "application/json",
+        "OpenAI-Beta": "assistants=v2"
+      },
+      "method": "post",
+      "request_body": ""
     },
     "response": {
       "binary": false,
-      "body": "{\"id\":\"chatcmpl-6qL69buDX0CwYGRuCljwLqaRaCay4\",\"object\":\"chat.completion\",\"created\":1677932177,\"model\":\"gpt-3.5-turbo-0301\",\"usage\":{\"prompt_tokens\":31,\"completion_tokens\":36,\"total_tokens\":67},\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\"The color of the sky is usually blue, but it can also be gray, pink, orange, red, or purple depending on the time of day and weather conditions.\"},\"finish_reason\":\"stop\",\"index\":0}]}\n",
+      "type": "ok",
+      "body": "{\n  \"id\": \"chatcmpl-CghsMLivHBYky8g4pVuASedT0TYiV\",\n  \"object\": \"chat.completion\",\n  \"created\": 1764294470,\n  \"model\": \"gpt-3.5-turbo-0125\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"The color of the sky can vary depending on the time of day and weather conditions. During the day, the sky is typically blue due to the scattering of sunlight by the Earth's atmosphere. At sunrise and sunset, the sky can appear orange, pink, or purple. At night, the sky is usually dark but can be illuminated by city lights or moonlight.\",\n        \"refusal\": null,\n        \"annotations\": []\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 29,\n    \"completion_tokens\": 73,\n    \"total_tokens\": 102,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\": {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\": 0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\": \"default\",\n  \"system_fingerprint\": null\n}\n",
       "headers": {
-        "Date": "Sat, 04 Mar 2023 12:16:18 GMT",
+        "Date": "Fri, 28 Nov 2025 01:47:50 GMT",
         "Content-Type": "application/json",
-        "Content-Length": "430",
+        "Transfer-Encoding": "chunked",
         "Connection": "keep-alive",
-        "Access-Control-Allow-Origin": "*",
-        "Cache-Control": "no-cache, must-revalidate",
-        "Openai-Model": "gpt-3.5-turbo-0301",
-        "Openai-Organization": "***",
-        "Openai-Processing-Ms": "1133",
-        "Openai-Version": "2020-10-01",
-        "Strict-Transport-Security": "max-age=15724800; includeSubDomains",
-        "X-Request-Id": "572bbb54175371ad431644f172f7a235"
+        "access-control-expose-headers": "X-Request-ID",
+        "openai-organization": "***",
+        "openai-processing-ms": "643",
+        "openai-project": "proj_rJ5fxI0uFV6QPNLclcdwofsq",
+        "openai-version": "2020-10-01",
+        "x-envoy-upstream-service-time": "802",
+        "x-ratelimit-limit-requests": "5000",
+        "x-ratelimit-limit-tokens": "4000000",
+        "x-ratelimit-remaining-requests": "4999",
+        "x-ratelimit-remaining-tokens": "3999984",
+        "x-ratelimit-reset-requests": "12ms",
+        "x-ratelimit-reset-tokens": "0s",
+        "x-request-id": "req_3a242e167248456c9bcbf76aee058fac",
+        "x-openai-proxy-wasm": "v0.1",
+        "cf-cache-status": "DYNAMIC",
+        "Set-Cookie": "***",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+        "X-Content-Type-Options": "nosniff",
+        "Server": "cloudflare",
+        "CF-RAY": "9a56330f3ced45cf-BKK",
+        "alt-svc": "h3=\":443\"; ma=86400"
       },
-      "status_code": 200,
-      "type": "ok"
+      "status_code": 200
     }
   }
 ]

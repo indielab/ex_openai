@@ -109,7 +109,7 @@ defmodule ExOpenAI.Codegen.ConvertResponseTest do
       assert result == {:error, "Something went wrong"}
     end
 
-    test "handles nested data structures" do
+    test "handles nested data structures with atomized keys" do
       response =
         {:ok,
          %{
@@ -125,8 +125,9 @@ defmodule ExOpenAI.Codegen.ConvertResponseTest do
       {:ok, struct} = result
       assert struct.id == "123"
       assert struct.name == "test"
-      assert struct.value["nested"] == "data"
-      assert Enum.map(struct.array, & &1["item"]) == [1, 2]
+      # Nested maps and lists should have atom keys
+      assert struct.value[:nested] == "data"
+      assert Enum.map(struct.array, & &1[:item]) == [1, 2]
     end
 
     test "handles string keys by converting them to atoms" do

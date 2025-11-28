@@ -4,6 +4,18 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
   alias ExOpenAI.Codegen.ResponseConverter
   alias ExOpenAI.Codegen.DocsParser.Schema
 
+  @moduledoc """
+  Tests for the response conversion logic.
+
+  These tests exercise:
+
+  * Top-level response conversion to component structs
+  * Handling of oneOf/anyOf schemas
+  * Field type extraction from typespec ASTs
+  * Primitive and union parsing in `parse_remote_type/2`
+  * Deep key atomization via `deep_atomize_keys/1`
+  """
+
   describe "convert_response/2" do
     test "handles response with 'response' and 'type' keys" do
       response = {:ok, %{"response" => %{"id" => "123", "name" => "test"}, "type" => "some_type"}}
@@ -206,69 +218,42 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
             assert response.object == :response
             assert response.status == :completed
 
-            # These conversions MUST work if the component modules exist
-            if Code.ensure_loaded?(ExOpenAI.Components.Reasoning) and
-                 function_exported?(ExOpenAI.Components.Reasoning, :__struct__, 0) do
-              assert is_struct(response.reasoning, ExOpenAI.Components.Reasoning),
-                     "reasoning field must be converted to ExOpenAI.Components.Reasoning struct"
-              assert response.reasoning.effort == nil
-              assert response.reasoning.summary == nil
-            else
-              flunk("ExOpenAI.Components.Reasoning module not loaded, cannot test nested struct conversion")
-            end
+            # Nested fields are converted to their component structs when possible.
+            assert is_struct(response.reasoning, ExOpenAI.Components.Reasoning)
+            assert response.reasoning.effort == nil
+            assert response.reasoning.summary == nil
 
-            case Code.ensure_loaded?(ExOpenAI.Components.Metadata) and
-                   function_exported?(ExOpenAI.Components.Metadata, :__struct__, 0) do
-              true ->
-                assert is_struct(response.metadata, ExOpenAI.Components.Metadata),
-                       "metadata field must be converted to ExOpenAI.Components.Metadata struct"
+            # Metadata is a free-form map alias; keep it as a map.
+            assert is_map(response.metadata)
+            assert response.metadata == %{}
 
-              false ->
-                # Allow map fallback when component is not generated
-                assert is_map(response.metadata)
-            end
+            assert is_struct(response.usage, ExOpenAI.Components.ResponseUsage)
+            assert response.usage.input_tokens == 11
+            assert response.usage.output_tokens == 19
+            assert response.usage.total_tokens == 30
 
-            if Code.ensure_loaded?(ExOpenAI.Components.ResponseUsage) and
-                 function_exported?(ExOpenAI.Components.ResponseUsage, :__struct__, 0) do
-              assert is_struct(response.usage, ExOpenAI.Components.ResponseUsage),
-                     "usage field must be converted to ExOpenAI.Components.ResponseUsage struct"
-              assert response.usage.input_tokens == 11
-              assert response.usage.output_tokens == 19
-              assert response.usage.total_tokens == 30
-            else
-              flunk("ExOpenAI.Components.ResponseUsage module not loaded, cannot test nested struct conversion")
-            end
+            # Output items come from OutputItem union and should be concrete structs
+            assert is_list(response.output)
+            assert length(response.output) == 1
 
-            # Output list conversion is MANDATORY if OutputItem exists
-            case Code.ensure_loaded?(ExOpenAI.Components.OutputItem) and
-                   function_exported?(ExOpenAI.Components.OutputItem, :__struct__, 0) do
-              true ->
-                assert is_list(response.output),
-                       "output field must be a list"
-                assert length(response.output) == 1,
-                       "output list must contain 1 item"
-                
-                output_item = List.first(response.output)
-                assert is_struct(output_item, ExOpenAI.Components.OutputItem),
-                       "output list items must be converted to ExOpenAI.Components.OutputItem structs"
-                assert output_item.id == "msg_68593161dcc0819a8e0ee42deab92f32046391d626b27379"
-                assert output_item.role == "assistant"
-                assert output_item.status == "completed"
-                assert output_item.type == "message"
-                
-                # Check the content field if it's also converted to structs
-                assert is_list(output_item.content),
-                       "content field must be a list"
-                assert length(output_item.content) == 1,
-                       "content list must contain 1 item"
-              false ->
-                # Allow map fallback when component is not generated
-                assert is_list(response.output)
-            end
+            output_item = List.first(response.output)
+            assert is_struct(output_item, ExOpenAI.Components.OutputMessage)
+
+            assert output_item.id ==
+                     "msg_68593161dcc0819a8e0ee42deab92f32046391d626b27379"
+
+            assert output_item.role == :assistant
+            assert output_item.status == "completed"
+            assert output_item.type == :message
+
+            assert is_list(output_item.content)
+            assert length(output_item.content) == 1
 
           {:ok, map} when is_map(map) ->
             # This should only happen if Response component doesn't exist
-            flunk("Expected conversion to ExOpenAI.Components.Response struct, got plain map: #{inspect(map)}")
+            flunk(
+              "Expected conversion to ExOpenAI.Components.Response struct, got plain map: #{inspect(map)}"
+            )
         end
       end
     end
@@ -596,7 +581,11 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
   describe "parse_remote_type/2" do
     test "handles nil values" do
       assert ResponseConverter.parse_remote_type({:type, 1, :string, []}, nil) == nil
-      assert ResponseConverter.parse_remote_type({:remote_type, 1, [{:atom, 0, String}, {:atom, 0, :t}, []]}, nil) == nil
+
+      assert ResponseConverter.parse_remote_type(
+               {:remote_type, 1, [{:atom, 0, String}, {:atom, 0, :t}, []]},
+               nil
+             ) == nil
     end
 
     test "returns basic types as-is" do
@@ -610,9 +599,11 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
     end
 
     test "converts string to atom for atom literals" do
-      assert ResponseConverter.parse_remote_type({:atom, 0, :completed}, "completed") == :completed
+      assert ResponseConverter.parse_remote_type({:atom, 0, :completed}, "completed") ==
+               :completed
+
       assert ResponseConverter.parse_remote_type({:atom, 0, :response}, "response") == :response
-      
+
       # Already an atom, returns as-is
       assert ResponseConverter.parse_remote_type({:atom, 0, :completed}, :completed) == :completed
     end
@@ -626,10 +617,10 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
       # Union with nil - value is nil
       union_type = {:type, 1, :union, [{:type, 1, :string, []}, {:atom, 0, nil}]}
       assert ResponseConverter.parse_remote_type(union_type, nil) == nil
-      
+
       # Union with nil - value is not nil
       assert ResponseConverter.parse_remote_type(union_type, "hello") == "hello"
-      
+
       # Union without nil
       union_type_no_nil = {:type, 1, :union, [{:type, 1, :string, []}, {:type, 1, :integer, []}]}
       assert ResponseConverter.parse_remote_type(union_type_no_nil, "test") == "test"
@@ -639,14 +630,18 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
       # List of strings
       list_type = {:type, 1, :list, [{:type, 1, :string, []}]}
       assert ResponseConverter.parse_remote_type(list_type, ["a", "b", "c"]) == ["a", "b", "c"]
-      
+
       # List of atoms
       list_atom_type = {:type, 1, :list, [{:atom, 0, :test}]}
-      assert ResponseConverter.parse_remote_type(list_atom_type, ["test", "test"]) == [:test, :test]
-      
+
+      assert ResponseConverter.parse_remote_type(list_atom_type, ["test", "test"]) == [
+               :test,
+               :test
+             ]
+
       # Empty list
       assert ResponseConverter.parse_remote_type(list_type, []) == []
-      
+
       # Non-list value returns as-is
       assert ResponseConverter.parse_remote_type(list_type, "not a list") == "not a list"
     end
@@ -657,54 +652,35 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
     end
   end
 
-  # Test with mock component if needed
-  if Code.ensure_loaded?(ExOpenAI.Components.Reasoning) do
-    describe "parse_remote_type/2 with component conversion" do
-      test "converts component remote types to structs" do
-        type_spec = {:remote_type, 1, [{:atom, 0, ExOpenAI.Components.Reasoning}, {:atom, 0, :t}, []]}
-        value = %{"effort" => "low", "summary" => "test summary"}
-        
-        result = ResponseConverter.parse_remote_type(type_spec, value)
-        
-        assert is_struct(result, ExOpenAI.Components.Reasoning)
-        assert result.effort == "low"
-        assert result.summary == "test summary"
-      end
-
-      test "handles list of components" do
-        type_spec = {:type, 1, :list, [
-          {:remote_type, 1, [{:atom, 0, ExOpenAI.Components.Reasoning}, {:atom, 0, :t}, []]}
-        ]}
-        
-        values = [
-          %{"effort" => "low", "summary" => "first"},
-          %{"effort" => "high", "summary" => "second"}
+  describe "deep_atomize_keys/1" do
+    test "atomizes string keys in maps and lists recursively" do
+      value = %{
+        "foo" => 1,
+        "bar" => [
+          %{"baz" => 2},
+          %{"qux" => [%{"inner" => 3}]}
         ]
-        
-        results = ResponseConverter.parse_remote_type(type_spec, values)
-        
-        assert length(results) == 2
-        assert Enum.all?(results, &is_struct(&1, ExOpenAI.Components.Reasoning))
-        assert Enum.at(results, 0).summary == "first"
-        assert Enum.at(results, 1).summary == "second"
-      end
+      }
 
-      test "handles union with component type" do
-        type_spec = {:type, 1, :union, [
-          {:remote_type, 1, [{:atom, 0, ExOpenAI.Components.Reasoning}, {:atom, 0, :t}, []]},
-          {:atom, 0, nil}
-        ]}
-        
-        # Non-nil value
-        value = %{"effort" => "medium", "summary" => "test"}
-        result = ResponseConverter.parse_remote_type(type_spec, value)
-        
-        assert is_struct(result, ExOpenAI.Components.Reasoning)
-        assert result.effort == "medium"
-        
-        # Nil value
-        assert ResponseConverter.parse_remote_type(type_spec, nil) == nil
-      end
+      result = ResponseConverter.deep_atomize_keys(value)
+
+      assert result == %{
+               foo: 1,
+               bar: [
+                 %{baz: 2},
+                 %{qux: [%{inner: 3}]}
+               ]
+             }
+    end
+
+    test "leaves atom keys untouched" do
+      value = %{foo: 1, bar: [%{baz: 2}]}
+      assert ResponseConverter.deep_atomize_keys(value) == value
     end
   end
+
+  # Test with mock component if needed
+  # Nested component conversions are handled at the top level by convert_response/2;
+  # parse_remote_type/2 itself no longer attempts to turn remote component types
+  # into structs. This keeps the function focused on primitive/enum coercion.
 end
