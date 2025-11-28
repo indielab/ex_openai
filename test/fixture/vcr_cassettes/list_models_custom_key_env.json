@@ -1,40 +1,44 @@
 [
   {
     "request": {
-      "body": "",
-      "headers": {
-        "Authorization": "Bearer abc_from_env",
-        "OpenAI-Organization": "def_from_env",
-        "Content-type": "application/json"
-      },
-      "method": "get",
       "options": {
         "recv_timeout": 50000
       },
+      "body": "",
+      "url": "https://api.openai.com/v1/models",
+      "headers": {
+        "Authorization": "***",
+        "OpenAI-Organization": "***",
+        "Content-type": "application/json",
+        "OpenAI-Beta": "assistants=v2"
+      },
       "request_body": "",
-      "url": "https://api.openai.com/v1/models"
+      "method": "get"
     },
     "response": {
       "binary": false,
-      "body": "{\n  \"error\": {\n    \"message\": \"Incorrect API key provided: abc_from_env. You can find your API key at https://platform.openai.com/account/api-keys.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": null,\n    \"code\": \"invalid_api_key\"\n  }\n}\n",
+      "type": "ok",
+      "body": "{\n  \"error\": {\n    \"message\": \"Incorrect API key provided: abc_from_env. You can find your API key at https://platform.openai.com/account/api-keys.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": null,\n    \"code\": \"invalid_api_key\"\n  }\n}",
       "headers": {
-        "Date": "Thu, 20 Apr 2023 06:37:59 GMT",
+        "Date": "Fri, 28 Nov 2025 07:51:50 GMT",
         "Content-Type": "application/json",
-        "Content-Length": "242",
+        "Content-Length": "241",
         "Connection": "keep-alive",
-        "www-authenticate": "Basic realm=\"OpenAI API\"",
-        "access-control-allow-origin": "*",
+        "www-authenticate": "Bearer realm=\"OpenAI API\"",
         "openai-version": "2020-10-01",
-        "x-request-id": "08253eb80b3c97e00e0d468a5fb7af73",
-        "openai-processing-ms": "10",
-        "strict-transport-security": "max-age=15724800; includeSubDomains",
-        "CF-Cache-Status": "DYNAMIC",
+        "x-request-id": "9c1799031d13267240a1a1c226d71673",
+        "openai-processing-ms": "1",
+        "x-envoy-upstream-service-time": "3",
+        "x-openai-proxy-wasm": "v0.1",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "cf-cache-status": "DYNAMIC",
+        "Set-Cookie": "***",
+        "X-Content-Type-Options": "nosniff",
         "Server": "cloudflare",
-        "CF-RAY": "7bab61bd2b2fa94d-SYD",
-        "alt-svc": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+        "CF-RAY": "9a584847f9788957-BKK",
+        "alt-svc": "h3=\":443\"; ma=86400"
       },
-      "status_code": 401,
-      "type": "ok"
+      "status_code": 401
     }
   }
 ]

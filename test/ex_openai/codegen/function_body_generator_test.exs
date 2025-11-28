@@ -17,7 +17,8 @@ defmodule ExOpenAI.Codegen.FunctionBodyGeneratorTest do
       
       # Should capture args and make GET request
       assert body_string =~ "binding()"
-      assert body_string =~ "api_call(:get"
+      assert body_string =~ "ExOpenAI.Config.http_client().api_call("
+      assert body_string =~ ":get"
       assert body_string =~ "final_url"
       assert body_string =~ "&Function.identity/1"
     end
@@ -43,9 +44,10 @@ defmodule ExOpenAI.Codegen.FunctionBodyGeneratorTest do
       body_string = Macro.to_string(ast)
       
       # Should replace path parameter
-      assert body_string =~ ~s|String.replace("{item_id}"|
+      assert body_string =~ ~s|String.replace(url, "{item_id}"|
       assert body_string =~ "to_string(Keyword.get(all_args, :item_id))"
-      assert body_string =~ "api_call(:delete"
+      assert body_string =~ "ExOpenAI.Config.http_client().api_call("
+      assert body_string =~ ":delete"
     end
     
     test "generates body for GET with query parameters" do
@@ -99,7 +101,8 @@ defmodule ExOpenAI.Codegen.FunctionBodyGeneratorTest do
       
       # Should extract body parameters
       assert body_string =~ "body_params"
-      assert body_string =~ "api_call(:post"
+      assert body_string =~ "ExOpenAI.Config.http_client().api_call("
+      assert body_string =~ ":post"
       assert body_string =~ ~s|:"application/json"|
     end
     
@@ -150,7 +153,7 @@ defmodule ExOpenAI.Codegen.FunctionBodyGeneratorTest do
       body_string = Macro.to_string(ast)
       
       # Should handle both path and query params
-      assert body_string =~ ~s|String.replace("{item_id}"|
+      assert body_string =~ ~s|String.replace(url, "{item_id}"|
       assert body_string =~ "query_params"
       assert body_string =~ ":include_metadata"
     end

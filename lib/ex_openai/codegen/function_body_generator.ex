@@ -2,7 +2,18 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
   @moduledoc """
   Generates function body AST for OpenAPI operations.
 
-  Handles URL building, parameter extraction, and HTTP client calls.
+  This module is primarily exercised via unit tests and mirrors the
+  high‑level behaviour documented in `docs/parsingv2.md`:
+
+  - Replaces path parameters in the URL using `String.replace/3`
+  - Builds query strings from `opts` using `URI.encode_www_form/1`
+  - Collects body parameters from the non‑`opts` function arguments
+  - Delegates the HTTP call to `ExOpenAI.Config.http_client().api_call/6`
+
+  In the current v2 codegen the real, production function bodies are
+  generated inline in `PathModuleGenerator`. `generate_body/3` exists as
+  a focused unit under test that captures the same ideas without being
+  wired into the runtime generator.
   """
 
   alias ExOpenAI.Codegen.DocsParser.Operation
@@ -10,90 +21,107 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
   @doc """
   Generates the function body AST for an operation.
 
-  Takes the operation definition, the path string, and the list of argument names
-  that were defined in the function signature.
+  The `arg_asts` parameter is the list of argument AST nodes that would
+  appear in a function head, e.g. `[quote(do: item_id), quote(do: opts)]`.
+
+  The generated body:
+  - Captures arguments via `binding/0` into `all_args`
+  - Replaces any `{path_param}` segments using `Keyword.get(all_args, name)`
+  - Builds a query string from query parameters present in `all_args`
+  - Builds `body_params` from non‑path, non‑`opts` arguments
+  - Calls `api_call/6` with `&Function.identity/1` as the converter
   """
-  @spec generate_body(Operation.t(), String.t(), [atom()]) :: Macro.t()
-  def generate_body(%Operation{} = operation, path, arg_names) do
-    # Extract parameter information
+  @spec generate_body(Operation.t(), String.t(), [Macro.t()]) :: Macro.t()
+  def generate_body(%Operation{} = operation, path, arg_asts) when is_list(arg_asts) do
     {path_params, query_params, _body_params} = categorize_parameters(operation)
 
-    # Determine HTTP method and content type
     http_method = determine_http_method(operation)
     content_type = determine_content_type(operation)
 
-    # Build URL replacement statements
-    url_replacements = path_params
-    |> Enum.map(fn param ->
-      param_name = String.to_atom(param.name)
-      pattern = "{#{param.name}}"
-      quote do
-        url = String.replace(url, unquote(pattern), to_string(unquote(Macro.var(param_name, nil))))
-      end
-    end)
-    
-    # Extract query parameter names
-    query_param_names = Enum.map(query_params, fn p -> String.to_atom(p.name) end)
-    
-    # Extract body argument names (non-path, non-opts arguments)
+    # Extract raw argument names (atoms) from the AST
+    arg_names =
+      Enum.map(arg_asts, fn
+        {name, _meta, _ctx} when is_atom(name) -> name
+      end)
+
+    # Last argument is always the opts keyword list
+    opts_name = List.last(arg_names)
+
     path_param_names = Enum.map(path_params, fn p -> String.to_atom(p.name) end)
-    body_arg_names = arg_names 
-    |> Enum.filter(fn name -> 
-      name != :opts and name not in path_param_names
-    end)
-    
-    # Build body parameter assignments
-    body_param_assignments = body_arg_names
-    |> Enum.map(fn name ->
-      quote do
-        {unquote(name), unquote(Macro.var(name, nil))}
-      end
-    end)
-    
-    # Generate AST variable for opts
-    opts_var = Macro.var(:opts, nil)
-    
+    query_param_names = Enum.map(query_params, fn p -> String.to_atom(p.name) end)
+
+    # Body args are all non‑path args except opts
+    body_arg_names =
+      arg_names
+      |> Enum.filter(fn name -> name not in path_param_names and name != opts_name end)
+
+    # Replace {param} segments in the URL using Keyword.get(all_args, ...)
+    url_replacements =
+      Enum.map(path_params, fn param ->
+        param_name = String.to_atom(param.name)
+        pattern = "{#{param.name}}"
+
+        quote do
+          url =
+            String.replace(
+              url,
+              unquote(pattern),
+              to_string(Keyword.get(all_args, unquote(param_name)))
+            )
+        end
+      end)
+
+    # Build body_params from non‑path positional args using all_args
+    body_param_assignments =
+      Enum.map(body_arg_names, fn name ->
+        quote do
+          {unquote(name), Keyword.get(all_args, unquote(name))}
+        end
+      end)
+
     quote do
-      # Debug logging
-      IO.puts("Function called with args: #{inspect(binding())}")
-      
+      # Capture all arguments as a keyword list
+      all_args = binding()
+
       # Start with the base URL
       url = unquote(path)
-      
+
       # Replace path parameters
       unquote_splicing(url_replacements)
-      
-      # Build query string from opts
-      query_params = Keyword.take(unquote(opts_var), unquote(query_param_names))
-      IO.puts("Query params extracted: #{inspect(query_params)}")
-      
-      query_string = if length(query_params) > 0 do
-        "?" <> URI.encode_query(query_params)
-      else
-        ""
-      end
-      
-      # Append query string
-      url = url <> query_string
-      IO.puts("Final URL: #{url}")
-      
-      # Build body parameters
+
+      # Build query params from all_args
+      query_params =
+        unquote(query_param_names)
+        |> Enum.map(fn key -> {key, Keyword.get(all_args, key)} end)
+        |> Enum.filter(fn {_k, v} -> not is_nil(v) end)
+
+      query_string =
+        if length(query_params) > 0 do
+          URI.encode_www_form(query_params)
+        else
+          ""
+        end
+
+      final_url =
+        if query_string == "" do
+          url
+        else
+          url <> "?" <> query_string
+        end
+
+      # Build body parameters from non‑path, non‑opts args
       body_params = [unquote_splicing(body_param_assignments)]
-      
-      IO.puts("Body params: #{inspect(body_params)}")
-      IO.puts("HTTP method: #{unquote(http_method)}")
-      
-      # Simple convert function for now
-      convert_response = fn response -> response end
-      
-      # Make the HTTP call
+
+      # Extract opts from captured args
+      opts = Keyword.get(all_args, unquote(opts_name))
+
       ExOpenAI.Config.http_client().api_call(
         unquote(http_method),
-        url,
+        final_url,
         body_params,
         unquote(content_type),
-        unquote(opts_var),
-        convert_response
+        opts,
+        &Function.identity/1
       )
     end
   end

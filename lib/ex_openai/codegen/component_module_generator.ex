@@ -22,20 +22,28 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     # Keep the original name from the input schema
     resolved_schema = %{resolved_schema | name: name}
     
-    # Now check if the resolved schema is an object type with actual properties.
-    # Some schemas omit `type: "object"` but still define `properties` – we
-    # treat those as objects as well to generate proper struct modules.
-    # Objects with only additionalProperties are map types, not structs.
-    is_object_type =
-      resolved_schema.type == "object" or
-        (is_nil(resolved_schema.type) and is_map(resolved_schema.properties) and
-           map_size(resolved_schema.properties) > 0)
+    # Decide whether this schema should become a struct module or a simple
+    # type alias:
+    #
+    # * Explicit `type: "object"` schemas are always treated as structs,
+    #   even when `properties` is an empty map (we generate `defstruct []`).
+    # * Schemas that omit `type: "object"` but define `properties` are also
+    #   treated as objects – this fixes cases in the official docs where the
+    #   `type` field is missing but an object shape is clearly described.
+    # * Everything else (enums, unions, bare arrays, map‑like schemas with
+    #   only `additionalProperties`, etc.) becomes a type alias.
+    has_properties = is_map(resolved_schema.properties)
+    property_count = if has_properties, do: map_size(resolved_schema.properties), else: 0
 
-    if is_object_type and is_map(resolved_schema.properties) and
-         map_size(resolved_schema.properties) > 0 do
-      generate_object_module(resolved_schema)
-    else
-      generate_type_alias_module(resolved_schema)
+    cond do
+      resolved_schema.type == "object" and has_properties ->
+        generate_object_module(resolved_schema)
+
+      is_nil(resolved_schema.type) and has_properties and property_count > 0 ->
+        generate_object_module(resolved_schema)
+
+      true ->
+        generate_type_alias_module(resolved_schema)
     end
   end
 

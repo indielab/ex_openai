@@ -227,9 +227,8 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
     end
     
     test "real example with chat completions" do
-      # Load actual path from testdata
-      {path, _} = Code.eval_file("openai/paths/chat_completions.exs")
-      
+      path = chat_completions_path_fixture()
+
       # Without schemas, should generate with opts only
       [ast] = PathModuleGenerator.generate_modules([path])
       module_string = Macro.to_string(ast)
@@ -240,9 +239,8 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
     end
     
     test "real example with chat completions and schemas" do
-      # Load actual path from testdata
-      {path, _} = Code.eval_file("openai/paths/chat_completions.exs")
-      
+      path = chat_completions_path_fixture()
+
       # Create a simplified CreateChatCompletionRequest schema
       schemas = %{
         "CreateChatCompletionRequest" => %Schema{
@@ -269,9 +267,8 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
     end
     
     test "real example with assistants" do
-      # Load actual path from testdata
-      {path, _} = Code.eval_file("openai/paths/assistants.exs")
-      
+      path = assistants_path_fixture()
+
       [ast] = PathModuleGenerator.generate_modules([path])
       module_string = Macro.to_string(ast)
       
@@ -559,5 +556,71 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
       # Should not have hyphens in function names
       refute module_string =~ "admin-api-keys"
     end
+  end
+
+  # Fixtures -----------------------------------------------------------------
+
+  # Minimal but realistic chat/completions path used by the "real example"
+  # tests above. We inline it here rather than loading it from external files
+  # so the tests remain self‑contained and match the v2 parser structs.
+  defp chat_completions_path_fixture do
+    %Path{
+      path: "/chat/completions",
+      operations: %{
+        "get" => %Operation{
+          method: "get",
+          operation_id: "listChatCompletions",
+          tags: ["Chat"],
+          parameters: [
+            %ExOpenAI.Codegen.DocsParser.Parameter{
+              name: "limit",
+              in: "query",
+              required: false
+            },
+            %ExOpenAI.Codegen.DocsParser.Parameter{
+              name: "after",
+              in: "query",
+              required: false
+            }
+          ]
+        },
+        "post" => %Operation{
+          method: "post",
+          operation_id: "createChatCompletion",
+          tags: ["Chat"],
+          # In real docs this has a request body referencing
+          # CreateChatCompletionRequest; we keep that shape so the
+          # schema‑aware test can assert required args.
+          request_body: %RequestBody{
+            required: true,
+            content: %{
+              "application/json" => %{
+                "schema" => %{
+                  "$ref" => "#/components/schemas/CreateChatCompletionRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  end
+
+  defp assistants_path_fixture do
+    %Path{
+      path: "/assistants",
+      operations: %{
+        "get" => %Operation{
+          method: "get",
+          operation_id: "listAssistants",
+          tags: ["Assistants"]
+        },
+        "post" => %Operation{
+          method: "post",
+          operation_id: "createAssistant",
+          tags: ["Assistants"]
+        }
+      }
+    }
   end
 end
