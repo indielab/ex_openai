@@ -93,6 +93,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
     # Get the response schema reference for this operation
     response_schema_ref = get_response_schema(operation, "200", schemas)
+    stream_response_schema_ref = get_stream_response_schema(operation, "200", schemas)
 
     # Generate documentation and spec
     doc_ast = FunctionDocGenerator.generate_doc(operation, schemas)
@@ -103,6 +104,51 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
     http_method = FunctionBodyGenerator.determine_http_method(operation)
     content_type = FunctionBodyGenerator.determine_content_type(operation)
+    supports_streaming? = :stream in optional_param_names
+
+    stream_convert_response_ast =
+      case stream_response_schema_ref do
+        nil ->
+          case response_schema_ref do
+            nil ->
+              quote do
+                fn
+                  {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
+                  other -> other
+                end
+              end
+
+            response_schema ->
+              quote do
+                fn response ->
+                  ExOpenAI.Codegen.ResponseConverter.convert_response(
+                    response,
+                    unquote(schema_ast(response_schema))
+                  )
+                end
+              end
+          end
+
+        stream_schema ->
+          quote do
+            fn response ->
+              ExOpenAI.Codegen.ResponseConverter.convert_response(
+                response,
+                unquote(schema_ast(stream_schema))
+              )
+            end
+          end
+      end
+
+    response_convert_response_ast =
+      quote do
+        fn response ->
+          ExOpenAI.Codegen.ResponseConverter.convert_response(
+            response,
+            unquote(schema_ast(response_schema_ref))
+          )
+        end
+      end
 
     # Build the data we need for the function body
     path_param_names = Enum.map(path_params, fn p -> String.to_atom(p.name) end)
@@ -125,7 +171,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         url = unquote(path)
 
         # Replace path parameters
-        unquote(
+        unquote_splicing(
           path_params
           |> Enum.map(fn param ->
             param_name = String.to_atom(param.name)
@@ -180,22 +226,16 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         opts = Keyword.drop(opts, optional_params_to_drop)
 
         # Choose convert_response based on streaming flag:
-        # - streaming: atomize keys but skip full struct conversion (streaming chunks differ from final schema)
+        # - streaming: use the SSE schema when available, otherwise fall back to atomized maps
         # - non-streaming: use full response converter with schema
         convert_response =
-          if Keyword.get(opts, :stream, false) do
-            fn
-              {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-              other -> other
-            end
-          else
-            fn response ->
-              ExOpenAI.Codegen.ResponseConverter.convert_response(
-                response,
-                unquote(Macro.escape(response_schema_ref))
-              )
-            end
-          end
+          unquote(
+            build_convert_response_ast(
+              supports_streaming?,
+              stream_convert_response_ast,
+              response_convert_response_ast
+            )
+          )
 
         # Make the HTTP call
         ExOpenAI.Config.http_client().api_call(
@@ -208,6 +248,106 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         )
       end
     end
+  end
+
+  defp build_convert_response_ast(
+         true,
+         stream_convert_response_ast,
+         response_convert_response_ast
+       ) do
+    quote do
+      if Keyword.get(opts, :stream, false) do
+        unquote(stream_convert_response_ast)
+      else
+        unquote(response_convert_response_ast)
+      end
+    end
+  end
+
+  defp build_convert_response_ast(
+         false,
+         _stream_convert_response_ast,
+         response_convert_response_ast
+       ) do
+    response_convert_response_ast
+  end
+
+  # Emit a compact `%Schema{}` literal for generated modules.
+  #
+  # We only keep fields that affect runtime response conversion or typespec
+  # generation. That preserves refs, unions, inline object schemas, arrays,
+  # enums, nullability, and discriminators without serializing doc-only
+  # metadata into every generated function.
+  #
+  # The return value here is quoted AST for a literal like:
+  #
+  #   %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Response"}
+  #
+  # rather than a fully materialized runtime struct escaped with
+  # `Macro.escape/1`. That keeps generated modules readable while still giving
+  # `ResponseConverter` a real `%Schema{}` value at runtime.
+  @spec schema_ast(Schema.t() | nil) :: Macro.t()
+  defp schema_ast(nil), do: nil
+
+  defp schema_ast(%Schema{} = schema) do
+    fields =
+      []
+      |> maybe_put_schema_field(:ref, schema.ref)
+      |> maybe_put_schema_field(:type, schema.type)
+      |> maybe_put_schema_field(:format, schema.format)
+      |> maybe_put_schema_field(:properties, properties_ast(schema.properties))
+      |> maybe_put_schema_field(:required, schema.required)
+      |> maybe_put_schema_field(:enum, schema.enum)
+      |> maybe_put_schema_field(:all_of, schema_list_ast(schema.all_of))
+      |> maybe_put_schema_field(:one_of, schema_list_ast(schema.one_of))
+      |> maybe_put_schema_field(:any_of, schema_list_ast(schema.any_of))
+      |> maybe_put_schema_field(:items, schema_ast(schema.items))
+      |> maybe_put_schema_field(
+        :additional_properties,
+        literal_ast(schema.additional_properties)
+      )
+      |> maybe_put_schema_field(:nullable, schema.nullable)
+      |> maybe_put_schema_field(:discriminator, literal_ast(schema.discriminator))
+
+    {:%, [], [schema_alias_ast(), {:%{}, [], fields}]}
+  end
+
+  # Convert nested schema lists used by `allOf` / `oneOf` / `anyOf` into
+  # quoted `%Schema{}` literals recursively.
+  defp schema_list_ast(nil), do: nil
+  defp schema_list_ast(schemas) when is_list(schemas), do: Enum.map(schemas, &schema_ast/1)
+
+  # Build the quoted `%{...}` for object properties, where each property value
+  # is itself another quoted schema literal. Empty property maps are omitted so
+  # we don't emit `%Schema{properties: %{}}` noise in generated modules.
+  defp properties_ast(nil), do: nil
+  defp properties_ast(properties) when map_size(properties) == 0, do: nil
+
+  defp properties_ast(properties) when is_map(properties) do
+    {:%{}, [], Enum.map(properties, fn {key, value} -> {key, schema_ast(value)} end)}
+  end
+
+  # Keep simple values as quoted literals. This is used for discriminator maps
+  # and `additional_properties`, which are runtime data rather than nested
+  # schema structs.
+  defp literal_ast(nil), do: nil
+  defp literal_ast(value), do: Macro.escape(value)
+
+  # Omit fields that would only add visual noise to generated code. We only
+  # skip values that have no effect on conversion logic: `nil`, empty lists, and
+  # empty quoted maps.
+  defp maybe_put_schema_field(fields, _field, nil), do: fields
+  defp maybe_put_schema_field(fields, _field, []), do: fields
+  defp maybe_put_schema_field(fields, _field, {:%{}, [], []}), do: fields
+
+  defp maybe_put_schema_field(fields, field, value) do
+    fields ++ [{field, value}]
+  end
+
+  # Emit the `%Schema{...}` struct alias in quoted form so `schema_ast/1` can
+  # construct a literal struct AST without relying on `quote do` blocks.
+  defp schema_alias_ast do
+    {:__aliases__, [alias: false], [:ExOpenAI, :Codegen, :DocsParser, :Schema]}
   end
 
   # Build function arguments based on operation parameters and request body
@@ -369,8 +509,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     |> Enum.map(&String.to_atom/1)
   end
 
-  defp extract_optional_field_names(_), do: []
-
   # Convert operationId from camelCase to snake_case
   defp operation_id_to_function_name(operation_id) do
     operation_id
@@ -388,12 +526,28 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   def get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
 
   def get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
-    case Map.get(responses, status_code) do
-      %{content: %{"application/json" => %{"schema" => %{"$ref" => ref}}}} ->
+    responses
+    |> Map.get(status_code)
+    |> content_schema("application/json")
+  end
+
+  def get_stream_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
+
+  def get_stream_response_schema(%Operation{responses: responses}, status_code, _schemas) do
+    responses
+    |> Map.get(status_code)
+    |> content_schema("text/event-stream")
+  end
+
+  defp content_schema(nil, _content_type), do: nil
+  defp content_schema(%{content: nil}, _content_type), do: nil
+
+  defp content_schema(%{content: content}, content_type) when is_map(content) do
+    case Map.get(content, content_type) do
+      %{"schema" => %{"$ref" => ref}} ->
         %Schema{ref: ref}
 
-      %{content: %{"application/json" => %{"schema" => %{"oneOf" => one_of}}}}
-      when is_list(one_of) ->
+      %{"schema" => %{"oneOf" => one_of}} when is_list(one_of) ->
         %Schema{
           one_of:
             one_of
@@ -407,8 +561,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
             end)
         }
 
-      %{content: %{"application/json" => %{"schema" => %{"anyOf" => any_of}}}}
-      when is_list(any_of) ->
+      %{"schema" => %{"anyOf" => any_of}} when is_list(any_of) ->
         %Schema{
           any_of:
             any_of

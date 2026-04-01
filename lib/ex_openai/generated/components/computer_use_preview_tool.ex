@@ -1,0 +1,31 @@
+defmodule ExOpenAI.Components.ComputerUsePreviewTool do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  A tool that controls a virtual computer. Learn more about the [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+
+  ## Fields
+
+  * `:display_height` - **required** - `integer()`  
+    The height of the computer display.
+
+  * `:display_width` - **required** - `integer()`  
+    The width of the computer display.
+
+  * `:environment` - **required** - `ExOpenAI.Components.ComputerEnvironment.t()`  
+    The type of computer environment to control.
+
+  * `:type` - **required** - `:computer_use_preview`  
+    The type of the computer use tool. Always `computer_use_preview`.  
+    Allowed values: `"computer_use_preview"`  
+    Default: `"computer_use_preview"`
+  """
+  @type t() :: %{
+          __struct__: __MODULE__,
+          display_height: integer(),
+          display_width: integer(),
+          environment: ExOpenAI.Components.ComputerEnvironment.t(),
+          type: :computer_use_preview
+        }
+  defstruct [:display_height, :display_width, :environment, :type]
+end

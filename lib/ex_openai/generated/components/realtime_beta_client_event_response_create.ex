@@ -1,0 +1,49 @@
+defmodule ExOpenAI.Components.RealtimeBetaClientEventResponseCreate do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  This event instructs the server to create a Response, which means triggering 
+  model inference. When in Server VAD mode, the server will create Responses 
+  automatically.
+
+  A Response will include at least one Item, and may have two, in which case 
+  the second will be a function call. These Items will be appended to the 
+  conversation history.
+
+  The server will respond with a `response.created` event, events for Items 
+  and content created, and finally a `response.done` event to indicate the 
+  Response is complete.
+
+  The `response.create` event can optionally include inference configuration like 
+  `instructions`, and `temperature`. These fields will override the Session's 
+  configuration for this Response only.
+
+  Responses can be created out-of-band of the default Conversation, meaning that they can
+  have arbitrary input, and it's possible to disable writing the output to the Conversation.
+  Only one Response can write to the default Conversation at a time, but otherwise multiple
+  Responses can be created in parallel.
+
+  Clients can set `conversation` to `none` to create a Response that does not write to the default
+  Conversation. Arbitrary input can be provided with the `input` field, which is an array accepting
+  raw Items and references to existing Items.
+
+
+  ## Fields
+
+  * `:event_id` - **optional** - `String.t()`  
+    Optional client-generated ID used to identify this event.
+
+  * `:response` - **optional** - `ExOpenAI.Components.RealtimeBetaResponseCreateParams.t()`
+
+  * `:type` - **required** - `:"response.create"`  
+    The event type, must be `response.create`.  
+    Allowed values: `"response.create"`
+  """
+  @type t() :: %{
+          __struct__: __MODULE__,
+          event_id: String.t() | nil,
+          response: ExOpenAI.Components.RealtimeBetaResponseCreateParams.t() | nil,
+          type: :"response.create"
+        }
+  defstruct [:event_id, :response, :type]
+end

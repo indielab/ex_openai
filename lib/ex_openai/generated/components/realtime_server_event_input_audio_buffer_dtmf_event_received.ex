@@ -1,0 +1,30 @@
+defmodule ExOpenAI.Components.RealtimeServerEventInputAudioBufferDtmfEventReceived do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  **SIP Only:** Returned when an DTMF event is received. A DTMF event is a message that
+  represents a telephone keypad press (0–9, *, #, A–D). The `event` property
+  is the keypad that the user press. The `received_at` is the UTC Unix Timestamp
+  that the server received the event.
+
+
+  ## Fields
+
+  * `:event` - **required** - `String.t()`  
+    The telephone keypad that was pressed by the user.
+
+  * `:received_at` - **required** - `integer()`  
+    UTC Unix Timestamp when DTMF Event was received by server.
+
+  * `:type` - **required** - `:"input_audio_buffer.dtmf_event_received"`  
+    The event type, must be `input_audio_buffer.dtmf_event_received`.  
+    Allowed values: `"input_audio_buffer.dtmf_event_received"`
+  """
+  @type t() :: %{
+          __struct__: __MODULE__,
+          event: String.t(),
+          received_at: integer(),
+          type: :"input_audio_buffer.dtmf_event_received"
+        }
+  defstruct [:event, :received_at, :type]
+end

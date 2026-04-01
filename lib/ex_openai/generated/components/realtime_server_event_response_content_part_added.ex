@@ -1,0 +1,49 @@
+defmodule ExOpenAI.Components.RealtimeServerEventResponseContentPartAdded do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  Returned when a new content part is added to an assistant message item during
+  response generation.
+
+
+  ## Fields
+
+  * `:content_index` - **required** - `integer()`  
+    The index of the content part in the item's content array.
+
+  * `:event_id` - **required** - `String.t()`  
+    The unique ID of the server event.
+
+  * `:item_id` - **required** - `String.t()`  
+    The ID of the item to which the content part was added.
+
+  * `:output_index` - **required** - `integer()`  
+    The index of the output item in the response.
+
+  * `:part` - **required** - `{:%{}, [], [{{:optional, [], [:audio]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:text]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:transcript]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:type]}, {:|, [], [:audio, :text]}}]}`  
+    The content part that was added.
+
+  * `:response_id` - **required** - `String.t()`  
+    The ID of the response.
+
+  * `:type` - **required** - `:"response.content_part.added"`  
+    The event type, must be `response.content_part.added`.  
+    Allowed values: `"response.content_part.added"`
+  """
+  @type t() :: %{
+          __struct__: __MODULE__,
+          content_index: integer(),
+          event_id: String.t(),
+          item_id: String.t(),
+          output_index: integer(),
+          part: %{
+            optional(:audio) => String.t(),
+            optional(:text) => String.t(),
+            optional(:transcript) => String.t(),
+            optional(:type) => :audio | :text
+          },
+          response_id: String.t(),
+          type: :"response.content_part.added"
+        }
+  defstruct [:content_index, :event_id, :item_id, :output_index, :part, :response_id, :type]
+end

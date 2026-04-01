@@ -27,12 +27,36 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   """
   @spec generate_spec(Operation.t(), atom(), [atom()], %{String.t() => Schema.t()}) :: Macro.t()
   def generate_spec(%Operation{} = operation, function_name, arg_names, schemas) do
-    param_specs = build_param_specs(operation, arg_names, schemas)
+    {param_specs, opts_type_ast} = build_spec_parts(operation, function_name, arg_names, schemas)
     return_spec = build_return_spec(operation, function_name, schemas)
 
     quote do
+      unquote(opts_type_ast)
       @spec unquote(function_name)(unquote_splicing(param_specs)) :: unquote(return_spec)
     end
+  end
+
+  # Assemble the pieces needed for a generated `@spec`.
+  #
+  # We keep positional parameter specs inline, but emit a named local type for
+  # `opts` when the endpoint has concrete option tuples. That keeps generated
+  # specs readable while preserving the detailed option information Dialyzer can
+  # use.
+  @spec build_spec_parts(Operation.t(), atom(), [atom()], %{String.t() => Schema.t()}) ::
+          {[Macro.t()], Macro.t() | nil}
+  defp build_spec_parts(%Operation{} = operation, function_name, arg_names, schemas) do
+    positional_args = Enum.filter(arg_names, &(&1 != :opts))
+    body_schema = SchemaResolver.get_request_body_schema(operation.request_body, schemas)
+
+    positional_specs =
+      Enum.map(positional_args, fn arg_name ->
+        build_positional_param_spec(operation, arg_name, body_schema, schemas)
+      end)
+
+    {opts_param_spec, opts_type_ast} =
+      build_named_opts_spec(operation, function_name, body_schema, schemas)
+
+    {positional_specs ++ [opts_param_spec], opts_type_ast}
   end
 
   # Build the documentation string
@@ -123,6 +147,45 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     opts_spec = build_opts_spec(operation, body_schema, schemas)
 
     positional_specs ++ [opts_spec]
+  end
+
+  # Build a local `@type ..._opt()` alias plus the `opts :: [...]` parameter
+  # spec used in generated module specs.
+  #
+  # Example output:
+  #
+  #   @type create_chat_completion_opt() ::
+  #     {:stream, boolean() | nil} | {:user, String.t()}
+  #
+  #   opts :: [create_chat_completion_opt()]
+  #
+  # We only emit the alias when the endpoint has known option tuples; generic
+  # `keyword()` fallbacks stay inline.
+  @spec build_named_opts_spec(Operation.t(), atom(), Schema.t() | nil, %{
+          optional(String.t()) => Schema.t()
+        }) :: {Macro.t(), Macro.t() | nil}
+  defp build_named_opts_spec(operation, function_name, body_schema, schemas) do
+    opt_types = build_option_tuple_types(operation, body_schema, schemas)
+
+    if opt_types == [] do
+      {quote(do: opts :: keyword()), nil}
+    else
+      opts_union = build_option_union_ast(opt_types)
+      type_name = String.to_atom("#{function_name}_opt")
+      local_type_ref = {type_name, [], []}
+
+      opts_param_spec =
+        quote do
+          opts :: [unquote(local_type_ref)]
+        end
+
+      opts_type_ast =
+        quote do
+          @type unquote(type_name)() :: unquote(opts_union)
+        end
+
+      {opts_param_spec, opts_type_ast}
+    end
   end
 
   @doc """
@@ -223,52 +286,11 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
   # Build opts typespec with all optional parameters
   defp build_opts_spec(operation, body_schema, schemas) do
-    # Collect all optional parameters from different sources
-    query_params = get_query_parameters(operation)
-    optional_body_params = get_optional_body_parameters(body_schema)
-
-    # Build type specs for each optional parameter
-    opt_types = []
-
-    # Add query parameters
-    opt_types =
-      opt_types ++
-        Enum.map(query_params, fn param ->
-          param_name = String.to_atom(param.name)
-          param_type = derive_type_from_parameter(param)
-
-          quote do
-            {unquote(param_name), unquote(param_type)}
-          end
-        end)
-
-    # Add optional body parameters
-    opt_types =
-      opt_types ++
-        Enum.map(optional_body_params, fn {name, schema} ->
-          param_name = String.to_atom(name)
-          param_type = TypespecGenerator.schema_to_typespec(schema, schemas)
-
-          quote do
-            {unquote(param_name), unquote(param_type)}
-          end
-        end)
+    opt_types = build_option_tuple_types(operation, body_schema, schemas)
 
     # If we have specific optional parameters, build a union type
     if length(opt_types) > 0 do
-      # Build the union of all option tuples
-      opts_union =
-        case opt_types do
-          [single] ->
-            single
-
-          [first | rest] ->
-            Enum.reduce(rest, first, fn opt, acc ->
-              quote do
-                unquote(acc) | unquote(opt)
-              end
-            end)
-        end
+      opts_union = build_option_union_ast(opt_types)
 
       quote do
         opts :: [unquote(opts_union)]
@@ -279,6 +301,52 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
         opts :: keyword()
       end
     end
+  end
+
+  # Build the list of `{option_name, option_type}` tuple ASTs used both by the
+  # inline `build_opts_spec/3` helper tests and the named option alias emitted
+  # by `generate_spec/4`.
+  @spec build_option_tuple_types(Operation.t(), Schema.t() | nil, %{
+          optional(String.t()) => Schema.t()
+        }) :: [Macro.t()]
+  defp build_option_tuple_types(operation, body_schema, schemas) do
+    query_params = get_query_parameters(operation)
+    optional_body_params = get_optional_body_parameters(body_schema)
+
+    query_option_types =
+      Enum.map(query_params, fn param ->
+        param_name = String.to_atom(param.name)
+        param_type = derive_type_from_parameter(param)
+
+        quote do
+          {unquote(param_name), unquote(param_type)}
+        end
+      end)
+
+    body_option_types =
+      Enum.map(optional_body_params, fn {name, schema} ->
+        param_name = String.to_atom(name)
+        param_type = TypespecGenerator.schema_to_typespec(schema, schemas)
+
+        quote do
+          {unquote(param_name), unquote(param_type)}
+        end
+      end)
+
+    query_option_types ++ body_option_types
+  end
+
+  # Fold a list of option tuple AST nodes into the union used by both
+  # `opts :: [...]` and the generated local `@type ..._opt()`.
+  @spec build_option_union_ast([Macro.t()]) :: Macro.t()
+  defp build_option_union_ast([single]), do: single
+
+  defp build_option_union_ast([first | rest]) do
+    Enum.reduce(rest, first, fn opt, acc ->
+      quote do
+        unquote(acc) | unquote(opt)
+      end
+    end)
   end
 
   # Get query parameters from operation
@@ -305,51 +373,78 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
   Determines the appropriate return type based on:
   - Response schemas defined in the operation
-  - Whether the function is a streaming endpoint (ends with "_stream")
+  - Whether the function is an explicit streaming helper (`*_stream`)
+  - Whether the endpoint supports `stream: true` on the normal function
 
   ## Parameters
 
     * `operation` - The Operation struct containing response definitions
-    * `function_name` - The function name (used to detect streaming endpoints)
+    * `function_name` - The function name (used to detect explicit streaming helpers)
     * `schemas` - Map of component schemas for type resolution
     
   ## Returns
 
   An AST node representing the return type, typically:
   - `{:ok, ComponentType.t()} | {:error, any()}` for normal endpoints
-  - `{:ok, reference()} | {:error, any()}` for streaming endpoints
+  - `{:ok, reference()} | {:error, any()}` for explicit streaming helpers
+  - `{:ok, ComponentType.t() | reference()} | {:error, any()}` for endpoints
+    that switch behavior with `stream: true`
   """
   @spec build_return_spec(Operation.t(), atom(), %{String.t() => Schema.t()}) :: Macro.t()
   def build_return_spec(%Operation{} = operation, function_name, schemas) do
-    # Check if this is a streaming endpoint
-    is_streaming =
+    # `foo_stream/..` style helpers return the async HTTP reference directly.
+    is_explicit_streaming =
       function_name
       |> Atom.to_string()
       |> String.ends_with?("_stream")
 
-    if is_streaming do
-      # Streaming API calls return the HTTP async reference.
-      # Note: We could potentially use the text/event-stream schema here for chunk payload typing.
+    if is_explicit_streaming do
       quote do
         {:ok, reference()} | {:error, any()}
       end
     else
-      # For non-streaming endpoints, derive type from response schema
-      case get_response_schema(operation, "200", schemas) do
-        %Schema{} = response_schema ->
-          response_type = TypespecGenerator.schema_to_typespec(response_schema, schemas)
+      response_type = build_non_stream_ok_type(operation, schemas)
 
-          quote do
-            {:ok, unquote(response_type)} | {:error, any()}
-          end
-
-        nil ->
-          # Fallback to generic map if no schema found
-          quote do
-            {:ok, map()} | {:error, any()}
-          end
+      if supports_streaming_option?(operation, schemas) do
+        quote do
+          {:ok, unquote(response_type) | reference()} | {:error, any()}
+        end
+      else
+        quote do
+          {:ok, unquote(response_type)} | {:error, any()}
+        end
       end
     end
+  end
+
+  # Derive the normal non-streaming success type from the endpoint's
+  # `application/json` response schema, falling back to `map()` when the schema
+  # is absent.
+  @spec build_non_stream_ok_type(Operation.t(), %{String.t() => Schema.t()}) :: Macro.t()
+  defp build_non_stream_ok_type(%Operation{} = operation, schemas) do
+    case get_response_schema(operation, "200", schemas) do
+      %Schema{} = response_schema ->
+        TypespecGenerator.schema_to_typespec(response_schema, schemas)
+
+      nil ->
+        quote do
+          map()
+        end
+    end
+  end
+
+  # Detect whether the normal generated function supports `stream: true`.
+  #
+  # The generated runtime branch is driven by the presence of `:stream` in the
+  # optional parameter list, so the spec generator needs the same check.
+  defp supports_streaming_option?(%Operation{} = operation, schemas) do
+    body_schema = SchemaResolver.get_request_body_schema(operation.request_body, schemas)
+
+    query_params = get_query_parameters(operation)
+    optional_body_params = get_optional_body_parameters(body_schema)
+
+    Enum.any?(query_params, &(&1.name == "stream")) or
+      Enum.any?(optional_body_params, fn {name, _schema} -> name == "stream" end)
   end
 
   # Extract and resolve the response schema for a given status code

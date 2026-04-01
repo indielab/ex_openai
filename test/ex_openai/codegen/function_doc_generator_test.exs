@@ -245,7 +245,63 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
       
       assert Macro.to_string(return_spec) == "{:ok, reference()} | {:error, any()}"
     end
-    
+
+    test "returns normal response or reference for endpoints with stream option" do
+      operation = %Operation{
+        responses: %{
+          "200" => %{
+            content: %{
+              "application/json" => %{
+                "schema" => %{
+                  "$ref" => "#/components/schemas/CreateChatCompletionResponse"
+                }
+              },
+              "text/event-stream" => %{
+                "schema" => %{
+                  "$ref" => "#/components/schemas/CreateChatCompletionStreamResponse"
+                }
+              }
+            }
+          }
+        },
+        request_body: %{
+          content: %{
+            "application/json" => %{
+              "schema" => %{
+                "$ref" => "#/components/schemas/CreateChatCompletionRequest"
+              }
+            }
+          }
+        }
+      }
+
+      schemas = %{
+        "CreateChatCompletionRequest" => %Schema{
+          type: "object",
+          properties: %{
+            "messages" => %Schema{
+              type: "array",
+              items: %Schema{ref: "#/components/schemas/ChatCompletionRequestMessage"}
+            },
+            "model" => %Schema{ref: "#/components/schemas/ModelIdsShared"},
+            "stream" => %Schema{type: "boolean", nullable: true}
+          },
+          required: ["messages", "model"]
+        }
+      }
+
+      return_spec = FunctionDocGenerator.build_return_spec(
+        operation,
+        :create_chat_completion,
+        schemas
+      )
+
+      spec_string = Macro.to_string(return_spec)
+      assert spec_string =~ "{:ok, "
+      assert spec_string =~ "ExOpenAI.Components.CreateChatCompletionResponse.t() | reference()"
+      assert spec_string =~ "} | {:error, any()}"
+    end
+
     test "returns generic map when no response schema found" do
       operation = %Operation{
         responses: %{
@@ -320,6 +376,35 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
       
       spec_string = Macro.to_string(return_spec)
       assert spec_string =~ "ExOpenAI.Components.ExtendedResponse.t()"
+    end
+  end
+
+  describe "generate_spec/4" do
+    test "emits a named local option type for readable generated specs" do
+      operation = %Operation{
+        parameters: [
+          %Parameter{
+            name: "limit",
+            in: "query",
+            schema: %{"type" => "integer"}
+          }
+        ],
+        responses: %{
+          "200" => %{
+            content: %{
+              "application/json" => %{
+                "schema" => %{"$ref" => "#/components/schemas/ChatCompletionList"}
+              }
+            }
+          }
+        }
+      }
+
+      spec_ast = FunctionDocGenerator.generate_spec(operation, :list_chat_completions, [:opts], %{})
+      spec_string = Macro.to_string(spec_ast)
+
+      assert spec_string =~ "@type list_chat_completions_opt() :: {:limit, integer()}"
+      assert spec_string =~ "@spec list_chat_completions(opts :: [list_chat_completions_opt()]) ::"
     end
   end
   

@@ -1,0 +1,65 @@
+defmodule ExOpenAI.Components.ResponseStreamEvent do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  Module for representing the OpenAI schema ResponseStreamEvent.
+
+  ## Type
+
+  `ExOpenAI.Components.ResponseAudioDeltaEvent.t() | ExOpenAI.Components.ResponseAudioDoneEvent.t() | ExOpenAI.Components.ResponseAudioTranscriptDeltaEvent.t() | ExOpenAI.Components.ResponseAudioTranscriptDoneEvent.t() | ExOpenAI.Components.ResponseCodeInterpreterCallCodeDeltaEvent.t() | ExOpenAI.Components.ResponseCodeInterpreterCallCodeDoneEvent.t() | ExOpenAI.Components.ResponseCodeInterpreterCallCompletedEvent.t() | ExOpenAI.Components.ResponseCodeInterpreterCallInProgressEvent.t() | ExOpenAI.Components.ResponseCodeInterpreterCallInterpretingEvent.t() | ExOpenAI.Components.ResponseCompletedEvent.t() | ExOpenAI.Components.ResponseContentPartAddedEvent.t() | ExOpenAI.Components.ResponseContentPartDoneEvent.t() | ExOpenAI.Components.ResponseCreatedEvent.t() | ExOpenAI.Components.ResponseErrorEvent.t() | ExOpenAI.Components.ResponseFileSearchCallCompletedEvent.t() | ExOpenAI.Components.ResponseFileSearchCallInProgressEvent.t() | ExOpenAI.Components.ResponseFileSearchCallSearchingEvent.t() | ExOpenAI.Components.ResponseFunctionCallArgumentsDeltaEvent.t() | ExOpenAI.Components.ResponseFunctionCallArgumentsDoneEvent.t() | ExOpenAI.Components.ResponseInProgressEvent.t() | ExOpenAI.Components.ResponseFailedEvent.t() | ExOpenAI.Components.ResponseIncompleteEvent.t() | ExOpenAI.Components.ResponseOutputItemAddedEvent.t() | ExOpenAI.Components.ResponseOutputItemDoneEvent.t() | ExOpenAI.Components.ResponseReasoningSummaryPartAddedEvent.t() | ExOpenAI.Components.ResponseReasoningSummaryPartDoneEvent.t() | ExOpenAI.Components.ResponseReasoningSummaryTextDeltaEvent.t() | ExOpenAI.Components.ResponseReasoningSummaryTextDoneEvent.t() | ExOpenAI.Components.ResponseReasoningTextDeltaEvent.t() | ExOpenAI.Components.ResponseReasoningTextDoneEvent.t() | ExOpenAI.Components.ResponseRefusalDeltaEvent.t() | ExOpenAI.Components.ResponseRefusalDoneEvent.t() | ExOpenAI.Components.ResponseTextDeltaEvent.t() | ExOpenAI.Components.ResponseTextDoneEvent.t() | ExOpenAI.Components.ResponseWebSearchCallCompletedEvent.t() | ExOpenAI.Components.ResponseWebSearchCallInProgressEvent.t() | ExOpenAI.Components.ResponseWebSearchCallSearchingEvent.t() | ExOpenAI.Components.ResponseImageGenCallCompletedEvent.t() | ExOpenAI.Components.ResponseImageGenCallGeneratingEvent.t() | ExOpenAI.Components.ResponseImageGenCallInProgressEvent.t() | ExOpenAI.Components.ResponseImageGenCallPartialImageEvent.t() | ExOpenAI.Components.ResponseMCPCallArgumentsDeltaEvent.t() | ExOpenAI.Components.ResponseMCPCallArgumentsDoneEvent.t() | ExOpenAI.Components.ResponseMCPCallCompletedEvent.t() | ExOpenAI.Components.ResponseMCPCallFailedEvent.t() | ExOpenAI.Components.ResponseMCPCallInProgressEvent.t() | ExOpenAI.Components.ResponseMCPListToolsCompletedEvent.t() | ExOpenAI.Components.ResponseMCPListToolsFailedEvent.t() | ExOpenAI.Components.ResponseMCPListToolsInProgressEvent.t() | ExOpenAI.Components.ResponseOutputTextAnnotationAddedEvent.t() | ExOpenAI.Components.ResponseQueuedEvent.t() | ExOpenAI.Components.ResponseCustomToolCallInputDeltaEvent.t() | ExOpenAI.Components.ResponseCustomToolCallInputDoneEvent.t()`
+  """
+  @type t() ::
+          (((((((((((((((((((((((((((((((((((((((((((((((((((ExOpenAI.Components.ResponseAudioDeltaEvent.t()
+                                                             | ExOpenAI.Components.ResponseAudioDoneEvent.t())
+                                                            | ExOpenAI.Components.ResponseAudioTranscriptDeltaEvent.t())
+                                                           | ExOpenAI.Components.ResponseAudioTranscriptDoneEvent.t())
+                                                          | ExOpenAI.Components.ResponseCodeInterpreterCallCodeDeltaEvent.t())
+                                                         | ExOpenAI.Components.ResponseCodeInterpreterCallCodeDoneEvent.t())
+                                                        | ExOpenAI.Components.ResponseCodeInterpreterCallCompletedEvent.t())
+                                                       | ExOpenAI.Components.ResponseCodeInterpreterCallInProgressEvent.t())
+                                                      | ExOpenAI.Components.ResponseCodeInterpreterCallInterpretingEvent.t())
+                                                     | ExOpenAI.Components.ResponseCompletedEvent.t())
+                                                    | ExOpenAI.Components.ResponseContentPartAddedEvent.t())
+                                                   | ExOpenAI.Components.ResponseContentPartDoneEvent.t())
+                                                  | ExOpenAI.Components.ResponseCreatedEvent.t())
+                                                 | ExOpenAI.Components.ResponseErrorEvent.t())
+                                                | ExOpenAI.Components.ResponseFileSearchCallCompletedEvent.t())
+                                               | ExOpenAI.Components.ResponseFileSearchCallInProgressEvent.t())
+                                              | ExOpenAI.Components.ResponseFileSearchCallSearchingEvent.t())
+                                             | ExOpenAI.Components.ResponseFunctionCallArgumentsDeltaEvent.t())
+                                            | ExOpenAI.Components.ResponseFunctionCallArgumentsDoneEvent.t())
+                                           | ExOpenAI.Components.ResponseInProgressEvent.t())
+                                          | ExOpenAI.Components.ResponseFailedEvent.t())
+                                         | ExOpenAI.Components.ResponseIncompleteEvent.t())
+                                        | ExOpenAI.Components.ResponseOutputItemAddedEvent.t())
+                                       | ExOpenAI.Components.ResponseOutputItemDoneEvent.t())
+                                      | ExOpenAI.Components.ResponseReasoningSummaryPartAddedEvent.t())
+                                     | ExOpenAI.Components.ResponseReasoningSummaryPartDoneEvent.t())
+                                    | ExOpenAI.Components.ResponseReasoningSummaryTextDeltaEvent.t())
+                                   | ExOpenAI.Components.ResponseReasoningSummaryTextDoneEvent.t())
+                                  | ExOpenAI.Components.ResponseReasoningTextDeltaEvent.t())
+                                 | ExOpenAI.Components.ResponseReasoningTextDoneEvent.t())
+                                | ExOpenAI.Components.ResponseRefusalDeltaEvent.t())
+                               | ExOpenAI.Components.ResponseRefusalDoneEvent.t())
+                              | ExOpenAI.Components.ResponseTextDeltaEvent.t())
+                             | ExOpenAI.Components.ResponseTextDoneEvent.t())
+                            | ExOpenAI.Components.ResponseWebSearchCallCompletedEvent.t())
+                           | ExOpenAI.Components.ResponseWebSearchCallInProgressEvent.t())
+                          | ExOpenAI.Components.ResponseWebSearchCallSearchingEvent.t())
+                         | ExOpenAI.Components.ResponseImageGenCallCompletedEvent.t())
+                        | ExOpenAI.Components.ResponseImageGenCallGeneratingEvent.t())
+                       | ExOpenAI.Components.ResponseImageGenCallInProgressEvent.t())
+                      | ExOpenAI.Components.ResponseImageGenCallPartialImageEvent.t())
+                     | ExOpenAI.Components.ResponseMCPCallArgumentsDeltaEvent.t())
+                    | ExOpenAI.Components.ResponseMCPCallArgumentsDoneEvent.t())
+                   | ExOpenAI.Components.ResponseMCPCallCompletedEvent.t())
+                  | ExOpenAI.Components.ResponseMCPCallFailedEvent.t())
+                 | ExOpenAI.Components.ResponseMCPCallInProgressEvent.t())
+                | ExOpenAI.Components.ResponseMCPListToolsCompletedEvent.t())
+               | ExOpenAI.Components.ResponseMCPListToolsFailedEvent.t())
+              | ExOpenAI.Components.ResponseMCPListToolsInProgressEvent.t())
+             | ExOpenAI.Components.ResponseOutputTextAnnotationAddedEvent.t())
+            | ExOpenAI.Components.ResponseQueuedEvent.t())
+           | ExOpenAI.Components.ResponseCustomToolCallInputDeltaEvent.t())
+          | ExOpenAI.Components.ResponseCustomToolCallInputDoneEvent.t()
+end

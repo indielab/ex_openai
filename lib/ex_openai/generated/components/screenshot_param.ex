@@ -1,0 +1,16 @@
+defmodule ExOpenAI.Components.ScreenshotParam do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  A screenshot action.
+
+  ## Fields
+
+  * `:type` - **required** - `:screenshot`  
+    Specifies the event type. For a screenshot action, this property is always set to `screenshot`.  
+    Allowed values: `"screenshot"`  
+    Default: `"screenshot"`
+  """
+  @type t() :: %{__struct__: __MODULE__, type: :screenshot}
+  defstruct [:type]
+end

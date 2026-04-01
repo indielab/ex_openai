@@ -111,6 +111,69 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
       assert result == {:ok, %{"id" => "123", "data" => "test_data"}}
     end
 
+    test "uses discriminator metadata to choose the correct anyOf schema" do
+      response =
+        {:ok,
+         %{
+           "type" => "response.output_text.delta",
+           "item_id" => "msg_123",
+           "output_index" => 0,
+           "content_index" => 0,
+           "delta" => "Hello",
+           "sequence_number" => 1,
+           "logprobs" => []
+         }}
+
+      schema = %Schema{
+        any_of: [
+          %Schema{ref: "#/components/schemas/ResponseTextDoneEvent"},
+          %Schema{ref: "#/components/schemas/ResponseTextDeltaEvent"}
+        ],
+        discriminator: %{property_name: "type", mapping: %{}}
+      }
+
+      assert {:ok, %ExOpenAI.Components.ResponseTextDeltaEvent{} = converted} =
+               ResponseConverter.convert_response(response, schema)
+
+      assert converted.type == "response.output_text.delta"
+      assert converted.item_id == "msg_123"
+      assert converted.delta == "Hello"
+    end
+
+    test "uses explicit discriminator mapping when provided" do
+      response =
+        {:ok,
+         %{
+           "type" => "mapped.text.done",
+           "item_id" => "msg_456",
+           "output_index" => 0,
+           "content_index" => 0,
+           "text" => "Completed",
+           "sequence_number" => 2,
+           "logprobs" => []
+         }}
+
+      schema = %Schema{
+        any_of: [
+          %Schema{ref: "#/components/schemas/ResponseTextDeltaEvent"},
+          %Schema{ref: "#/components/schemas/ResponseTextDoneEvent"}
+        ],
+        discriminator: %{
+          property_name: "type",
+          mapping: %{
+            "mapped.text.done" => "#/components/schemas/ResponseTextDoneEvent"
+          }
+        }
+      }
+
+      assert {:ok, %ExOpenAI.Components.ResponseTextDoneEvent{} = converted} =
+               ResponseConverter.convert_response(response, schema)
+
+      assert converted.item_id == "msg_456"
+      assert converted.type == "mapped.text.done"
+      assert converted.text == "Completed"
+    end
+
     test "handles empty oneOf list" do
       response = {:ok, %{"id" => "123"}}
       schema = %Schema{one_of: []}

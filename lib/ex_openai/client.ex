@@ -200,7 +200,7 @@ defmodule ExOpenAI.Client do
       # in the OpenAPI schema.
       is_bitstring(content) and not String.valid?(content) ->
         filename = strname
-        mime_type = MIME.from_path(filename) || "application/octet-stream"
+        mime_type = MIME.from_path(filename)
 
         {"file", content, {"form-data", [name: strname, filename: filename]},
          [{"Content-Type", mime_type}]}
