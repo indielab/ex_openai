@@ -46,30 +46,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListVectorStoresResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListVectorStoresResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -148,30 +130,10 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VectorStoreObject"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -216,30 +178,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/DeleteVectorStoreResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/DeleteVectorStoreResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -284,30 +228,10 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VectorStoreObject"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -371,30 +295,10 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VectorStoreObject"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -471,30 +375,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreFileBatchObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/VectorStoreFileBatchObject"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -546,30 +432,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreFileBatchObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/VectorStoreFileBatchObject"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -621,30 +489,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreFileBatchObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/VectorStoreFileBatchObject"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -724,30 +574,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListVectorStoreFilesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListVectorStoreFilesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -822,30 +654,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListVectorStoreFilesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListVectorStoreFilesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -908,30 +722,10 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreFileObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VectorStoreFileObject"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -983,30 +777,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/DeleteVectorStoreFileResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/DeleteVectorStoreFileResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1058,30 +834,10 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreFileObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VectorStoreFileObject"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1136,30 +892,10 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreFileObject",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VectorStoreFileObject"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1211,30 +947,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreFileContentResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/VectorStoreFileContentResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1319,30 +1037,12 @@ defmodule ExOpenAI.VectorStores do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VectorStoreSearchResultsPage",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/VectorStoreSearchResultsPage"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(

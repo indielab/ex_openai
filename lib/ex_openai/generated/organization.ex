@@ -39,30 +39,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ApiKeyList",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ApiKeyList"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -103,30 +83,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/AdminApiKey",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/AdminApiKey"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -218,30 +178,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/AdminApiKey",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/AdminApiKey"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -359,30 +299,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListAuditLogsResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ListAuditLogsResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -436,30 +356,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListCertificatesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListCertificatesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -511,30 +413,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Certificate",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Certificate"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -583,30 +465,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListCertificatesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListCertificatesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -655,30 +519,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListCertificatesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListCertificatesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -726,30 +572,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/DeleteCertificateResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/DeleteCertificateResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -802,30 +630,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Certificate",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Certificate"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -874,30 +682,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Certificate",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Certificate"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -995,30 +783,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1073,30 +841,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/GroupListResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/GroupListResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1141,30 +889,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/GroupResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/GroupResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1209,30 +937,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/GroupDeletedResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/GroupDeletedResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1281,30 +989,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/GroupResourceWithSuccess",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/GroupResourceWithSuccess"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1364,30 +1054,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/RoleListResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RoleListResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1435,30 +1105,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/GroupRoleAssignment",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/GroupRoleAssignment"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1507,30 +1157,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/DeletedRoleAssignmentResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/DeletedRoleAssignmentResource"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1592,30 +1224,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UserListResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UserListResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1663,30 +1275,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/GroupUserAssignment",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/GroupUserAssignment"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1735,30 +1327,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/GroupUserDeletedResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/GroupUserDeletedResource"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1806,30 +1380,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/InviteListResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/InviteListResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1887,30 +1441,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Invite",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Invite"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -1955,30 +1489,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/InviteDeleteResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/InviteDeleteResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2023,30 +1537,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Invite",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Invite"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2104,30 +1598,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectListResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectListResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2179,30 +1653,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Project",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Project"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2247,30 +1701,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Project",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Project"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2318,30 +1752,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Project",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Project"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2397,30 +1811,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectApiKeyListResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectApiKeyListResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2476,30 +1872,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectApiKeyDeleteResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectApiKeyDeleteResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2551,30 +1929,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectApiKey",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectApiKey"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2619,30 +1977,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Project",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Project"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2703,30 +2041,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListCertificatesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListCertificatesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2780,30 +2100,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListCertificatesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListCertificatesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2856,30 +2158,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ListCertificatesResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ListCertificatesResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -2941,30 +2225,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectGroupListResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectGroupListResource"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3019,30 +2285,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectGroup",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectGroup"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3094,30 +2340,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectGroupDeletedResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectGroupDeletedResource"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3176,30 +2404,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectRateLimitListResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectRateLimitListResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3299,30 +2509,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectRateLimit",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectRateLimit"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3378,30 +2568,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectServiceAccountListResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectServiceAccountListResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3453,30 +2625,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectServiceAccountCreateResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectServiceAccountCreateResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3533,30 +2687,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectServiceAccountDeleteResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectServiceAccountDeleteResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3608,30 +2744,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectServiceAccount",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectServiceAccount"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3687,30 +2803,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectUserListResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectUserListResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3766,30 +2862,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectUser",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectUser"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3842,30 +2918,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectUserDeleteResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ProjectUserDeleteResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3917,30 +2975,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectUser",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectUser"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -3997,30 +3035,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ProjectUser",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ProjectUser"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4075,30 +3093,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/PublicRoleListResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/PublicRoleListResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4153,30 +3151,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Role",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Role"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4221,30 +3199,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/RoleDeletedResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RoleDeletedResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4308,30 +3266,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Role",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Role"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4460,30 +3398,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4612,30 +3530,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4735,30 +3633,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -4894,30 +3772,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5046,30 +3904,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5212,30 +4050,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5364,30 +4182,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5487,30 +4285,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UsageResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UsageResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5561,30 +4339,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UserListResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UserListResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5629,30 +4387,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UserDeleteResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UserDeleteResponse"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5697,30 +4435,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/User",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/User"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5769,30 +4487,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/User",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/User"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5852,30 +4550,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/RoleListResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RoleListResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5923,30 +4601,10 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/UserRoleAssignment",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UserRoleAssignment"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -5995,30 +4653,12 @@ defmodule ExOpenAI.Organization do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/DeletedRoleAssignmentResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/DeletedRoleAssignmentResource"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(

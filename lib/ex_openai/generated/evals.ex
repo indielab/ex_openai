@@ -53,30 +53,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/EvalList",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/EvalList"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -234,30 +214,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Eval",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Eval"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -303,30 +263,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/Eval",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Eval"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -395,30 +335,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/EvalRunList",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/EvalRunList"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -577,30 +497,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/EvalRun",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/EvalRun"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -650,30 +550,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/EvalRun",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/EvalRun"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -748,30 +628,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/EvalRunOutputItemList",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/EvalRunOutputItemList"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -829,30 +689,10 @@ defmodule ExOpenAI.Evals do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/EvalRunOutputItem",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/EvalRunOutputItem"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(

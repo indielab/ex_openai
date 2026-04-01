@@ -57,30 +57,10 @@ defmodule ExOpenAI.Chat do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ChatCompletionList",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ChatCompletionList"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -467,57 +447,21 @@ defmodule ExOpenAI.Chat do
       convert_response =
         if Keyword.get(opts, :stream, false) do
           fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/CreateChatCompletionStreamResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
+            ExOpenAI.Codegen.ResponseConverter.convert_response(
+              response,
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/CreateChatCompletionStreamResponse"
+              }
+            )
           end
         else
           fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/CreateChatCompletionResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
+            ExOpenAI.Codegen.ResponseConverter.convert_response(
+              response,
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/CreateChatCompletionResponse"
+              }
+            )
           end
         end
 
@@ -565,30 +509,10 @@ defmodule ExOpenAI.Chat do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ChatCompletionDeleted",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ChatCompletionDeleted"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -635,30 +559,12 @@ defmodule ExOpenAI.Chat do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/CreateChatCompletionResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/CreateChatCompletionResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -706,30 +612,12 @@ defmodule ExOpenAI.Chat do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/CreateChatCompletionResponse",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/CreateChatCompletionResponse"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -793,30 +681,12 @@ defmodule ExOpenAI.Chat do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/ChatCompletionMessageList",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/ChatCompletionMessageList"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(

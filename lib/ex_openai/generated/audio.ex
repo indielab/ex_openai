@@ -219,130 +219,31 @@ defmodule ExOpenAI.Audio do
       convert_response =
         if Keyword.get(opts, :stream, false) do
           fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/CreateTranscriptionResponseStreamEvent",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
+            ExOpenAI.Codegen.ResponseConverter.convert_response(
+              response,
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/CreateTranscriptionResponseStreamEvent"
+              }
+            )
           end
         else
           fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: [
-                %{
-                  __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-                  additional_properties: nil,
-                  all_of: nil,
-                  any_of: nil,
-                  default: nil,
-                  deprecated: nil,
-                  description: nil,
-                  discriminator: nil,
-                  enum: nil,
-                  example: nil,
-                  format: nil,
-                  items: nil,
-                  name: nil,
-                  nullable: nil,
-                  one_of: nil,
-                  properties: nil,
-                  raw: nil,
-                  read_only: nil,
-                  ref: "#/components/schemas/CreateTranscriptionResponseJson",
-                  required: nil,
-                  type: nil,
-                  write_only: nil
-                },
-                %{
-                  __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-                  additional_properties: nil,
-                  all_of: nil,
-                  any_of: nil,
-                  default: nil,
-                  deprecated: nil,
-                  description: nil,
-                  discriminator: nil,
-                  enum: nil,
-                  example: nil,
-                  format: nil,
-                  items: nil,
-                  name: nil,
-                  nullable: nil,
-                  one_of: nil,
-                  properties: nil,
-                  raw: nil,
-                  read_only: nil,
-                  ref: "#/components/schemas/CreateTranscriptionResponseDiarizedJson",
-                  required: nil,
-                  type: nil,
-                  write_only: nil
-                },
-                %{
-                  __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-                  additional_properties: nil,
-                  all_of: nil,
-                  any_of: nil,
-                  default: nil,
-                  deprecated: nil,
-                  description: nil,
-                  discriminator: nil,
-                  enum: nil,
-                  example: nil,
-                  format: nil,
-                  items: nil,
-                  name: nil,
-                  nullable: nil,
-                  one_of: nil,
-                  properties: nil,
-                  raw: nil,
-                  read_only: nil,
-                  ref: "#/components/schemas/CreateTranscriptionResponseVerboseJson",
-                  required: nil,
-                  type: nil,
-                  write_only: nil
-                }
-              ],
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: nil,
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
+            ExOpenAI.Codegen.ResponseConverter.convert_response(
+              response,
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                one_of: [
+                  %ExOpenAI.Codegen.DocsParser.Schema{
+                    ref: "#/components/schemas/CreateTranscriptionResponseJson"
+                  },
+                  %ExOpenAI.Codegen.DocsParser.Schema{
+                    ref: "#/components/schemas/CreateTranscriptionResponseDiarizedJson"
+                  },
+                  %ExOpenAI.Codegen.DocsParser.Schema{
+                    ref: "#/components/schemas/CreateTranscriptionResponseVerboseJson"
+                  }
+                ]
+              }
+            )
           end
         end
 
@@ -416,79 +317,19 @@ defmodule ExOpenAI.Audio do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: [
-            %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/CreateTranslationResponseJson",
-              required: nil,
-              type: nil,
-              write_only: nil
-            },
-            %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/CreateTranslationResponseVerboseJson",
-              required: nil,
-              type: nil,
-              write_only: nil
-            }
-          ],
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: nil,
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            one_of: [
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/CreateTranslationResponseJson"
+              },
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/CreateTranslationResponseVerboseJson"
+              }
+            ]
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -541,30 +382,12 @@ defmodule ExOpenAI.Audio do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VoiceConsentListResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/VoiceConsentListResource"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -627,30 +450,10 @@ defmodule ExOpenAI.Audio do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VoiceConsentResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VoiceConsentResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -700,30 +503,12 @@ defmodule ExOpenAI.Audio do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VoiceConsentDeletedResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            ref: "#/components/schemas/VoiceConsentDeletedResource"
+          }
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -773,30 +558,10 @@ defmodule ExOpenAI.Audio do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VoiceConsentResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VoiceConsentResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -849,30 +614,10 @@ defmodule ExOpenAI.Audio do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VoiceConsentResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VoiceConsentResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(
@@ -935,30 +680,10 @@ defmodule ExOpenAI.Audio do
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-          additional_properties: nil,
-          all_of: nil,
-          any_of: nil,
-          default: nil,
-          deprecated: nil,
-          description: nil,
-          discriminator: nil,
-          enum: nil,
-          example: nil,
-          format: nil,
-          items: nil,
-          name: nil,
-          nullable: nil,
-          one_of: nil,
-          properties: nil,
-          raw: nil,
-          read_only: nil,
-          ref: "#/components/schemas/VoiceResource",
-          required: nil,
-          type: nil,
-          write_only: nil
-        })
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VoiceResource"}
+        )
       end
 
       ExOpenAI.Config.http_client().api_call(

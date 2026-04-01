@@ -123,7 +123,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
                 fn response ->
                   ExOpenAI.Codegen.ResponseConverter.convert_response(
                     response,
-                    unquote(Macro.escape(response_schema))
+                    unquote(schema_ast(response_schema))
                   )
                 end
               end
@@ -134,7 +134,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
             fn response ->
               ExOpenAI.Codegen.ResponseConverter.convert_response(
                 response,
-                unquote(Macro.escape(stream_schema))
+                unquote(schema_ast(stream_schema))
               )
             end
           end
@@ -145,7 +145,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         fn response ->
           ExOpenAI.Codegen.ResponseConverter.convert_response(
             response,
-            unquote(Macro.escape(response_schema_ref))
+            unquote(schema_ast(response_schema_ref))
           )
         end
       end
@@ -270,6 +270,84 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
          response_convert_response_ast
        ) do
     response_convert_response_ast
+  end
+
+  # Emit a compact `%Schema{}` literal for generated modules.
+  #
+  # We only keep fields that affect runtime response conversion or typespec
+  # generation. That preserves refs, unions, inline object schemas, arrays,
+  # enums, nullability, and discriminators without serializing doc-only
+  # metadata into every generated function.
+  #
+  # The return value here is quoted AST for a literal like:
+  #
+  #   %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Response"}
+  #
+  # rather than a fully materialized runtime struct escaped with
+  # `Macro.escape/1`. That keeps generated modules readable while still giving
+  # `ResponseConverter` a real `%Schema{}` value at runtime.
+  @spec schema_ast(Schema.t() | nil) :: Macro.t()
+  defp schema_ast(nil), do: nil
+
+  defp schema_ast(%Schema{} = schema) do
+    fields =
+      []
+      |> maybe_put_schema_field(:ref, schema.ref)
+      |> maybe_put_schema_field(:type, schema.type)
+      |> maybe_put_schema_field(:format, schema.format)
+      |> maybe_put_schema_field(:properties, properties_ast(schema.properties))
+      |> maybe_put_schema_field(:required, schema.required)
+      |> maybe_put_schema_field(:enum, schema.enum)
+      |> maybe_put_schema_field(:all_of, schema_list_ast(schema.all_of))
+      |> maybe_put_schema_field(:one_of, schema_list_ast(schema.one_of))
+      |> maybe_put_schema_field(:any_of, schema_list_ast(schema.any_of))
+      |> maybe_put_schema_field(:items, schema_ast(schema.items))
+      |> maybe_put_schema_field(
+        :additional_properties,
+        literal_ast(schema.additional_properties)
+      )
+      |> maybe_put_schema_field(:nullable, schema.nullable)
+      |> maybe_put_schema_field(:discriminator, literal_ast(schema.discriminator))
+
+    {:%, [], [schema_alias_ast(), {:%{}, [], fields}]}
+  end
+
+  # Convert nested schema lists used by `allOf` / `oneOf` / `anyOf` into
+  # quoted `%Schema{}` literals recursively.
+  defp schema_list_ast(nil), do: nil
+  defp schema_list_ast(schemas) when is_list(schemas), do: Enum.map(schemas, &schema_ast/1)
+
+  # Build the quoted `%{...}` for object properties, where each property value
+  # is itself another quoted schema literal. Empty property maps are omitted so
+  # we don't emit `%Schema{properties: %{}}` noise in generated modules.
+  defp properties_ast(nil), do: nil
+  defp properties_ast(properties) when map_size(properties) == 0, do: nil
+
+  defp properties_ast(properties) when is_map(properties) do
+    {:%{}, [], Enum.map(properties, fn {key, value} -> {key, schema_ast(value)} end)}
+  end
+
+  # Keep simple values as quoted literals. This is used for discriminator maps
+  # and `additional_properties`, which are runtime data rather than nested
+  # schema structs.
+  defp literal_ast(nil), do: nil
+  defp literal_ast(value), do: Macro.escape(value)
+
+  # Omit fields that would only add visual noise to generated code. We only
+  # skip values that have no effect on conversion logic: `nil`, empty lists, and
+  # empty quoted maps.
+  defp maybe_put_schema_field(fields, _field, nil), do: fields
+  defp maybe_put_schema_field(fields, _field, []), do: fields
+  defp maybe_put_schema_field(fields, _field, {:%{}, [], []}), do: fields
+
+  defp maybe_put_schema_field(fields, field, value) do
+    fields ++ [{field, value}]
+  end
+
+  # Emit the `%Schema{...}` struct alias in quoted form so `schema_ast/1` can
+  # construct a literal struct AST without relying on `quote do` blocks.
+  defp schema_alias_ast do
+    {:__aliases__, [alias: false], [:ExOpenAI, :Codegen, :DocsParser, :Schema]}
   end
 
   # Build function arguments based on operation parameters and request body
