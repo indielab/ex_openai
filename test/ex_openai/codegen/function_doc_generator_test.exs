@@ -4,7 +4,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
   alias ExOpenAI.Codegen.FunctionDocGenerator
   alias ExOpenAI.Codegen.DocsParser.{Operation, Schema, Parameter}
   
-  describe "determine_param_type/3" do
+  describe "determine_param_type/4" do
     test "returns string type for path parameter with string schema" do
       operation = %Operation{
         parameters: [
@@ -16,7 +16,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
         ]
       }
       
-      type_ast = FunctionDocGenerator.determine_param_type(operation, :assistant_id, nil)
+      type_ast = FunctionDocGenerator.determine_param_type(operation, :assistant_id, nil, %{})
       
       # The AST should represent String.t()
       assert Macro.to_string(type_ast) == "String.t()"
@@ -33,7 +33,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
         ]
       }
       
-      type_ast = FunctionDocGenerator.determine_param_type(operation, :count, nil)
+      type_ast = FunctionDocGenerator.determine_param_type(operation, :count, nil, %{})
       
       assert Macro.to_string(type_ast) == "integer()"
     end
@@ -52,7 +52,12 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
         }
       }
       
-      type_ast = FunctionDocGenerator.determine_param_type(operation, :messages, body_schema)
+      schemas = %{
+        "ChatCompletionRequestMessage" => %Schema{type: "object"}
+      }
+
+      type_ast =
+        FunctionDocGenerator.determine_param_type(operation, :messages, body_schema, schemas)
       
       # Should generate list type with component reference
       type_string = Macro.to_string(type_ast)
@@ -63,7 +68,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
     test "returns any() when parameter not found" do
       operation = %Operation{parameters: []}
       
-      type_ast = FunctionDocGenerator.determine_param_type(operation, :unknown, nil)
+      type_ast = FunctionDocGenerator.determine_param_type(operation, :unknown, nil, %{})
       
       assert Macro.to_string(type_ast) == "any()"
     end
@@ -72,13 +77,13 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
       operation = %Operation{parameters: []}
       body_schema = %Schema{properties: nil}
       
-      type_ast = FunctionDocGenerator.determine_param_type(operation, :something, body_schema)
+      type_ast = FunctionDocGenerator.determine_param_type(operation, :something, body_schema, %{})
       
       assert Macro.to_string(type_ast) == "any()"
     end
   end
   
-  describe "build_positional_param_spec/3" do
+  describe "build_positional_param_spec/4" do
     test "builds correct spec for path parameter" do
       operation = %Operation{
         parameters: [
@@ -90,7 +95,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
         ]
       }
       
-      spec_ast = FunctionDocGenerator.build_positional_param_spec(operation, :id, nil)
+      spec_ast = FunctionDocGenerator.build_positional_param_spec(operation, :id, nil, %{})
       spec_string = Macro.to_string(spec_ast)
       
       assert spec_string == "id :: String.t()"

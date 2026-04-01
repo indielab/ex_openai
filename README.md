@@ -140,7 +140,8 @@ audio_data = File.read!("path/to/audio.wav")
 
 ## Known Limitations
 
-- Streaming responses are returned with atomized keys but without full struct typing; deltas are not accumulated into final typed structs yet.
+- Streaming `*_stream` functions are typed at the call boundary, but callback/process chunk payloads are not converted into fully typed structs.
+- Streaming responses are returned with atomized keys; deltas are not accumulated into final typed structs yet.
   - See `docs/streaming.md` for a sample streaming session and current behavior.
 
 ## Contributing
