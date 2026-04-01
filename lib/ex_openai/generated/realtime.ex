@@ -98,15 +98,9 @@ defmodule ExOpenAI.Realtime do
       optional_params_to_drop = [:session] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response -> ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil) end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -298,15 +292,9 @@ defmodule ExOpenAI.Realtime do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response -> ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil) end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -354,15 +342,9 @@ defmodule ExOpenAI.Realtime do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response -> ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil) end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -412,15 +394,9 @@ defmodule ExOpenAI.Realtime do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response -> ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil) end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -472,15 +448,9 @@ defmodule ExOpenAI.Realtime do
       optional_params_to_drop = [:status_code] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response -> ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil) end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -549,40 +519,32 @@ defmodule ExOpenAI.Realtime do
       optional_params_to_drop = [:expires_after, :session] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/RealtimeCreateClientSecretResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/RealtimeCreateClientSecretResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -777,40 +739,32 @@ defmodule ExOpenAI.Realtime do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/RealtimeSessionCreateResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/RealtimeSessionCreateResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -915,40 +869,32 @@ defmodule ExOpenAI.Realtime do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/RealtimeTranscriptionSessionCreateResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/RealtimeTranscriptionSessionCreateResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,

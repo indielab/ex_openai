@@ -38,40 +38,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ApiKeyList",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ApiKeyList",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -110,40 +102,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/AdminApiKey",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/AdminApiKey",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -187,15 +171,9 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response -> ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil) end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -239,40 +217,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/AdminApiKey",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/AdminApiKey",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -388,40 +358,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ListAuditLogsResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ListAuditLogsResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -473,40 +435,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ListCertificatesResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ListCertificatesResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -556,40 +510,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:name] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Certificate",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Certificate",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -636,40 +582,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ListCertificatesResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ListCertificatesResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -716,40 +654,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ListCertificatesResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ListCertificatesResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -795,40 +725,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/DeleteCertificateResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/DeleteCertificateResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -879,40 +801,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:include] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Certificate",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Certificate",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -959,40 +873,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Certificate",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Certificate",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -1088,40 +994,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -1174,40 +1072,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/GroupListResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/GroupListResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -1250,40 +1140,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/GroupResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/GroupResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -1326,40 +1208,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/GroupDeletedResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/GroupDeletedResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -1406,40 +1280,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/GroupResourceWithSuccess",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/GroupResourceWithSuccess",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -1497,40 +1363,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/RoleListResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/RoleListResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -1576,40 +1434,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/GroupRoleAssignment",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/GroupRoleAssignment",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -1656,40 +1506,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/DeletedRoleAssignmentResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/DeletedRoleAssignmentResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -1749,40 +1591,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UserListResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UserListResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -1828,40 +1662,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/GroupUserAssignment",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/GroupUserAssignment",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -1908,40 +1734,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/GroupUserDeletedResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/GroupUserDeletedResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -1987,40 +1805,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/InviteListResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/InviteListResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -2076,40 +1886,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:projects] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Invite",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Invite",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -2152,40 +1954,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/InviteDeleteResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/InviteDeleteResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -2228,40 +2022,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Invite",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Invite",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -2317,40 +2103,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectListResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectListResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -2400,40 +2178,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:geography] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Project",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Project",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -2476,40 +2246,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Project",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Project",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -2555,40 +2317,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Project",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Project",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -2642,40 +2396,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectApiKeyListResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectApiKeyListResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -2729,40 +2475,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectApiKeyDeleteResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectApiKeyDeleteResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -2812,40 +2550,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectApiKey",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectApiKey",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -2888,40 +2618,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Project",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Project",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -2980,40 +2702,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ListCertificatesResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ListCertificatesResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -3065,40 +2779,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ListCertificatesResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ListCertificatesResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -3149,40 +2855,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ListCertificatesResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ListCertificatesResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -3242,40 +2940,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectGroupListResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectGroupListResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -3328,40 +3018,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectGroup",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectGroup",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -3411,40 +3093,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectGroupDeletedResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectGroupDeletedResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -3501,40 +3175,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :before, :limit] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectRateLimitListResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectRateLimitListResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -3632,40 +3298,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectRateLimit",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectRateLimit",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -3719,40 +3377,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectServiceAccountListResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectServiceAccountListResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -3802,40 +3452,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectServiceAccountCreateResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectServiceAccountCreateResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -3890,40 +3532,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectServiceAccountDeleteResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectServiceAccountDeleteResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -3973,40 +3607,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectServiceAccount",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectServiceAccount",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -4060,40 +3686,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectUserListResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectUserListResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -4147,40 +3765,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectUser",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectUser",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -4231,40 +3841,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectUserDeleteResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectUserDeleteResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -4314,40 +3916,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectUser",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectUser",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -4402,40 +3996,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/ProjectUser",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/ProjectUser",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -4488,40 +4074,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/PublicRoleListResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/PublicRoleListResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -4574,40 +4152,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:description] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Role",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Role",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -4650,40 +4220,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/RoleDeletedResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/RoleDeletedResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -4745,40 +4307,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/Role",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/Role",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -4905,40 +4459,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -5065,40 +4611,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -5196,40 +4734,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -5363,40 +4893,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -5523,40 +5045,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -5697,40 +5211,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -5857,40 +5363,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -5988,40 +5486,32 @@ defmodule ExOpenAI.Organization do
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UsageResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UsageResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -6070,40 +5560,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :emails, :limit] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UserListResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UserListResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -6146,40 +5628,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UserDeleteResponse",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UserDeleteResponse",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -6222,40 +5696,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/User",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/User",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -6302,40 +5768,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/User",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/User",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -6393,40 +5851,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/RoleListResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/RoleListResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -6472,40 +5922,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/UserRoleAssignment",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/UserRoleAssignment",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -6552,40 +5994,32 @@ defmodule ExOpenAI.Organization do
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response =
-        if Keyword.get(opts, :stream, false) do
-          fn
-            {:ok, map} when is_map(map) -> {:ok, ExOpenAI.StreamingClient.atomize_keys(map)}
-            other -> other
-          end
-        else
-          fn response ->
-            ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
-              __struct__: ExOpenAI.Codegen.DocsParser.Schema,
-              additional_properties: nil,
-              all_of: nil,
-              any_of: nil,
-              default: nil,
-              deprecated: nil,
-              description: nil,
-              discriminator: nil,
-              enum: nil,
-              example: nil,
-              format: nil,
-              items: nil,
-              name: nil,
-              nullable: nil,
-              one_of: nil,
-              properties: nil,
-              raw: nil,
-              read_only: nil,
-              ref: "#/components/schemas/DeletedRoleAssignmentResource",
-              required: nil,
-              type: nil,
-              write_only: nil
-            })
-          end
-        end
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(response, %{
+          __struct__: ExOpenAI.Codegen.DocsParser.Schema,
+          additional_properties: nil,
+          all_of: nil,
+          any_of: nil,
+          default: nil,
+          deprecated: nil,
+          description: nil,
+          discriminator: nil,
+          enum: nil,
+          example: nil,
+          format: nil,
+          items: nil,
+          name: nil,
+          nullable: nil,
+          one_of: nil,
+          properties: nil,
+          raw: nil,
+          read_only: nil,
+          ref: "#/components/schemas/DeletedRoleAssignmentResource",
+          required: nil,
+          type: nil,
+          write_only: nil
+        })
+      end
 
       ExOpenAI.Config.http_client().api_call(
         :delete,

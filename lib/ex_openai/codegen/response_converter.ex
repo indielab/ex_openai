@@ -106,11 +106,13 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
               module_exists?(module) and
                 count_matching_keys(res, get_struct_keys(module)) > 0
 
-            %Schema{one_of: schemas} when is_list(schemas) and schemas != [] ->
-              find_best_matching_schema(res, schemas) != nil
+            %Schema{one_of: schemas, discriminator: discriminator}
+            when is_list(schemas) and schemas != [] ->
+              find_matching_schema(res, schemas, discriminator) != nil
 
-            %Schema{any_of: schemas} when is_list(schemas) and schemas != [] ->
-              find_best_matching_schema(res, schemas) != nil
+            %Schema{any_of: schemas, discriminator: discriminator}
+            when is_list(schemas) and schemas != [] ->
+              find_matching_schema(res, schemas, discriminator) != nil
 
             _ ->
               false
@@ -196,34 +198,24 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     end
   end
 
+  defp convert_map_response(res, %Schema{one_of: schemas, discriminator: discriminator})
+       when is_list(schemas) and schemas != [] do
+    convert_map_union_response(res, schemas, discriminator)
+  end
+
   defp convert_map_response(res, %Schema{one_of: schemas})
        when is_list(schemas) and schemas != [] do
-    # Handle oneOf - find the best matching schema
-    best_match = find_best_matching_schema(res, schemas)
+    convert_map_union_response(res, schemas, nil)
+  end
 
-    case best_match do
-      {module, _count, _component_name} ->
-        # Values are already converted, just create the struct
-        {:ok, struct(module, res)}
-
-      nil ->
-        {:ok, res}
-    end
+  defp convert_map_response(res, %Schema{any_of: schemas, discriminator: discriminator})
+       when is_list(schemas) and schemas != [] do
+    convert_map_union_response(res, schemas, discriminator)
   end
 
   defp convert_map_response(res, %Schema{any_of: schemas})
        when is_list(schemas) and schemas != [] do
-    # Handle anyOf - similar to oneOf
-    best_match = find_best_matching_schema(res, schemas)
-
-    case best_match do
-      {module, _count, _component_name} ->
-        # Values are already converted, just create the struct
-        {:ok, struct(module, res)}
-
-      nil ->
-        {:ok, res}
-    end
+    convert_map_union_response(res, schemas, nil)
   end
 
   defp convert_map_response(res, _schema) do
@@ -231,7 +223,38 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     {:ok, res}
   end
 
+  # Convert a `oneOf`/`anyOf` payload by first looking for the schema's
+  # discriminator field and using that union tag to select the right branch.
+  #
+  # Example:
+  #   discriminator.property_name == "type"
+  #   payload["type"] == "response.output_text.delta"
+  #
+  # If there is no discriminator, or the discriminator value does not resolve
+  # cleanly, we fall back to the older key-overlap heuristic.
+  @spec convert_map_union_response(map(), [Schema.t()], map() | nil) ::
+          {:ok, any()} | {:error, any()}
+  defp convert_map_union_response(res, schemas, discriminator) do
+    best_match = find_matching_schema(res, schemas, discriminator)
+
+    case best_match do
+      {module, _count, _component_name} ->
+        # Values are already converted, just create the struct
+        {:ok, struct(module, res)}
+
+      nil ->
+        {:ok, res}
+    end
+  end
+
   # Find the best matching schema from a list of schemas
+  @spec find_matching_schema(map(), [Schema.t()], map() | nil) ::
+          {module(), non_neg_integer(), String.t()} | nil
+  defp find_matching_schema(res, schemas, discriminator) do
+    find_discriminator_matching_schema(res, schemas, discriminator) ||
+      find_best_matching_schema(res, schemas)
+  end
+
   defp find_best_matching_schema(res, schemas) do
     schemas
     |> Enum.map(fn
@@ -253,6 +276,140 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     |> Enum.filter(fn {_module, count, _name} -> count > 0 end)
     |> Enum.sort_by(fn {_module, count, _name} -> count end, :desc)
     |> List.first()
+  end
+
+  # Use the schema discriminator to resolve an exact union arm for a payload.
+  #
+  # This is the preferred path for streamed event unions such as
+  # `ResponseStreamEvent`, where a top-level field like:
+  #
+  #   "type": "response.output_text.delta"
+  #
+  # identifies the concrete event schema without any shape-guessing.
+  @spec find_discriminator_matching_schema(map(), [Schema.t()], map() | nil) ::
+          {module(), non_neg_integer(), String.t()} | nil
+  defp find_discriminator_matching_schema(_res, _schemas, nil), do: nil
+
+  defp find_discriminator_matching_schema(res, schemas, discriminator) when is_map(res) do
+    with property_name when is_binary(property_name) <-
+           discriminator_property_name(discriminator),
+         raw_value when not is_nil(raw_value) <- fetch_discriminator_value(res, property_name),
+         discriminator_value when is_binary(discriminator_value) <-
+           normalize_discriminator_value(raw_value) do
+      find_explicit_discriminator_match(discriminator, discriminator_value) ||
+        find_inferred_discriminator_match(schemas, property_name, discriminator_value)
+    else
+      _ -> nil
+    end
+  end
+
+  defp find_discriminator_matching_schema(_res, _schemas, _discriminator), do: nil
+
+  # Read the name of the union tag field from normalized discriminator
+  # metadata, e.g. `"type"` or `"object"`.
+  @spec discriminator_property_name(map() | any()) :: String.t() | nil
+  defp discriminator_property_name(discriminator) when is_map(discriminator) do
+    discriminator[:property_name] || discriminator["property_name"] ||
+      discriminator[:propertyName] || discriminator["propertyName"]
+  end
+
+  defp discriminator_property_name(_), do: nil
+
+  # Read the explicit discriminator mapping, if the schema provided one. The
+  # mapping connects discriminator values to component refs, for example:
+  #
+  #   "response.output_text.delta" =>
+  #     "#/components/schemas/ResponseTextDeltaEvent"
+  @spec discriminator_mapping(map() | any()) :: map()
+  defp discriminator_mapping(discriminator) when is_map(discriminator) do
+    discriminator[:mapping] || discriminator["mapping"] || %{}
+  end
+
+  defp discriminator_mapping(_), do: %{}
+
+  # Fetch the discriminator tag value from the payload using either the raw JSON
+  # string key (`"type"`) or the atomized equivalent (`:type`).
+  @spec fetch_discriminator_value(map(), String.t()) :: any() | nil
+  defp fetch_discriminator_value(res, property_name) when is_map(res) do
+    case Map.fetch(res, property_name) do
+      {:ok, value} ->
+        value
+
+      :error ->
+        atom_key =
+          try do
+            String.to_existing_atom(property_name)
+          rescue
+            ArgumentError -> String.to_atom(property_name)
+          end
+
+        Map.get(res, atom_key)
+    end
+  end
+
+  @spec normalize_discriminator_value(any()) :: String.t() | nil
+  defp normalize_discriminator_value(value) when is_atom(value), do: Atom.to_string(value)
+  defp normalize_discriminator_value(value) when is_binary(value), do: value
+  defp normalize_discriminator_value(_), do: nil
+
+  # Respect an explicit discriminator mapping from the schema when present.
+  #
+  # This is the most direct form of dispatch because the OpenAPI schema tells us
+  # exactly which component ref to use for a given discriminator value.
+  @spec find_explicit_discriminator_match(map(), String.t()) ::
+          {module(), non_neg_integer(), String.t()} | nil
+  defp find_explicit_discriminator_match(discriminator, discriminator_value) do
+    case Map.get(discriminator_mapping(discriminator), discriminator_value) do
+      "#/components/schemas/" <> component_name ->
+        module = ref_to_module(component_name)
+
+        if module_exists?(module) do
+          {module, 10_000, component_name}
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  # Fall back to inferring the correct union arm from generated component
+  # typespecs when the schema only gives us the discriminator field name and no
+  # explicit mapping.
+  #
+  # Concretely, for a discriminator field like `type`, we inspect each
+  # candidate component's `@type t()` and look for literal values such as:
+  #
+  #   type: :message
+  #   type: :"response.output_text.delta"
+  #
+  # If one of those literals matches the payload's discriminator value, we use
+  # that component.
+  @spec find_inferred_discriminator_match([Schema.t()], String.t(), String.t()) ::
+          {module(), non_neg_integer(), String.t()} | nil
+  defp find_inferred_discriminator_match(schemas, property_name, discriminator_value) do
+    field_name =
+      try do
+        String.to_existing_atom(property_name)
+      rescue
+        ArgumentError -> String.to_atom(property_name)
+      end
+
+    schemas
+    |> Enum.find_value(fn
+      %Schema{ref: "#/components/schemas/" <> component_name} ->
+        module = ref_to_module(component_name)
+
+        if module_exists?(module) do
+          specs = fetch_types(module)
+
+          if discriminator_value in allowed_type_strings(specs, field_name) do
+            {module, 10_000, component_name}
+          end
+        end
+
+      _ ->
+        nil
+    end)
   end
 
   # Convert a component name to its module atom

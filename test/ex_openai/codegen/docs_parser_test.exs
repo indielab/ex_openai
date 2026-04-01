@@ -86,6 +86,33 @@ defmodule ExOpenAI.Codegen.DocsParserTest do
             description: Success
   """
 
+  @discriminator_yaml """
+  openapi: 3.0.0
+  components:
+    schemas:
+      StreamEvent:
+        anyOf:
+          - $ref: '#/components/schemas/TextDelta'
+          - $ref: '#/components/schemas/TextDone'
+        discriminator:
+          propertyName: type
+      TextDelta:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - response.output_text.delta
+      TextDone:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - response.output_text.done
+  paths: {}
+  """
+
   describe "get_documentation/1" do
     test "returns Documentation struct with typed components" do
       result = DocsParser.get_documentation(@minimal_yaml)
@@ -213,6 +240,16 @@ defmodule ExOpenAI.Codegen.DocsParserTest do
       assert map_size(result.components) == 1
       assert result.components["TestModel"].type == "object"
       assert result.paths == %{}
+    end
+
+    test "normalizes discriminator metadata on parsed schemas" do
+      result = DocsParser.get_documentation(@discriminator_yaml)
+      stream_event = result.components["StreamEvent"]
+
+      assert stream_event.discriminator == %{
+               property_name: "type",
+               mapping: %{}
+             }
     end
 
     test "handles empty YAML sections" do
@@ -496,7 +533,6 @@ defmodule ExOpenAI.Codegen.DocsParserTest do
 
       # Check that we have many schemas
       assert map_size(result.components) > 100
-
 
       # Check that we have many paths
       assert map_size(result.paths) > 50

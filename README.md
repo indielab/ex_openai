@@ -53,14 +53,18 @@ config :ex_openai,
 # List available models
 {:ok, models} = ExOpenAI.Models.list_models()
 
-# Create a completion
-{:ok, completion} = ExOpenAI.Completions.create_completion("gpt-3.5-turbo-instruct", "The sky is")
-
-# Chat completion
+# Create a chat completion
 messages = [
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{role: :user, content: "What is the capital of France?"}
+  %ExOpenAI.Components.ChatCompletionRequestSystemMessage{
+    role: :system,
+    content: "You are a concise assistant."
+  },
+  %ExOpenAI.Components.ChatCompletionRequestUserMessage{
+    role: :user,
+    content: "What is the capital of France?"
+  }
 ]
-{:ok, response} = ExOpenAI.Chat.create_chat_completion(messages, "gpt-4")
+{:ok, chat_response} = ExOpenAI.Chat.create_chat_completion(messages, "gpt-4o-mini")
 
 # Responses
 {:ok, response} = ExOpenAI.Responses.create_response(
@@ -103,14 +107,30 @@ For detailed documentation on each module, see the [API Documentation](https://h
 ```elixir
 # Using a callback function
 callback = fn
-  :finish -> IO.puts "Done"
-  {:data, data} -> IO.puts "Data: #{inspect(data)}"
-  {:error, err} -> IO.puts "Error: #{inspect(err)}"
+  :finish ->
+    IO.puts("\nDone")
+
+  {:data, %ExOpenAI.Components.CreateChatCompletionStreamResponse{} = chunk} ->
+	  IO.inspect(chunk)
+
+    chunk.choices
+    |> Enum.map_join("", fn choice -> Map.get(choice.delta, :content, "") end)
+    |> IO.write()
+
+  {:error, err} ->
+    IO.puts("Error: #{inspect(err)}")
 end
 
-ExOpenAI.Completions.create_completion(
-  "gpt-3.5-turbo-instruct",
-  "Tell me a story",
+messages = [
+  %ExOpenAI.Components.ChatCompletionRequestUserMessage{
+    role: :user,
+    content: "Tell me a short story"
+  }
+]
+
+ExOpenAI.Chat.create_chat_completion(
+  messages,
+  "gpt-4o-mini",
   stream: true,
   stream_to: callback
 )
