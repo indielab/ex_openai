@@ -26,7 +26,7 @@ Add **_:ex_openai_** as a dependency in your mix.exs file:
 ```elixir
 def deps do
   [
-    {:ex_openai, "~> 1.8.0"}
+    {:ex_openai, "~> 2.0.0-beta"}
   ]
 end
 ```
@@ -138,6 +138,12 @@ audio_data = File.read!("path/to/audio.wav")
 - [Configuration Options](docs/configuration.md)
 - [Examples](docs/examples.md)
 
+## Known Limitations
+
+- Streaming `*_stream` functions are typed at the call boundary, but callback/process chunk payloads are not converted into fully typed structs.
+- Streaming responses are returned with atomized keys; deltas are not accumulated into final typed structs yet.
+  - See `docs/streaming.md` for a sample streaming session and current behavior.
+
 ## Contributing
 
 Contributions are welcome! If you find a bug or want to add a feature, please open an issue or submit a PR.
@@ -151,7 +157,7 @@ mix update_openai_docs
 ## Projects Using ExOpenAI
 
 - [Elixir ChatGPT](https://github.com/dvcrn/elixir-chatgpt)
-- [FixMyJP](https://fixmyjp.d.sh)
+- [FixMyJP](https://fixmyjapanese.com)
 - [GPT Slack Bot](https://github.com/dvcrn/gpt-slack-bot)
 
 _Add yours with a PR!_

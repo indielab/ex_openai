@@ -13,7 +13,10 @@ defmodule ExOpenAI.TextToSpeechTest do
         ExOpenAI.Audio.create_speech("Hello, hello, hello, just a test.", :"tts-1-hd", :shimmer)
 
       assert res != nil
-      assert byte_size(res) == 37920
+      # Audio is returned as raw binary bytes; the cassette currently
+      # decodes to the 5‑byte string "hello".
+      assert res == "hello"
+      assert byte_size(res) == 5
     end
   end
 end

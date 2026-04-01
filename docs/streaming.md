@@ -28,6 +28,18 @@ ExOpenAI.Completions.create_completion(
 )
 ```
 
+The API call itself returns an async stream reference:
+
+```elixir
+{:ok, stream_ref} =
+  ExOpenAI.Completions.create_completion(
+    "gpt-3.5-turbo-instruct",
+    "Tell me a story about a robot",
+    stream: true,
+    stream_to: callback
+  )
+```
+
 The callback function will be called with:
 - `{:data, data}` for each chunk of data received
 - `{:error, error}` if an error occurs
@@ -71,12 +83,13 @@ end
 ```elixir
 {:ok, pid} = MyStreamingClient.start_link(initial_state)
 
-ExOpenAI.Chat.create_chat_completion(
-  messages,
-  "gpt-4",
-  stream: true,
-  stream_to: pid
-)
+{:ok, stream_ref} =
+  ExOpenAI.Chat.create_chat_completion(
+    messages,
+    "gpt-4",
+    stream: true,
+    stream_to: pid
+  )
 ```
 
 ## Example: Building a Chat Interface
@@ -189,9 +202,60 @@ The streamed data will contain text fragments.
 ## Caveats and Limitations
 
 - Type information for streamed data is not always accurate in the current version
-- Return types for streaming requests may not match the actual returned data
+- Streaming API calls return an async reference, while streamed callback/process payloads are atomized maps rather than typed structs
 - Streaming increases the total number of tokens used slightly compared to non-streaming requests
 - Error handling in streaming contexts requires special attention
+- Streaming chunks are returned with atomized keys but without full struct typing; deltas are not accumulated into a final typed struct yet.
+
+## IEx example (chat chunks)
+
+```elixir
+callback = fn
+  :finish -> IO.puts("Stream finished")
+  {:data, data} -> IO.inspect(data, label: "chunk")
+  {:error, err} -> IO.inspect(err, label: "error")
+end
+
+msgs = [
+  %ExOpenAI.Components.ChatCompletionRequestUserMessage{role: :user, content: "Hello!"},
+  %ExOpenAI.Components.ChatCompletionRequestAssistantMessage{role: :assistant, content: "What's up?"},
+  %ExOpenAI.Components.ChatCompletionRequestUserMessage{role: :user, content: "What is the color of the sky?"}
+]
+
+{:ok, _ref} =
+  ExOpenAI.Chat.create_chat_completion(
+    msgs,
+    "gpt-3.5-turbo",
+    logit_bias: %{"8043" => -100},
+    stream: true,
+    stream_to: callback
+  )
+```
+
+Sample output (truncated):
+
+```
+chunk: %{
+  id: "chatcmpl-…",
+  model: "gpt-3.5-turbo-0125",
+  created: 1764240033,
+  object: "chat.completion.chunk",
+  choices: [
+    %{index: 0, logprobs: nil, delta: %{role: "assistant", content: ""}, finish_reason: nil}
+  ],
+  service_tier: "default",
+  system_fingerprint: nil
+}
+chunk: %{
+  id: "chatcmpl-…",
+  model: "gpt-3.5-turbo-0125",
+  choices: [
+    %{index: 0, delta: %{content: "The color"}, finish_reason: nil}
+  ],
+  …
+}
+… (more chunks) …
+```
 
 ## Best Practices
 

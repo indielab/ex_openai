@@ -1,40 +1,45 @@
 [
   {
     "request": {
-      "body": "{:multipart, [{\"file\", <<137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 1, 99, 0, 0, 1, 99, 8, 6, 0, 0, 0, 232, 194, 106, 225, 0, 0, 0, 1, 115, 82, 71, 66, 0, 174, 206, 28, ...>>, {\"form-data\", [name: \"image\", filename: \"duck.png\"]}, []}]}",
-      "headers": {
-        "Authorization": "***",
-        "OpenAI-Organization": "***",
-        "Content-type": "multipart/form-data"
-      },
-      "method": "post",
       "options": {
         "recv_timeout": 50000
       },
-      "request_body": "",
-      "url": "https://api.openai.com/v1/images/variations?"
+      "body": "{:multipart, [{\"file\", <<137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 1, 99, 0, 0, 1, 99, 8, 6, 0, 0, 0, 232, 194, 106, 225, 0, 0, 0, 1, 115, 82, 71, 66, 0, 174, 206, 28, ...>>, {\"form-data\", [name: \"image\", filename: \"duck.png\"]}, [{\"Content-Type\", \"image/png\"}]}]}",
+      "url": "https://api.openai.com/v1/images/variations",
+      "headers": {
+        "Authorization": "***",
+        "Content-type": "multipart/form-data",
+        "OpenAI-Beta": "assistants=v2"
+      },
+      "method": "post",
+      "request_body": ""
     },
     "response": {
       "binary": false,
-      "body": "{\n  \"created\": 1692584747,\n  \"data\": [\n    {\n      \"url\": \"https://oaidalleapiprodscus.blob.core.windows.net/private/org-U1ISUPKU2jQVnQpqskZAg5IO/user-UJcL6KdEJLM3qBrLzUK8E8id/img-G64hI5wPcuNnZWoZ2lpEDoA5.png?st=2023-08-21T01%3A25%3A47Z&se=2023-08-21T03%3A25%3A47Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-08-21T00%3A37%3A37Z&ske=2023-08-22T00%3A37%3A37Z&sks=b&skv=2021-08-06&sig=RG/7SypjLyM33r0uNJPN%2BIP/I9KRap70A6QGPv9n4TA%3D\"\n    }\n  ]\n}\n",
+      "type": "ok",
+      "body": "{\n  \"created\": 1764320768,\n  \"data\": [\n    {\n      \"url\": \"https://oaidalleapiprodscus.blob.core.windows.net/private/org-PEX6yimM3dFikgcBrrK0hy4E/user-WlYtzNyXDDhbIAlOM2IQ8hPu/img-3orEAByBV4eZbXzHCiDRp5Ug.png?st=2025-11-28T08%3A06%3A08Z&se=2025-11-28T10%3A06%3A08Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-11-28T09%3A06%3A08Z&ske=2025-11-29T09%3A06%3A08Z&sks=b&skv=2024-08-04&sig=3zGSN9NF5b64yKAdeZmFGAlOI447GsEkOmec81Y4TbM%3D\"\n    }\n  ]\n}\n",
       "headers": {
-        "Date": "Mon, 21 Aug 2023 02:25:47 GMT",
+        "Date": "Fri, 28 Nov 2025 09:06:08 GMT",
         "Content-Type": "application/json",
-        "Content-Length": "547",
+        "Content-Length": "545",
         "Connection": "keep-alive",
         "openai-version": "2020-10-01",
-        "openai-organization": "mercari-8",
-        "x-request-id": "5016db2e1e32d345e7144ddbfe931686",
-        "openai-processing-ms": "9832",
+        "openai-organization": "***",
+        "openai-project": "proj_rJ5fxI0uFV6QPNLclcdwofsq",
+        "x-request-id": "req_0013d6161b83540d892c9ae000bf996a",
+        "openai-processing-ms": "12276",
         "access-control-allow-origin": "*",
-        "strict-transport-security": "max-age=15724800; includeSubDomains",
-        "CF-Cache-Status": "DYNAMIC",
+        "x-envoy-upstream-service-time": "12283",
+        "x-openai-proxy-wasm": "v0.1",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "cf-cache-status": "DYNAMIC",
+        "Set-Cookie": "***",
+        "X-Content-Type-Options": "nosniff",
         "Server": "cloudflare",
-        "CF-RAY": "7f9f6d232f713e75-ADL",
+        "CF-RAY": "9a58b4d38e608957-BKK",
         "alt-svc": "h3=\":443\"; ma=86400"
       },
-      "status_code": 200,
-      "type": "ok"
+      "status_code": 200
     }
   }
 ]

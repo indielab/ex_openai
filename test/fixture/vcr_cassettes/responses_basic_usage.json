@@ -1,33 +1,46 @@
 [
   {
     "request": {
-      "options": [],
+      "options": {
+        "recv_timeout": 50000
+      },
       "body": "{\"input\":\"tell me a joke\",\"model\":\"gpt-4o-mini\"}",
-      "url": "https://api.openai.com/v1/responses?",
+      "url": "https://api.openai.com/v1/responses",
       "headers": {
         "Authorization": "***",
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "OpenAI-Beta": "assistants=v2"
       },
-      "method": "post",
-      "request_body": ""
+      "request_body": "",
+      "method": "post"
     },
     "response": {
       "binary": false,
       "type": "ok",
-      "body": "{\n  \"id\": \"resp_67d2a82e377c81929d2d0a90d7be62680d257b2afabb8523\",\n  \"object\": \"response\",\n  \"created_at\": 1741858862,\n  \"status\": \"completed\",\n  \"error\": null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\": null,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n  \"output\": [\n    {\n      \"type\": \"message\",\n      \"id\": \"msg_67d2a82ea20881929a8fb281c1a95da40d257b2afabb8523\",\n      \"status\": \"completed\",\n      \"role\": \"assistant\",\n      \"content\": [\n        {\n          \"type\": \"output_text\",\n          \"text\": \"Why did the scarecrow win an award? \\n\\nBecause he was outstanding in his field!\",\n          \"annotations\": []\n        }\n      ]\n    }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\": null,\n  \"reasoning\": {\n    \"effort\": null,\n    \"generate_summary\": null\n  },\n  \"store\": true,\n  \"temperature\": 1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    }\n  },\n  \"tool_choice\": \"auto\",\n  \"tools\": [],\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\": 29,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 19,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 48\n  },\n  \"user\": null,\n  \"metadata\": {}\n}",
+      "body": "{\n  \"id\": \"resp_02a7bdbf36eb8cf80069295e7ee9048197983114d3b468dcef\",\n  \"object\": \"response\",\n  \"created_at\": 1764318846,\n  \"status\": \"completed\",\n  \"background\": false,\n  \"billing\": {\n    \"payer\": \"developer\"\n  },\n  \"error\": null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\": null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n  \"output\": [\n    {\n      \"id\": \"msg_02a7bdbf36eb8cf80069295e7f844881979760d2f733c89992\",\n      \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\": [\n        {\n          \"type\": \"output_text\",\n          \"annotations\": [],\n          \"logprobs\": [],\n          \"text\": \"Why did the scarecrow win an award?\\n\\nBecause he was outstanding in his field!\"\n        }\n      ],\n      \"role\": \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\": null,\n  \"prompt_cache_key\": null,\n  \"prompt_cache_retention\": null,\n  \"reasoning\": {\n    \"effort\": null,\n    \"summary\": null\n  },\n  \"safety_identifier\": null,\n  \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\": 1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    },\n    \"verbosity\": \"medium\"\n  },\n  \"tool_choice\": \"auto\",\n  \"tools\": [],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\": 11,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 18,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 29\n  },\n  \"user\": null,\n  \"metadata\": {}\n}",
       "headers": {
-        "Date": "Thu, 13 Mar 2025 09:41:02 GMT",
+        "Date": "Fri, 28 Nov 2025 08:34:09 GMT",
         "Content-Type": "application/json",
-        "Content-Length": "1240",
+        "Content-Length": "1522",
         "Connection": "keep-alive",
+        "x-ratelimit-limit-requests": "5000",
+        "x-ratelimit-limit-tokens": "4000000",
+        "x-ratelimit-remaining-requests": "4999",
+        "x-ratelimit-remaining-tokens": "3999970",
+        "x-ratelimit-reset-requests": "12ms",
+        "x-ratelimit-reset-tokens": "0s",
         "openai-version": "2020-10-01",
-        "x-request-id": "req_1a29e9c9f1e0c1d4574b10156590edd3",
-        "openai-processing-ms": "680",
-        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "openai-organization": "***",
+        "openai-project": "proj_rJ5fxI0uFV6QPNLclcdwofsq",
+        "x-request-id": "req_758c565379a04c8c8c5a8a2140511e74",
+        "openai-processing-ms": "2165",
+        "x-envoy-upstream-service-time": "2168",
         "cf-cache-status": "DYNAMIC",
+        "Set-Cookie": "***",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
         "X-Content-Type-Options": "nosniff",
         "Server": "cloudflare",
-        "CF-RAY": "91fa92c03837d74f-NRT",
+        "CF-RAY": "9a5886380e9c8957-BKK",
         "alt-svc": "h3=\":443\"; ma=86400"
       },
       "status_code": 200
@@ -35,33 +48,40 @@
   },
   {
     "request": {
-      "options": [],
+      "options": {
+        "recv_timeout": 50000
+      },
       "body": "",
-      "url": "https://api.openai.com/v1/responses/resp_67d2a82e377c81929d2d0a90d7be62680d257b2afabb8523?",
+      "url": "https://api.openai.com/v1/responses/resp_02a7bdbf36eb8cf80069295e7ee9048197983114d3b468dcef",
       "headers": {
         "Authorization": "***",
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+        "OpenAI-Beta": "assistants=v2"
       },
-      "method": "get",
-      "request_body": ""
+      "request_body": "",
+      "method": "get"
     },
     "response": {
       "binary": false,
       "type": "ok",
-      "body": "{\n  \"id\": \"resp_67d2a82e377c81929d2d0a90d7be62680d257b2afabb8523\",\n  \"object\": \"response\",\n  \"created_at\": 1741858862,\n  \"status\": \"completed\",\n  \"error\": null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\": null,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n  \"output\": [\n    {\n      \"type\": \"message\",\n      \"id\": \"msg_67d2a82ea20881929a8fb281c1a95da40d257b2afabb8523\",\n      \"status\": \"completed\",\n      \"role\": \"assistant\",\n      \"content\": [\n        {\n          \"type\": \"output_text\",\n          \"text\": \"Why did the scarecrow win an award? \\n\\nBecause he was outstanding in his field!\",\n          \"annotations\": []\n        }\n      ]\n    }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\": null,\n  \"reasoning\": {\n    \"effort\": null,\n    \"generate_summary\": null\n  },\n  \"store\": true,\n  \"temperature\": 1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    }\n  },\n  \"tool_choice\": \"auto\",\n  \"tools\": [],\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\": 29,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 19,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 48\n  },\n  \"user\": null,\n  \"metadata\": {}\n}",
+      "body": "{\n  \"id\": \"resp_02a7bdbf36eb8cf80069295e7ee9048197983114d3b468dcef\",\n  \"object\": \"response\",\n  \"created_at\": 1764318846,\n  \"status\": \"completed\",\n  \"background\": false,\n  \"billing\": {\n    \"payer\": \"developer\"\n  },\n  \"error\": null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\": null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n  \"output\": [\n    {\n      \"id\": \"msg_02a7bdbf36eb8cf80069295e7f844881979760d2f733c89992\",\n      \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\": [\n        {\n          \"type\": \"output_text\",\n          \"annotations\": [],\n          \"logprobs\": [],\n          \"text\": \"Why did the scarecrow win an award?\\n\\nBecause he was outstanding in his field!\"\n        }\n      ],\n      \"role\": \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\": null,\n  \"prompt_cache_key\": null,\n  \"prompt_cache_retention\": null,\n  \"reasoning\": {\n    \"effort\": null,\n    \"summary\": null\n  },\n  \"safety_identifier\": null,\n  \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\": 1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    },\n    \"verbosity\": \"medium\"\n  },\n  \"tool_choice\": \"auto\",\n  \"tools\": [],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\": 11,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 18,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 29\n  },\n  \"user\": null,\n  \"metadata\": {}\n}",
       "headers": {
-        "Date": "Thu, 13 Mar 2025 09:41:03 GMT",
+        "Date": "Fri, 28 Nov 2025 08:34:09 GMT",
         "Content-Type": "application/json",
-        "Content-Length": "1240",
+        "Content-Length": "1522",
         "Connection": "keep-alive",
         "openai-version": "2020-10-01",
-        "x-request-id": "req_bd8bf1abb9306e67f25e219ef6a1ed07",
-        "openai-processing-ms": "63",
-        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "openai-organization": "***",
+        "openai-project": "proj_rJ5fxI0uFV6QPNLclcdwofsq",
+        "x-request-id": "req_6591ed51df694885b3768989fcfd84d6",
+        "openai-processing-ms": "86",
+        "x-envoy-upstream-service-time": "89",
         "cf-cache-status": "DYNAMIC",
+        "Set-Cookie": "***",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
         "X-Content-Type-Options": "nosniff",
         "Server": "cloudflare",
-        "CF-RAY": "91fa92c64db6d74f-NRT",
+        "CF-RAY": "9a588647caae8957-BKK",
         "alt-svc": "h3=\":443\"; ma=86400"
       },
       "status_code": 200

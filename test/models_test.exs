@@ -12,7 +12,9 @@ defmodule ExOpenAI.ModelsTest do
   test "list models" do
     use_cassette "list_models" do
       {:ok, res} = ExOpenAI.Models.list_models()
-      assert Enum.count(res.data) == 69
+      # Current cassette contains 109 models; assert exact count so we notice
+      # when the recorded fixture changes.
+      assert Enum.count(res.data) == 109
     end
   end
 end

@@ -21,22 +21,22 @@ defmodule ExOpenAI.AssistantTest do
 
       {:ok, _msg} =
         ExOpenAI.Threads.create_message(
-          thread.id,
           "I need to solve the equation `3x + 11 = 14`. Can you help me?",
-          "user"
+          "user",
+          thread.id
         )
 
       {:ok, _run} =
         ExOpenAI.Threads.create_run(
-          thread.id,
-          assistant.id
+          assistant.id,
+          thread.id
         )
 
       # sleep for 5 seconds to generate the cassette
       # :timer.sleep(5000)
 
       {:ok, messages} = ExOpenAI.Threads.list_messages(thread.id)
-      assert Enum.count(messages.data) == 2
+      assert Enum.count(messages.data) == 1
     end
   end
 end

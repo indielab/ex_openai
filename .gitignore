@@ -16,9 +16,7 @@
 # If the VM crashes, it generates a dump, let's ignore it too.
 erl_crash.dump
 
-# Also ignore archive artifacts (built via "mix archive.build").
-*.ez
-
+# Also ignore archive artifacts (built via "mix archive.build"). *.ez
 # Ignore package tarball (built via "mix hex.build").
 openai-*.tar
 
@@ -27,3 +25,7 @@ openai-*.tar
 /tmp
 
 .aider*
+
+openai/components/
+openai/paths/
+fnox.toml

@@ -57,6 +57,32 @@ defmodule ExOpenAI.StreamingClient do
     callback_fx.(data)
   end
 
+  @doc """
+  Recursively atomizes map keys (string keys become atoms), walking lists and maps.
+  Intended for streaming fallback when we skip full struct conversion.
+  """
+  def atomize_keys(map) when is_map(map) do
+    map
+    |> Enum.map(fn
+      {key, value} when is_binary(key) ->
+        atom_key =
+          try do
+            String.to_existing_atom(key)
+          rescue
+            ArgumentError -> String.to_atom(key)
+          end
+
+        {atom_key, atomize_keys(value)}
+
+      {key, value} ->
+        {key, atomize_keys(value)}
+    end)
+    |> Enum.into(%{})
+  end
+
+  def atomize_keys(list) when is_list(list), do: Enum.map(list, &atomize_keys/1)
+  def atomize_keys(value), do: value
+
   def handle_chunk(
         chunk,
         %{stream_to: pid_or_fx, convert_response_fx: convert_fx}
@@ -289,19 +315,15 @@ defmodule ExOpenAI.StreamingClient do
     # Try to parse the string as JSON
     case Jason.decode(str) do
       {:ok, decoded} ->
-        # If it's a complete JSON with an error field, return it
-        if is_map(decoded) && Map.has_key?(decoded, "error") do
-          {:ok, decoded}
-        else
-          :incomplete
-        end
+        # Return any successfully parsed JSON
+        {:ok, decoded}
 
       {:error, _} ->
         :incomplete
     end
   end
 
-  # Process a complete JSON object (typically an error)
+  # Process a complete JSON object
   defp process_complete_json(json_obj, state) do
     if Map.has_key?(json_obj, "error") do
       error_data = Map.get(json_obj, "error")

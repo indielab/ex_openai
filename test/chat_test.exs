@@ -33,15 +33,15 @@ defmodule ExOpenAI.ChatTest do
 
       assert Enum.count(res.choices) == 1
 
-      assert List.first(res.choices) == %{
-               finish_reason: "stop",
+      assert %{
+               finish_reason: :stop,
                index: 0,
-               message: %{
+               message: %ExOpenAI.Components.ChatCompletionResponseMessage{
                  content:
-                   "The color of the sky is usually blue, but it can also be gray, pink, orange, red, or purple depending on the time of day and weather conditions.",
-                 role: "assistant"
+                   "The color of the sky can vary depending on the time of day and weather conditions. During the day, the sky is typically blue due to the scattering of sunlight by the Earth's atmosphere. At sunrise and sunset, the sky can appear orange, pink, or purple. At night, the sky is usually dark but can be illuminated by city lights or moonlight.",
+                 role: :assistant
                }
-             }
+             } = List.first(res.choices)
     end
   end
 end
