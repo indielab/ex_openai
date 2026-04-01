@@ -33,6 +33,8 @@ defmodule ExOpenAI.Codegen.DocsParser do
     ]
   end
 
+  @type t :: Documentation.t()
+
   @doc """
   Parses OpenAPI YAML documentation and returns typed structs.
   """

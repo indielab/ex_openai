@@ -162,10 +162,7 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
               module = ref_to_module(component_name)
               {:ok, struct(module, converted_map)}
 
-            %Schema{one_of: _} ->
-              convert_map_response(converted_map, response_schema)
-
-            %Schema{any_of: _} ->
+            %Schema{} ->
               convert_map_response(converted_map, response_schema)
           end
         else
@@ -307,25 +304,21 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
 
   # Read the name of the union tag field from normalized discriminator
   # metadata, e.g. `"type"` or `"object"`.
-  @spec discriminator_property_name(map() | any()) :: String.t() | nil
+  @spec discriminator_property_name(Schema.discriminator_t() | nil) :: String.t() | nil
   defp discriminator_property_name(discriminator) when is_map(discriminator) do
     discriminator[:property_name] || discriminator["property_name"] ||
       discriminator[:propertyName] || discriminator["propertyName"]
   end
-
-  defp discriminator_property_name(_), do: nil
 
   # Read the explicit discriminator mapping, if the schema provided one. The
   # mapping connects discriminator values to component refs, for example:
   #
   #   "response.output_text.delta" =>
   #     "#/components/schemas/ResponseTextDeltaEvent"
-  @spec discriminator_mapping(map() | any()) :: map()
+  @spec discriminator_mapping(Schema.discriminator_t()) :: Schema.discriminator_mapping_t()
   defp discriminator_mapping(discriminator) when is_map(discriminator) do
     discriminator[:mapping] || discriminator["mapping"] || %{}
   end
-
-  defp discriminator_mapping(_), do: %{}
 
   # Fetch the discriminator tag value from the payload using either the raw JSON
   # string key (`"type"`) or the atomized equivalent (`:type`).
@@ -717,9 +710,9 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
         {:type, _, :list, _} = type ->
           {0, type}
 
-        # Nil in union – handled separately
-        {:atom, _, nil} = type when is_nil(value) ->
-          {1, type}
+        # Nil in union – handled by the nil branch above, so it gets no score here.
+        {:atom, _, nil} = type ->
+          {0, type}
 
         type ->
           {0, type}

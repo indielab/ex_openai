@@ -2,8 +2,15 @@ defmodule ExOpenAI.Codegen.DocsParser.Schema do
   @moduledoc """
   Represents an OpenAPI schema component.
   """
+  @type discriminator_mapping_t :: %{optional(String.t()) => String.t()}
+
+  @type discriminator_t :: %{
+          property_name: String.t() | nil,
+          mapping: discriminator_mapping_t()
+        }
+
   @type t :: %__MODULE__{
-          name: String.t(),
+          name: String.t() | nil,
           type: String.t() | nil,
           description: String.t() | nil,
           properties: %{String.t() => t()} | nil,
@@ -19,11 +26,11 @@ defmodule ExOpenAI.Codegen.DocsParser.Schema do
           example: any() | nil,
           default: any() | nil,
           nullable: boolean() | nil,
-          discriminator: map() | nil,
+          discriminator: discriminator_t() | nil,
           read_only: boolean() | nil,
           write_only: boolean() | nil,
           deprecated: boolean() | nil,
-          raw: map()
+          raw: map() | nil
         }
 
   defstruct [
@@ -137,7 +144,7 @@ defmodule ExOpenAI.Codegen.DocsParser.Schema do
   #
   # so runtime conversion can dispatch directly from the tag field instead of
   # guessing by key overlap.
-  @spec normalize_discriminator(map() | nil | any()) :: map() | nil | any()
+  @spec normalize_discriminator(map() | nil | any()) :: discriminator_t() | nil | any()
   defp normalize_discriminator(nil), do: nil
 
   defp normalize_discriminator(discriminator) when is_map(discriminator) do
@@ -158,7 +165,7 @@ defmodule ExOpenAI.Codegen.DocsParser.Schema do
   #
   # into a string-keyed map. Decoded JSON discriminator values are strings, so
   # keeping these keys as strings avoids another conversion step later.
-  @spec normalize_discriminator_mapping(map() | nil) :: map()
+  @spec normalize_discriminator_mapping(map() | nil) :: discriminator_mapping_t()
   defp normalize_discriminator_mapping(nil), do: %{}
 
   defp normalize_discriminator_mapping(mapping) when is_map(mapping) do

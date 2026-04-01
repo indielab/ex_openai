@@ -509,8 +509,6 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     |> Enum.map(&String.to_atom/1)
   end
 
-  defp extract_optional_field_names(_), do: []
-
   # Convert operationId from camelCase to snake_case
   defp operation_id_to_function_name(operation_id) do
     operation_id
