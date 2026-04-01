@@ -88,8 +88,8 @@ defmodule ExOpenAI.Responses do
     Used to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).  
       Example: `"user-1234"`
     """
-    @spec create_response(
-            opts :: [
+    (
+      @type create_response_opt() ::
               ((((((((((((((((((((((((((({:background, boolean() | any()}
                                          | {:context_management,
                                             list(ExOpenAI.Components.ContextManagementParam.t())
@@ -123,8 +123,10 @@ defmodule ExOpenAI.Responses do
                 | {:top_p, number() | any()})
                | {:truncation, (:auto | :disabled) | any()})
               | {:user, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.Response.t()} | {:error, any()}
+      @spec create_response(opts :: [create_response_opt()]) ::
+              {:ok, ExOpenAI.Components.Response.t() | reference()} | {:error, any()}
+    )
+
     def create_response(opts \\ []) do
       url = "/responses"
       query_params = Keyword.take(opts, [])
@@ -258,14 +260,16 @@ defmodule ExOpenAI.Responses do
 
     * `prompt_cache_key` - **optional** - `String.t() | any()`
     """
-    @spec compactconversation(
-            opts :: [
+    (
+      @type compactconversation_opt() ::
               (({:input, (String.t() | list(ExOpenAI.Components.InputItem.t())) | any()}
                 | {:instructions, String.t() | any()})
                | {:previous_response_id, String.t() | any()})
               | {:prompt_cache_key, String.t() | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.CompactResource.t()} | {:error, any()}
+      @spec compactconversation(opts :: [compactconversation_opt()]) ::
+              {:ok, ExOpenAI.Components.CompactResource.t()} | {:error, any()}
+    )
+
     def compactconversation(opts \\ []) do
       url = "/responses/compact"
       query_params = Keyword.take(opts, [])
@@ -340,8 +344,8 @@ defmodule ExOpenAI.Responses do
     * `truncation` - **optional** - `any()`  
       The truncation strategy to use for the model response. - `auto`: If the input to this Response exceeds the model's context window size, the model will truncate the response to fit the context window by dropping items from the beginning of the conversation. - `disabled` (default): If the input size will exceed the context window size for a model, the request will fail with a 400 error.
     """
-    @spec getinputtokencounts(
-            opts :: [
+    (
+      @type getinputtokencounts_opt() ::
               ((((((((({:conversation, ExOpenAI.Components.ConversationParam.t() | any()}
                        | {:input, (String.t() | list(ExOpenAI.Components.InputItem.t())) | any()})
                       | {:instructions, String.t() | any()})
@@ -353,8 +357,10 @@ defmodule ExOpenAI.Responses do
                 | {:tool_choice, ExOpenAI.Components.ToolChoiceParam.t() | any()})
                | {:tools, list(ExOpenAI.Components.Tool.t()) | any()})
               | {:truncation, ExOpenAI.Components.TruncationEnum.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.TokenCountsResource.t()} | {:error, any()}
+      @spec getinputtokencounts(opts :: [getinputtokencounts_opt()]) ::
+              {:ok, ExOpenAI.Components.TokenCountsResource.t()} | {:error, any()}
+    )
+
     def getinputtokencounts(opts \\ []) do
       url = "/responses/input_tokens"
       query_params = Keyword.take(opts, [])
@@ -432,8 +438,13 @@ defmodule ExOpenAI.Responses do
     * `:response_id` - **required** - `String.t()`  
       The ID of the response to delete.
     """
-    @spec delete_response(response_id :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_response(response_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def delete_response(response_id, opts \\ []) do
       url = "/responses/{response_id}"
       url = String.replace(url, "{response_id}", to_string(response_id))
@@ -502,13 +513,14 @@ defmodule ExOpenAI.Responses do
     `include_obfuscation` to false to optimize for bandwidth if you trust
     the network links between your application and the OpenAI API.
     """
-    @spec get_response(
-            response_id :: String.t(),
-            opts :: [
+    (
+      @type get_response_opt() ::
               (({:include, any()} | {:stream, boolean()}) | {:starting_after, integer()})
               | {:include_obfuscation, boolean()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.Response.t()} | {:error, any()}
+      @spec get_response(response_id :: String.t(), opts :: [get_response_opt()]) ::
+              {:ok, ExOpenAI.Components.Response.t() | reference()} | {:error, any()}
+    )
+
     def get_response(response_id, opts \\ []) do
       url = "/responses/{response_id}"
       url = String.replace(url, "{response_id}", to_string(response_id))
@@ -577,8 +589,13 @@ defmodule ExOpenAI.Responses do
     * `:response_id` - **required** - `String.t()`  
       The ID of the response to cancel.
     """
-    @spec cancel_response(response_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Response.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_response(response_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Response.t()} | {:error, any()}
+    )
+
     def cancel_response(response_id, opts \\ []) do
       url = "/responses/{response_id}/cancel"
       url = String.replace(url, "{response_id}", to_string(response_id))
@@ -645,13 +662,14 @@ defmodule ExOpenAI.Responses do
       Additional fields to include in the response. See the `include`
     parameter for Response creation above for more information.
     """
-    @spec list_input_items(
-            response_id :: String.t(),
-            opts :: [
+    (
+      @type list_input_items_opt() ::
               (({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
               | {:include, any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ResponseItemList.t()} | {:error, any()}
+      @spec list_input_items(response_id :: String.t(), opts :: [list_input_items_opt()]) ::
+              {:ok, ExOpenAI.Components.ResponseItemList.t()} | {:error, any()}
+    )
+
     def list_input_items(response_id, opts \\ []) do
       url = "/responses/{response_id}/input_items"
       url = String.replace(url, "{response_id}", to_string(response_id))

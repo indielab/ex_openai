@@ -40,20 +40,23 @@ defmodule ExOpenAI.Audio do
       Allowed values: `"sse"`, `"audio"`  
       Default: `"audio"`
     """
-    @spec create_speech(
-            input :: String.t(),
-            model ::
-              String.t()
-              | ((:"tts-1" | :"tts-1-hd") | :"gpt-4o-mini-tts")
-              | :"gpt-4o-mini-tts-2025-12-15",
-            voice :: ExOpenAI.Components.VoiceIdsOrCustomVoice.t(),
-            opts :: [
+    (
+      @type create_speech_opt() ::
               (({:instructions, String.t()}
                 | {:response_format, ((((:mp3 | :opus) | :aac) | :flac) | :wav) | :pcm})
                | {:speed, number()})
               | {:stream_format, :sse | :audio}
-            ]
-          ) :: {:ok, map()} | {:error, any()}
+      @spec create_speech(
+              input :: String.t(),
+              model ::
+                String.t()
+                | ((:"tts-1" | :"tts-1-hd") | :"gpt-4o-mini-tts")
+                | :"gpt-4o-mini-tts-2025-12-15",
+              voice :: ExOpenAI.Components.VoiceIdsOrCustomVoice.t(),
+              opts :: [create_speech_opt()]
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def create_speech(input, model, voice, opts \\ []) do
       url = "/audio/speech"
       query_params = Keyword.take(opts, [])
@@ -149,14 +152,8 @@ defmodule ExOpenAI.Audio do
     This option is not available for `gpt-4o-transcribe-diarize`.  
       Default: `["segment"]`
     """
-    @spec create_transcription(
-            file :: binary(),
-            model ::
-              String.t()
-              | (((:"whisper-1" | :"gpt-4o-transcribe") | :"gpt-4o-mini-transcribe")
-                 | :"gpt-4o-mini-transcribe-2025-12-15")
-              | :"gpt-4o-transcribe-diarize",
-            opts :: [
+    (
+      @type create_transcription_opt() ::
               (((((((({:chunking_strategy, (:auto | ExOpenAI.Components.VadConfig.t()) | any()}
                       | {:include, list(ExOpenAI.Components.TranscriptionInclude.t())})
                      | {:known_speaker_names, list(String.t())})
@@ -167,8 +164,17 @@ defmodule ExOpenAI.Audio do
                 | {:stream, boolean() | any()})
                | {:temperature, number()})
               | {:timestamp_granularities, list(:word | :segment)}
-            ]
-          ) :: {:ok, map()} | {:error, any()}
+      @spec create_transcription(
+              file :: binary(),
+              model ::
+                String.t()
+                | (((:"whisper-1" | :"gpt-4o-transcribe") | :"gpt-4o-mini-transcribe")
+                   | :"gpt-4o-mini-transcribe-2025-12-15")
+                | :"gpt-4o-transcribe-diarize",
+              opts :: [create_transcription_opt()]
+            ) :: {:ok, map() | reference()} | {:error, any()}
+    )
+
     def create_transcription(file, model, opts \\ []) do
       url = "/audio/transcriptions"
       query_params = Keyword.take(opts, [])
@@ -286,15 +292,18 @@ defmodule ExOpenAI.Audio do
       The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.  
       Default: `0`
     """
-    @spec create_translation(
-            file :: binary(),
-            model :: String.t() | :"whisper-1",
-            opts :: [
+    (
+      @type create_translation_opt() ::
               ({:prompt, String.t()}
                | {:response_format, (((:json | :text) | :srt) | :verbose_json) | :vtt})
               | {:temperature, number()}
-            ]
-          ) :: {:ok, map()} | {:error, any()}
+      @spec create_translation(
+              file :: binary(),
+              model :: String.t() | :"whisper-1",
+              opts :: [create_translation_opt()]
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def create_translation(file, model, opts \\ []) do
       url = "/audio/translations"
       query_params = Keyword.take(opts, [])
@@ -361,8 +370,12 @@ defmodule ExOpenAI.Audio do
       A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.  
       Default: `20`
     """
-    @spec list_voice_consents(opts :: [{:after, String.t()} | {:limit, integer()}]) ::
-            {:ok, ExOpenAI.Components.VoiceConsentListResource.t()} | {:error, any()}
+    (
+      @type list_voice_consents_opt() :: {:after, String.t()} | {:limit, integer()}
+      @spec list_voice_consents(opts :: [list_voice_consents_opt()]) ::
+              {:ok, ExOpenAI.Components.VoiceConsentListResource.t()} | {:error, any()}
+    )
+
     def list_voice_consents(opts \\ []) do
       url = "/audio/voice_consents"
       query_params = Keyword.take(opts, [:after, :limit])
@@ -425,12 +438,17 @@ defmodule ExOpenAI.Audio do
     `audio/mpeg`, `audio/wav`, `audio/x-wav`, `audio/ogg`, `audio/aac`, `audio/flac`, `audio/webm`, `audio/mp4`.  
       Format: `binary`
     """
-    @spec create_voice_consent(
-            language :: String.t(),
-            name :: String.t(),
-            recording :: binary(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.VoiceConsentResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_voice_consent(
+              language :: String.t(),
+              name :: String.t(),
+              recording :: binary(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.VoiceConsentResource.t()} | {:error, any()}
+    )
+
     def create_voice_consent(language, name, recording, opts \\ []) do
       url = "/audio/voice_consents"
       query_params = Keyword.take(opts, [])
@@ -481,8 +499,13 @@ defmodule ExOpenAI.Audio do
     * `:consent_id` - **required** - `String.t()`  
       The ID of the consent recording to delete.
     """
-    @spec delete_voice_consent(consent_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VoiceConsentDeletedResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_voice_consent(consent_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VoiceConsentDeletedResource.t()} | {:error, any()}
+    )
+
     def delete_voice_consent(consent_id, opts \\ []) do
       url = "/audio/voice_consents/{consent_id}"
       url = String.replace(url, "{consent_id}", to_string(consent_id))
@@ -536,8 +559,13 @@ defmodule ExOpenAI.Audio do
     * `:consent_id` - **required** - `String.t()`  
       The ID of the consent recording to retrieve.
     """
-    @spec get_voice_consent(consent_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VoiceConsentResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_voice_consent(consent_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VoiceConsentResource.t()} | {:error, any()}
+    )
+
     def get_voice_consent(consent_id, opts \\ []) do
       url = "/audio/voice_consents/{consent_id}"
       url = String.replace(url, "{consent_id}", to_string(consent_id))
@@ -592,8 +620,13 @@ defmodule ExOpenAI.Audio do
     * `name` - **required** - `String.t()`  
       The updated label for this consent recording.
     """
-    @spec update_voice_consent(consent_id :: String.t(), name :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VoiceConsentResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec update_voice_consent(consent_id :: String.t(), name :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VoiceConsentResource.t()} | {:error, any()}
+    )
+
     def update_voice_consent(consent_id, name, opts \\ []) do
       url = "/audio/voice_consents/{consent_id}"
       url = String.replace(url, "{consent_id}", to_string(consent_id))
@@ -655,12 +688,17 @@ defmodule ExOpenAI.Audio do
     * `name` - **required** - `String.t()`  
       The name of the new voice.
     """
-    @spec create_voice(
-            audio_sample :: binary(),
-            consent :: String.t(),
-            name :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.VoiceResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_voice(
+              audio_sample :: binary(),
+              consent :: String.t(),
+              name :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.VoiceResource.t()} | {:error, any()}
+    )
+
     def create_voice(audio_sample, consent, name, opts \\ []) do
       url = "/audio/voices"
       query_params = Keyword.take(opts, [])

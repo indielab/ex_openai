@@ -25,12 +25,14 @@ defmodule ExOpenAI.Evals do
       Allowed values: `"created_at"`, `"updated_at"`  
       Default: `"created_at"`
     """
-    @spec list_evals(
-            opts :: [
+    (
+      @type list_evals_opt() ::
               (({:after, String.t()} | {:limit, integer()}) | {:order, String.t()})
               | {:order_by, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.EvalList.t()} | {:error, any()}
+      @spec list_evals(opts :: [list_evals_opt()]) ::
+              {:ok, ExOpenAI.Components.EvalList.t()} | {:error, any()}
+    )
+
     def list_evals(opts \\ []) do
       url = "/evals"
       query_params = Keyword.take(opts, [:after, :limit, :order, :order_by])
@@ -92,18 +94,23 @@ defmodule ExOpenAI.Evals do
     * `name` - **optional** - `String.t()`  
       The name of the evaluation.
     """
-    @spec create_eval(
-            data_source_config :: map(),
-            testing_criteria ::
-              list(
-                (((ExOpenAI.Components.CreateEvalLabelModelGrader.t()
-                   | ExOpenAI.Components.EvalGraderStringCheck.t())
-                  | ExOpenAI.Components.EvalGraderTextSimilarity.t())
-                 | ExOpenAI.Components.EvalGraderPython.t())
-                | ExOpenAI.Components.EvalGraderScoreModel.t()
-              ),
-            opts :: [{:metadata, ExOpenAI.Components.Metadata.t()} | {:name, String.t()}]
-          ) :: {:ok, map()} | {:error, any()}
+    (
+      @type create_eval_opt() ::
+              {:metadata, ExOpenAI.Components.Metadata.t()} | {:name, String.t()}
+      @spec create_eval(
+              data_source_config :: map(),
+              testing_criteria ::
+                list(
+                  (((ExOpenAI.Components.CreateEvalLabelModelGrader.t()
+                     | ExOpenAI.Components.EvalGraderStringCheck.t())
+                    | ExOpenAI.Components.EvalGraderTextSimilarity.t())
+                   | ExOpenAI.Components.EvalGraderPython.t())
+                  | ExOpenAI.Components.EvalGraderScoreModel.t()
+                ),
+              opts :: [create_eval_opt()]
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def create_eval(data_source_config, testing_criteria, opts \\ []) do
       url = "/evals"
       query_params = Keyword.take(opts, [])
@@ -147,7 +154,13 @@ defmodule ExOpenAI.Evals do
     * `:eval_id` - **required** - `String.t()`  
       The ID of the evaluation to delete.
     """
-    @spec delete_eval(eval_id :: String.t(), opts :: keyword()) :: {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_eval(eval_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def delete_eval(eval_id, opts \\ []) do
       url = "/evals/{eval_id}"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -192,8 +205,13 @@ defmodule ExOpenAI.Evals do
     * `:eval_id` - **required** - `String.t()`  
       The ID of the evaluation to retrieve.
     """
-    @spec get_eval(eval_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Eval.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_eval(eval_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Eval.t()} | {:error, any()}
+    )
+
     def get_eval(eval_id, opts \\ []) do
       url = "/evals/{eval_id}"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -241,8 +259,13 @@ defmodule ExOpenAI.Evals do
     * `:eval_id` - **required** - `String.t()`  
       The ID of the evaluation to update.
     """
-    @spec update_eval(eval_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Eval.t()} | {:error, any()}
+    (
+      nil
+
+      @spec update_eval(eval_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Eval.t()} | {:error, any()}
+    )
+
     def update_eval(eval_id, opts \\ []) do
       url = "/evals/{eval_id}"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -308,13 +331,14 @@ defmodule ExOpenAI.Evals do
       Filter runs by status. One of `queued` | `in_progress` | `failed` | `completed` | `canceled`.  
       Allowed values: `"queued"`, `"in_progress"`, `"completed"`, `"canceled"`, `"failed"`
     """
-    @spec get_eval_runs(
-            eval_id :: String.t(),
-            opts :: [
+    (
+      @type get_eval_runs_opt() ::
               (({:after, String.t()} | {:limit, integer()}) | {:order, String.t()})
               | {:status, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.EvalRunList.t()} | {:error, any()}
+      @spec get_eval_runs(eval_id :: String.t(), opts :: [get_eval_runs_opt()]) ::
+              {:ok, ExOpenAI.Components.EvalRunList.t()} | {:error, any()}
+    )
+
     def get_eval_runs(eval_id, opts \\ []) do
       url = "/evals/{eval_id}/runs"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -372,11 +396,16 @@ defmodule ExOpenAI.Evals do
     * `name` - **optional** - `String.t()`  
       The name of the run.
     """
-    @spec create_eval_run(
-            data_source :: map(),
-            eval_id :: String.t(),
-            opts :: [{:metadata, ExOpenAI.Components.Metadata.t()} | {:name, String.t()}]
-          ) :: {:ok, map()} | {:error, any()}
+    (
+      @type create_eval_run_opt() ::
+              {:metadata, ExOpenAI.Components.Metadata.t()} | {:name, String.t()}
+      @spec create_eval_run(
+              data_source :: map(),
+              eval_id :: String.t(),
+              opts :: [create_eval_run_opt()]
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def create_eval_run(data_source, eval_id, opts \\ []) do
       url = "/evals/{eval_id}/runs"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -424,8 +453,13 @@ defmodule ExOpenAI.Evals do
     * `:run_id` - **required** - `String.t()`  
       The ID of the run to delete.
     """
-    @spec delete_eval_run(eval_id :: String.t(), run_id :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_eval_run(eval_id :: String.t(), run_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def delete_eval_run(eval_id, run_id, opts \\ []) do
       url = "/evals/{eval_id}/runs/{run_id}"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -474,8 +508,13 @@ defmodule ExOpenAI.Evals do
     * `:run_id` - **required** - `String.t()`  
       The ID of the run to retrieve.
     """
-    @spec get_eval_run(eval_id :: String.t(), run_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.EvalRun.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_eval_run(eval_id :: String.t(), run_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.EvalRun.t()} | {:error, any()}
+    )
+
     def get_eval_run(eval_id, run_id, opts \\ []) do
       url = "/evals/{eval_id}/runs/{run_id}"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -527,8 +566,13 @@ defmodule ExOpenAI.Evals do
     * `:run_id` - **required** - `String.t()`  
       The ID of the run to cancel.
     """
-    @spec cancel_eval_run(eval_id :: String.t(), run_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.EvalRun.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_eval_run(eval_id :: String.t(), run_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.EvalRun.t()} | {:error, any()}
+    )
+
     def cancel_eval_run(eval_id, run_id, opts \\ []) do
       url = "/evals/{eval_id}/runs/{run_id}"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -599,14 +643,17 @@ defmodule ExOpenAI.Evals do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"asc"`
     """
-    @spec get_eval_run_output_items(
-            eval_id :: String.t(),
-            run_id :: String.t(),
-            opts :: [
+    (
+      @type get_eval_run_output_items_opt() ::
               (({:after, String.t()} | {:limit, integer()}) | {:status, String.t()})
               | {:order, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.EvalRunOutputItemList.t()} | {:error, any()}
+      @spec get_eval_run_output_items(
+              eval_id :: String.t(),
+              run_id :: String.t(),
+              opts :: [get_eval_run_output_items_opt()]
+            ) :: {:ok, ExOpenAI.Components.EvalRunOutputItemList.t()} | {:error, any()}
+    )
+
     def get_eval_run_output_items(eval_id, run_id, opts \\ []) do
       url = "/evals/{eval_id}/runs/{run_id}/output_items"
       url = String.replace(url, "{eval_id}", to_string(eval_id))
@@ -661,12 +708,17 @@ defmodule ExOpenAI.Evals do
     * `:output_item_id` - **required** - `String.t()`  
       The ID of the output item to retrieve.
     """
-    @spec get_eval_run_output_item(
-            eval_id :: String.t(),
-            output_item_id :: String.t(),
-            run_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.EvalRunOutputItem.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_eval_run_output_item(
+              eval_id :: String.t(),
+              output_item_id :: String.t(),
+              run_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.EvalRunOutputItem.t()} | {:error, any()}
+    )
+
     def get_eval_run_output_item(eval_id, output_item_id, run_id, opts \\ []) do
       url = "/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}"
       url = String.replace(url, "{eval_id}", to_string(eval_id))

@@ -49,13 +49,17 @@ defmodule ExOpenAI.Uploads do
 
     * `expires_after` - **optional** - `any()`
     """
-    @spec create_upload(
-            bytes :: integer(),
-            filename :: String.t(),
-            mime_type :: String.t(),
-            purpose :: ((:assistants | :batch) | :"fine-tune") | :vision,
-            opts :: [expires_after: ExOpenAI.Components.FileExpirationAfter.t()]
-          ) :: {:ok, ExOpenAI.Components.Upload.t()} | {:error, any()}
+    (
+      @type create_upload_opt() :: {:expires_after, ExOpenAI.Components.FileExpirationAfter.t()}
+      @spec create_upload(
+              bytes :: integer(),
+              filename :: String.t(),
+              mime_type :: String.t(),
+              purpose :: ((:assistants | :batch) | :"fine-tune") | :vision,
+              opts :: [create_upload_opt()]
+            ) :: {:ok, ExOpenAI.Components.Upload.t()} | {:error, any()}
+    )
+
     def create_upload(bytes, filename, mime_type, purpose, opts \\ []) do
       url = "/uploads"
       query_params = Keyword.take(opts, [])
@@ -104,8 +108,13 @@ defmodule ExOpenAI.Uploads do
     * `:upload_id` - **required** - `String.t()`  
       The ID of the Upload.
     """
-    @spec cancel_upload(upload_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Upload.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_upload(upload_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Upload.t()} | {:error, any()}
+    )
+
     def cancel_upload(upload_id, opts \\ []) do
       url = "/uploads/{upload_id}/cancel"
       url = String.replace(url, "{upload_id}", to_string(upload_id))
@@ -168,11 +177,15 @@ defmodule ExOpenAI.Uploads do
     * `md5` - **optional** - `String.t()`  
       The optional md5 checksum for the file contents to verify if the bytes uploaded matches what you expect.
     """
-    @spec complete_upload(
-            part_ids :: list(String.t()),
-            upload_id :: String.t(),
-            opts :: [md5: String.t()]
-          ) :: {:ok, ExOpenAI.Components.Upload.t()} | {:error, any()}
+    (
+      @type complete_upload_opt() :: {:md5, String.t()}
+      @spec complete_upload(
+              part_ids :: list(String.t()),
+              upload_id :: String.t(),
+              opts :: [complete_upload_opt()]
+            ) :: {:ok, ExOpenAI.Components.Upload.t()} | {:error, any()}
+    )
+
     def complete_upload(part_ids, upload_id, opts \\ []) do
       url = "/uploads/{upload_id}/complete"
       url = String.replace(url, "{upload_id}", to_string(upload_id))
@@ -228,8 +241,13 @@ defmodule ExOpenAI.Uploads do
       The chunk of bytes for this Part.  
       Format: `binary`
     """
-    @spec add_upload_part(data :: binary(), upload_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.UploadPart.t()} | {:error, any()}
+    (
+      nil
+
+      @spec add_upload_part(data :: binary(), upload_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.UploadPart.t()} | {:error, any()}
+    )
+
     def add_upload_part(data, upload_id, opts \\ []) do
       url = "/uploads/{upload_id}/parts"
       url = String.replace(url, "{upload_id}", to_string(upload_id))

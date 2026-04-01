@@ -21,12 +21,14 @@ defmodule ExOpenAI.Files do
     * `:after` - **optional** - `String.t()`  
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
     """
-    @spec list_files(
-            opts :: [
+    (
+      @type list_files_opt() ::
               (({:purpose, String.t()} | {:limit, integer()}) | {:order, String.t()})
               | {:after, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListFilesResponse.t()} | {:error, any()}
+      @spec list_files(opts :: [list_files_opt()]) ::
+              {:ok, ExOpenAI.Components.ListFilesResponse.t()} | {:error, any()}
+    )
+
     def list_files(opts \\ []) do
       url = "/files"
       query_params = Keyword.take(opts, [:purpose, :limit, :order, :after])
@@ -107,12 +109,16 @@ defmodule ExOpenAI.Files do
 
     * `expires_after` - **optional** - `any()`
     """
-    @spec create_file(
-            file :: binary(),
-            purpose ::
-              ((((:assistants | :batch) | :"fine-tune") | :vision) | :user_data) | :evals,
-            opts :: [expires_after: ExOpenAI.Components.FileExpirationAfter.t()]
-          ) :: {:ok, ExOpenAI.Components.OpenAIFile.t()} | {:error, any()}
+    (
+      @type create_file_opt() :: {:expires_after, ExOpenAI.Components.FileExpirationAfter.t()}
+      @spec create_file(
+              file :: binary(),
+              purpose ::
+                ((((:assistants | :batch) | :"fine-tune") | :vision) | :user_data) | :evals,
+              opts :: [create_file_opt()]
+            ) :: {:ok, ExOpenAI.Components.OpenAIFile.t()} | {:error, any()}
+    )
+
     def create_file(file, purpose, opts \\ []) do
       url = "/files"
       query_params = Keyword.take(opts, [])
@@ -158,8 +164,13 @@ defmodule ExOpenAI.Files do
     * `:file_id` - **required** - `String.t()`  
       The ID of the file to use for this request.
     """
-    @spec delete_file(file_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeleteFileResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_file(file_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeleteFileResponse.t()} | {:error, any()}
+    )
+
     def delete_file(file_id, opts \\ []) do
       url = "/files/{file_id}"
       url = String.replace(url, "{file_id}", to_string(file_id))
@@ -206,8 +217,13 @@ defmodule ExOpenAI.Files do
     * `:file_id` - **required** - `String.t()`  
       The ID of the file to use for this request.
     """
-    @spec retrieve_file(file_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.OpenAIFile.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_file(file_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.OpenAIFile.t()} | {:error, any()}
+    )
+
     def retrieve_file(file_id, opts \\ []) do
       url = "/files/{file_id}"
       url = String.replace(url, "{file_id}", to_string(file_id))
@@ -254,8 +270,13 @@ defmodule ExOpenAI.Files do
     * `:file_id` - **required** - `String.t()`  
       The ID of the file to use for this request.
     """
-    @spec download_file(file_id :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec download_file(file_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def download_file(file_id, opts \\ []) do
       url = "/files/{file_id}/content"
       url = String.replace(url, "{file_id}", to_string(file_id))

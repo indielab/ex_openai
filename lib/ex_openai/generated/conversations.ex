@@ -10,12 +10,14 @@ defmodule ExOpenAI.Conversations do
 
     * `metadata` - **optional** - `any() | any()`
     """
-    @spec create_conversation(
-            opts :: [
+    (
+      @type create_conversation_opt() ::
               {:items, list(ExOpenAI.Components.InputItem.t()) | any()}
               | {:metadata, ExOpenAI.Components.Metadata.t() | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+      @spec create_conversation(opts :: [create_conversation_opt()]) ::
+              {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+    )
+
     def create_conversation(opts \\ []) do
       url = "/conversations"
       query_params = Keyword.take(opts, [])
@@ -61,8 +63,13 @@ defmodule ExOpenAI.Conversations do
     * `:conversation_id` - **required** - `String.t()`  
       The ID of the conversation to delete.
     """
-    @spec delete_conversation(conversation_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeletedConversationResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_conversation(conversation_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeletedConversationResource.t()} | {:error, any()}
+    )
+
     def delete_conversation(conversation_id, opts \\ []) do
       url = "/conversations/{conversation_id}"
       url = String.replace(url, "{conversation_id}", to_string(conversation_id))
@@ -111,8 +118,13 @@ defmodule ExOpenAI.Conversations do
     * `:conversation_id` - **required** - `String.t()`  
       The ID of the conversation to retrieve.
     """
-    @spec get_conversation(conversation_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_conversation(conversation_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+    )
+
     def get_conversation(conversation_id, opts \\ []) do
       url = "/conversations/{conversation_id}"
       url = String.replace(url, "{conversation_id}", to_string(conversation_id))
@@ -163,8 +175,13 @@ defmodule ExOpenAI.Conversations do
       Set of 16 key-value pairs that can be attached to an object. This can be         useful for storing additional information about the object in a structured         format, and querying for objects via API or the dashboard.
             Keys are strings with a maximum length of 64 characters. Values are strings         with a maximum length of 512 characters.
     """
-    @spec update_conversation(conversation_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec update_conversation(conversation_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+    )
+
     def update_conversation(conversation_id, opts \\ []) do
       url = "/conversations/{conversation_id}"
       url = String.replace(url, "{conversation_id}", to_string(conversation_id))
@@ -237,13 +254,16 @@ defmodule ExOpenAI.Conversations do
     - `message.output_text.logprobs`: Include logprobs with assistant messages.
     - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in reasoning item outputs. This enables reasoning items to be used in multi-turn conversations when using the Responses API statelessly (like when the `store` parameter is set to `false`, or when an organization is enrolled in the zero data retention program).
     """
-    @spec list_conversation_items(
-            conversation_id :: String.t(),
-            opts :: [
+    (
+      @type list_conversation_items_opt() ::
               (({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
               | {:include, any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ConversationItemList.t()} | {:error, any()}
+      @spec list_conversation_items(
+              conversation_id :: String.t(),
+              opts :: [list_conversation_items_opt()]
+            ) :: {:ok, ExOpenAI.Components.ConversationItemList.t()} | {:error, any()}
+    )
+
     def list_conversation_items(conversation_id, opts \\ []) do
       url = "/conversations/{conversation_id}/items"
       url = String.replace(url, "{conversation_id}", to_string(conversation_id))
@@ -299,8 +319,14 @@ defmodule ExOpenAI.Conversations do
       Additional fields to include in the response. See the `include`
     parameter for [listing Conversation items above](/docs/api-reference/conversations/list-items#conversations_list_items-include) for more information.
     """
-    @spec create_conversation_items(conversation_id :: String.t(), opts :: [include: any()]) ::
-            {:ok, ExOpenAI.Components.ConversationItemList.t()} | {:error, any()}
+    (
+      @type create_conversation_items_opt() :: {:include, any()}
+      @spec create_conversation_items(
+              conversation_id :: String.t(),
+              opts :: [create_conversation_items_opt()]
+            ) :: {:ok, ExOpenAI.Components.ConversationItemList.t()} | {:error, any()}
+    )
+
     def create_conversation_items(conversation_id, opts \\ []) do
       url = "/conversations/{conversation_id}/items"
       url = String.replace(url, "{conversation_id}", to_string(conversation_id))
@@ -350,11 +376,16 @@ defmodule ExOpenAI.Conversations do
     * `:item_id` - **required** - `String.t()`  
       The ID of the item to delete.
     """
-    @spec delete_conversation_item(
-            conversation_id :: String.t(),
-            item_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_conversation_item(
+              conversation_id :: String.t(),
+              item_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ConversationResource.t()} | {:error, any()}
+    )
+
     def delete_conversation_item(conversation_id, item_id, opts \\ []) do
       url = "/conversations/{conversation_id}/items/{item_id}"
       url = String.replace(url, "{conversation_id}", to_string(conversation_id))
@@ -411,11 +442,15 @@ defmodule ExOpenAI.Conversations do
       Additional fields to include in the response. See the `include`
     parameter for [listing Conversation items above](/docs/api-reference/conversations/list-items#conversations_list_items-include) for more information.
     """
-    @spec get_conversation_item(
-            conversation_id :: String.t(),
-            item_id :: String.t(),
-            opts :: [include: any()]
-          ) :: {:ok, ExOpenAI.Components.ConversationItem.t()} | {:error, any()}
+    (
+      @type get_conversation_item_opt() :: {:include, any()}
+      @spec get_conversation_item(
+              conversation_id :: String.t(),
+              item_id :: String.t(),
+              opts :: [get_conversation_item_opt()]
+            ) :: {:ok, ExOpenAI.Components.ConversationItem.t()} | {:error, any()}
+    )
+
     def get_conversation_item(conversation_id, item_id, opts \\ []) do
       url = "/conversations/{conversation_id}/items/{item_id}"
       url = String.replace(url, "{conversation_id}", to_string(conversation_id))

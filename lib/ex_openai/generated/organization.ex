@@ -17,9 +17,13 @@ defmodule ExOpenAI.Organization do
     * `:limit` - **optional** - `integer()`  
       Default: `20`
     """
-    @spec admin_api_keys_list(
-            opts :: [({:after, String.t()} | {:order, String.t()}) | {:limit, integer()}]
-          ) :: {:ok, ExOpenAI.Components.ApiKeyList.t()} | {:error, any()}
+    (
+      @type admin_api_keys_list_opt() ::
+              ({:after, String.t()} | {:order, String.t()}) | {:limit, integer()}
+      @spec admin_api_keys_list(opts :: [admin_api_keys_list_opt()]) ::
+              {:ok, ExOpenAI.Components.ApiKeyList.t()} | {:error, any()}
+    )
+
     def admin_api_keys_list(opts \\ []) do
       url = "/organization/admin_api_keys"
       query_params = Keyword.take(opts, [:after, :order, :limit])
@@ -62,8 +66,13 @@ defmodule ExOpenAI.Organization do
 
     Create a new admin-level API key for the organization.
     """
-    @spec admin_api_keys_create(opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.AdminApiKey.t()} | {:error, any()}
+    (
+      nil
+
+      @spec admin_api_keys_create(opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.AdminApiKey.t()} | {:error, any()}
+    )
+
     def admin_api_keys_create(opts \\ []) do
       url = "/organization/admin_api_keys"
       query_params = Keyword.take(opts, [])
@@ -110,8 +119,13 @@ defmodule ExOpenAI.Organization do
 
     * `:key_id` - **required** - `String.t()`
     """
-    @spec admin_api_keys_delete(key_id :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec admin_api_keys_delete(key_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def admin_api_keys_delete(key_id, opts \\ []) do
       url = "/organization/admin_api_keys/{key_id}"
       url = String.replace(url, "{key_id}", to_string(key_id))
@@ -156,8 +170,13 @@ defmodule ExOpenAI.Organization do
 
     * `:key_id` - **required** - `String.t()`
     """
-    @spec admin_api_keys_get(key_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.AdminApiKey.t()} | {:error, any()}
+    (
+      nil
+
+      @spec admin_api_keys_get(key_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.AdminApiKey.t()} | {:error, any()}
+    )
+
     def admin_api_keys_get(key_id, opts \\ []) do
       url = "/organization/admin_api_keys/{key_id}"
       url = String.replace(url, "{key_id}", to_string(key_id))
@@ -229,8 +248,8 @@ defmodule ExOpenAI.Organization do
     * `:before` - **optional** - `String.t()`  
       A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
     """
-    @spec list_audit_logs(
-            opts :: [
+    (
+      @type list_audit_logs_opt() ::
               ((((((({:effective_at, any()} | {:"project_ids[]", any()})
                     | {:"event_types[]", any()})
                    | {:"actor_ids[]", any()})
@@ -239,8 +258,10 @@ defmodule ExOpenAI.Organization do
                 | {:limit, integer()})
                | {:after, String.t()})
               | {:before, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListAuditLogsResponse.t()} | {:error, any()}
+      @spec list_audit_logs(opts :: [list_audit_logs_opt()]) ::
+              {:ok, ExOpenAI.Components.ListAuditLogsResponse.t()} | {:error, any()}
+    )
+
     def list_audit_logs(opts \\ []) do
       url = "/organization/audit_logs"
 
@@ -334,9 +355,13 @@ defmodule ExOpenAI.Organization do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"desc"`
     """
-    @spec list_organization_certificates(
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    (
+      @type list_organization_certificates_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_organization_certificates(opts :: [list_organization_certificates_opt()]) ::
+              {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    )
+
     def list_organization_certificates(opts \\ []) do
       url = "/organization/certificates"
       query_params = Keyword.take(opts, [:limit, :after, :order])
@@ -392,8 +417,12 @@ defmodule ExOpenAI.Organization do
     * `name` - **optional** - `String.t()`  
       An optional name for the certificate
     """
-    @spec upload_certificate(content :: String.t(), opts :: [name: String.t()]) ::
-            {:ok, ExOpenAI.Components.Certificate.t()} | {:error, any()}
+    (
+      @type upload_certificate_opt() :: {:name, String.t()}
+      @spec upload_certificate(content :: String.t(), opts :: [upload_certificate_opt()]) ::
+              {:ok, ExOpenAI.Components.Certificate.t()} | {:error, any()}
+    )
+
     def upload_certificate(content, opts \\ []) do
       url = "/organization/certificates"
       query_params = Keyword.take(opts, [])
@@ -442,10 +471,15 @@ defmodule ExOpenAI.Organization do
     * `certificate_ids` - **required** - `[String.t()]`  
       Constraints: minItems: 1, maxItems: 10
     """
-    @spec activate_organization_certificates(
-            certificate_ids :: list(String.t()),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec activate_organization_certificates(
+              certificate_ids :: list(String.t()),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    )
+
     def activate_organization_certificates(certificate_ids, opts \\ []) do
       url = "/organization/certificates/activate"
       query_params = Keyword.take(opts, [])
@@ -496,10 +530,15 @@ defmodule ExOpenAI.Organization do
     * `certificate_ids` - **required** - `[String.t()]`  
       Constraints: minItems: 1, maxItems: 10
     """
-    @spec deactivate_organization_certificates(
-            certificate_ids :: list(String.t()),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec deactivate_organization_certificates(
+              certificate_ids :: list(String.t()),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    )
+
     def deactivate_organization_certificates(certificate_ids, opts \\ []) do
       url = "/organization/certificates/deactivate"
       query_params = Keyword.take(opts, [])
@@ -550,8 +589,13 @@ defmodule ExOpenAI.Organization do
     * `:certificate_id` - **required** - `String.t()`  
       Unique ID of the certificate to delete.
     """
-    @spec delete_certificate(certificate_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeleteCertificateResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_certificate(certificate_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeleteCertificateResponse.t()} | {:error, any()}
+    )
+
     def delete_certificate(certificate_id, opts \\ []) do
       url = "/organization/certificates/{certificate_id}"
       url = String.replace(url, "{certificate_id}", to_string(certificate_id))
@@ -608,8 +652,12 @@ defmodule ExOpenAI.Organization do
     * `:include` - **optional** - `[String.t()]`  
       A list of additional fields to include in the response. Currently the only supported value is `content` to fetch the PEM content of the certificate.
     """
-    @spec get_certificate(certificate_id :: String.t(), opts :: [include: any()]) ::
-            {:ok, ExOpenAI.Components.Certificate.t()} | {:error, any()}
+    (
+      @type get_certificate_opt() :: {:include, any()}
+      @spec get_certificate(certificate_id :: String.t(), opts :: [get_certificate_opt()]) ::
+              {:ok, ExOpenAI.Components.Certificate.t()} | {:error, any()}
+    )
+
     def get_certificate(certificate_id, opts \\ []) do
       url = "/organization/certificates/{certificate_id}"
       url = String.replace(url, "{certificate_id}", to_string(certificate_id))
@@ -660,8 +708,16 @@ defmodule ExOpenAI.Organization do
     * `name` - **required** - `String.t()`  
       The updated name for the certificate
     """
-    @spec modify_certificate(certificate_id :: String.t(), name :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Certificate.t()} | {:error, any()}
+    (
+      nil
+
+      @spec modify_certificate(
+              certificate_id :: String.t(),
+              name :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.Certificate.t()} | {:error, any()}
+    )
+
     def modify_certificate(certificate_id, name, opts \\ []) do
       url = "/organization/certificates/{certificate_id}"
       url = String.replace(url, "{certificate_id}", to_string(certificate_id))
@@ -729,16 +785,18 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_costs(
-            opts :: [
+    (
+      @type usage_costs_opt() ::
               ((((({:start_time, integer()} | {:end_time, integer()})
                   | {:bucket_width, String.t()})
                  | {:project_ids, any()})
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_costs(opts :: [usage_costs_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_costs(opts \\ []) do
       url = "/organization/costs"
 
@@ -819,9 +877,13 @@ defmodule ExOpenAI.Organization do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"asc"`
     """
-    @spec list_groups(
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.GroupListResource.t()} | {:error, any()}
+    (
+      @type list_groups_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_groups(opts :: [list_groups_opt()]) ::
+              {:ok, ExOpenAI.Components.GroupListResource.t()} | {:error, any()}
+    )
+
     def list_groups(opts \\ []) do
       url = "/organization/groups"
       query_params = Keyword.take(opts, [:limit, :after, :order])
@@ -868,8 +930,13 @@ defmodule ExOpenAI.Organization do
       Human readable name for the group.  
       Constraints: minLength: 1, maxLength: 255
     """
-    @spec create_group(name :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.GroupResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_group(name :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.GroupResponse.t()} | {:error, any()}
+    )
+
     def create_group(name, opts \\ []) do
       url = "/organization/groups"
       query_params = Keyword.take(opts, [])
@@ -915,8 +982,13 @@ defmodule ExOpenAI.Organization do
     * `:group_id` - **required** - `String.t()`  
       The ID of the group to delete.
     """
-    @spec delete_group(group_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.GroupDeletedResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_group(group_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.GroupDeletedResource.t()} | {:error, any()}
+    )
+
     def delete_group(group_id, opts \\ []) do
       url = "/organization/groups/{group_id}"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -967,8 +1039,13 @@ defmodule ExOpenAI.Organization do
       New display name for the group.  
       Constraints: minLength: 1, maxLength: 255
     """
-    @spec update_group(group_id :: String.t(), name :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.GroupResourceWithSuccess.t()} | {:error, any()}
+    (
+      nil
+
+      @spec update_group(group_id :: String.t(), name :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.GroupResourceWithSuccess.t()} | {:error, any()}
+    )
+
     def update_group(group_id, name, opts \\ []) do
       url = "/organization/groups/{group_id}"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -1030,10 +1107,15 @@ defmodule ExOpenAI.Organization do
       Sort order for the returned organization roles.  
       Allowed values: `"asc"`, `"desc"`
     """
-    @spec list_group_role_assignments(
-            group_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    (
+      @type list_group_role_assignments_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_group_role_assignments(
+              group_id :: String.t(),
+              opts :: [list_group_role_assignments_opt()]
+            ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    )
+
     def list_group_role_assignments(group_id, opts \\ []) do
       url = "/organization/groups/{group_id}/roles"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -1083,8 +1165,13 @@ defmodule ExOpenAI.Organization do
     * `role_id` - **required** - `String.t()`  
       Identifier of the role to assign.
     """
-    @spec assign_group_role(group_id :: String.t(), role_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.GroupRoleAssignment.t()} | {:error, any()}
+    (
+      nil
+
+      @spec assign_group_role(group_id :: String.t(), role_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.GroupRoleAssignment.t()} | {:error, any()}
+    )
+
     def assign_group_role(group_id, role_id, opts \\ []) do
       url = "/organization/groups/{group_id}/roles"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -1134,8 +1221,13 @@ defmodule ExOpenAI.Organization do
     * `:role_id` - **required** - `String.t()`  
       The ID of the organization role to remove from the group.
     """
-    @spec unassign_group_role(group_id :: String.t(), role_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec unassign_group_role(group_id :: String.t(), role_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    )
+
     def unassign_group_role(group_id, role_id, opts \\ []) do
       url = "/organization/groups/{group_id}/roles/{role_id}"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -1200,10 +1292,13 @@ defmodule ExOpenAI.Organization do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"desc"`
     """
-    @spec list_group_users(
-            group_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.UserListResource.t()} | {:error, any()}
+    (
+      @type list_group_users_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_group_users(group_id :: String.t(), opts :: [list_group_users_opt()]) ::
+              {:ok, ExOpenAI.Components.UserListResource.t()} | {:error, any()}
+    )
+
     def list_group_users(group_id, opts \\ []) do
       url = "/organization/groups/{group_id}/users"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -1253,8 +1348,13 @@ defmodule ExOpenAI.Organization do
     * `user_id` - **required** - `String.t()`  
       Identifier of the user to add to the group.
     """
-    @spec add_group_user(group_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.GroupUserAssignment.t()} | {:error, any()}
+    (
+      nil
+
+      @spec add_group_user(group_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.GroupUserAssignment.t()} | {:error, any()}
+    )
+
     def add_group_user(group_id, user_id, opts \\ []) do
       url = "/organization/groups/{group_id}/users"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -1304,8 +1404,13 @@ defmodule ExOpenAI.Organization do
     * `:user_id` - **required** - `String.t()`  
       The ID of the user to remove from the group.
     """
-    @spec remove_group_user(group_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.GroupUserDeletedResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec remove_group_user(group_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.GroupUserDeletedResource.t()} | {:error, any()}
+    )
+
     def remove_group_user(group_id, user_id, opts \\ []) do
       url = "/organization/groups/{group_id}/users/{user_id}"
       url = String.replace(url, "{group_id}", to_string(group_id))
@@ -1359,8 +1464,12 @@ defmodule ExOpenAI.Organization do
     * `:after` - **optional** - `String.t()`  
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
     """
-    @spec list_invites(opts :: [{:limit, integer()} | {:after, String.t()}]) ::
-            {:ok, ExOpenAI.Components.InviteListResponse.t()} | {:error, any()}
+    (
+      @type list_invites_opt() :: {:limit, integer()} | {:after, String.t()}
+      @spec list_invites(opts :: [list_invites_opt()]) ::
+              {:ok, ExOpenAI.Components.InviteListResponse.t()} | {:error, any()}
+    )
+
     def list_invites(opts \\ []) do
       url = "/organization/invites"
       query_params = Keyword.take(opts, [:limit, :after])
@@ -1415,13 +1524,17 @@ defmodule ExOpenAI.Organization do
     * `projects` - **optional** - `[any()]`  
       An array of projects to which membership is granted at the same time the org invite is accepted. If omitted, the user will be invited to the default project for compatibility with legacy behavior.
     """
-    @spec invite_user(
-            email :: String.t(),
-            role :: :reader | :owner,
-            opts :: [
-              projects: list(%{required(:id) => String.t(), required(:role) => :member | :owner})
-            ]
-          ) :: {:ok, ExOpenAI.Components.Invite.t()} | {:error, any()}
+    (
+      @type invite_user_opt() ::
+              {:projects,
+               list(%{required(:id) => String.t(), required(:role) => :member | :owner})}
+      @spec invite_user(
+              email :: String.t(),
+              role :: :reader | :owner,
+              opts :: [invite_user_opt()]
+            ) :: {:ok, ExOpenAI.Components.Invite.t()} | {:error, any()}
+    )
+
     def invite_user(email, role, opts \\ []) do
       url = "/organization/invites"
       query_params = Keyword.take(opts, [])
@@ -1467,8 +1580,13 @@ defmodule ExOpenAI.Organization do
     * `:invite_id` - **required** - `String.t()`  
       The ID of the invite to delete.
     """
-    @spec delete_invite(invite_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.InviteDeleteResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_invite(invite_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.InviteDeleteResponse.t()} | {:error, any()}
+    )
+
     def delete_invite(invite_id, opts \\ []) do
       url = "/organization/invites/{invite_id}"
       url = String.replace(url, "{invite_id}", to_string(invite_id))
@@ -1515,8 +1633,13 @@ defmodule ExOpenAI.Organization do
     * `:invite_id` - **required** - `String.t()`  
       The ID of the invite to retrieve.
     """
-    @spec retrieve_invite(invite_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Invite.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_invite(invite_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Invite.t()} | {:error, any()}
+    )
+
     def retrieve_invite(invite_id, opts \\ []) do
       url = "/organization/invites/{invite_id}"
       url = String.replace(url, "{invite_id}", to_string(invite_id))
@@ -1571,11 +1694,13 @@ defmodule ExOpenAI.Organization do
       If `true` returns all projects including those that have been `archived`. Archived projects are not included by default.  
       Default: `false`
     """
-    @spec list_projects(
-            opts :: [
+    (
+      @type list_projects_opt() ::
               ({:limit, integer()} | {:after, String.t()}) | {:include_archived, boolean()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ProjectListResponse.t()} | {:error, any()}
+      @spec list_projects(opts :: [list_projects_opt()]) ::
+              {:ok, ExOpenAI.Components.ProjectListResponse.t()} | {:error, any()}
+    )
+
     def list_projects(opts \\ []) do
       url = "/organization/projects"
       query_params = Keyword.take(opts, [:limit, :after, :include_archived])
@@ -1630,10 +1755,13 @@ defmodule ExOpenAI.Organization do
       Create the project with the specified data residency region. Your organization must have access to Data residency functionality in order to use. See [data residency controls](/docs/guides/your-data#data-residency-controls) to review the functionality and limitations of setting this field.  
       Allowed values: `"US"`, `"EU"`, `"JP"`, `"IN"`, `"KR"`, `"CA"`, `"AU"`, `"SG"`
     """
-    @spec create_project(
-            name :: String.t(),
-            opts :: [geography: ((((((:US | :EU) | :JP) | :IN) | :KR) | :CA) | :AU) | :SG]
-          ) :: {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    (
+      @type create_project_opt() ::
+              {:geography, ((((((:US | :EU) | :JP) | :IN) | :KR) | :CA) | :AU) | :SG}
+      @spec create_project(name :: String.t(), opts :: [create_project_opt()]) ::
+              {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    )
+
     def create_project(name, opts \\ []) do
       url = "/organization/projects"
       query_params = Keyword.take(opts, [])
@@ -1679,8 +1807,13 @@ defmodule ExOpenAI.Organization do
     * `:project_id` - **required** - `String.t()`  
       The ID of the project.
     """
-    @spec retrieve_project(project_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_project(project_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    )
+
     def retrieve_project(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -1730,8 +1863,13 @@ defmodule ExOpenAI.Organization do
     * `name` - **required** - `String.t()`  
       The updated name of the project, this name appears in reports.
     """
-    @spec modify_project(name :: String.t(), project_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    (
+      nil
+
+      @spec modify_project(name :: String.t(), project_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    )
+
     def modify_project(name, project_id, opts \\ []) do
       url = "/organization/projects/{project_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -1787,10 +1925,12 @@ defmodule ExOpenAI.Organization do
     * `:after` - **optional** - `String.t()`  
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
     """
-    @spec list_project_api_keys(
-            project_id :: String.t(),
-            opts :: [{:limit, integer()} | {:after, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ProjectApiKeyListResponse.t()} | {:error, any()}
+    (
+      @type list_project_api_keys_opt() :: {:limit, integer()} | {:after, String.t()}
+      @spec list_project_api_keys(project_id :: String.t(), opts :: [list_project_api_keys_opt()]) ::
+              {:ok, ExOpenAI.Components.ProjectApiKeyListResponse.t()} | {:error, any()}
+    )
+
     def list_project_api_keys(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/api_keys"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -1846,11 +1986,16 @@ defmodule ExOpenAI.Organization do
     * `:key_id` - **required** - `String.t()`  
       The ID of the API key.
     """
-    @spec delete_project_api_key(
-            key_id :: String.t(),
-            project_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectApiKeyDeleteResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_project_api_key(
+              key_id :: String.t(),
+              project_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectApiKeyDeleteResponse.t()} | {:error, any()}
+    )
+
     def delete_project_api_key(key_id, project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/api_keys/{key_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -1903,11 +2048,16 @@ defmodule ExOpenAI.Organization do
     * `:key_id` - **required** - `String.t()`  
       The ID of the API key.
     """
-    @spec retrieve_project_api_key(
-            key_id :: String.t(),
-            project_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectApiKey.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_project_api_key(
+              key_id :: String.t(),
+              project_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectApiKey.t()} | {:error, any()}
+    )
+
     def retrieve_project_api_key(key_id, project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/api_keys/{key_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -1955,8 +2105,13 @@ defmodule ExOpenAI.Organization do
     * `:project_id` - **required** - `String.t()`  
       The ID of the project.
     """
-    @spec archive_project(project_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    (
+      nil
+
+      @spec archive_project(project_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Project.t()} | {:error, any()}
+    )
+
     def archive_project(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/archive"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2017,10 +2172,15 @@ defmodule ExOpenAI.Organization do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"desc"`
     """
-    @spec list_project_certificates(
-            project_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    (
+      @type list_project_certificates_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_project_certificates(
+              project_id :: String.t(),
+              opts :: [list_project_certificates_opt()]
+            ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    )
+
     def list_project_certificates(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/certificates"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2075,11 +2235,16 @@ defmodule ExOpenAI.Organization do
     * `certificate_ids` - **required** - `[String.t()]`  
       Constraints: minItems: 1, maxItems: 10
     """
-    @spec activate_project_certificates(
-            certificate_ids :: list(String.t()),
-            project_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec activate_project_certificates(
+              certificate_ids :: list(String.t()),
+              project_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    )
+
     def activate_project_certificates(certificate_ids, project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/certificates/activate"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2133,11 +2298,16 @@ defmodule ExOpenAI.Organization do
     * `certificate_ids` - **required** - `[String.t()]`  
       Constraints: minItems: 1, maxItems: 10
     """
-    @spec deactivate_project_certificates(
-            certificate_ids :: list(String.t()),
-            project_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec deactivate_project_certificates(
+              certificate_ids :: list(String.t()),
+              project_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ListCertificatesResponse.t()} | {:error, any()}
+    )
+
     def deactivate_project_certificates(certificate_ids, project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/certificates/deactivate"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2201,10 +2371,13 @@ defmodule ExOpenAI.Organization do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"asc"`
     """
-    @spec list_project_groups(
-            project_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ProjectGroupListResource.t()} | {:error, any()}
+    (
+      @type list_project_groups_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_project_groups(project_id :: String.t(), opts :: [list_project_groups_opt()]) ::
+              {:ok, ExOpenAI.Components.ProjectGroupListResource.t()} | {:error, any()}
+    )
+
     def list_project_groups(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/groups"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2259,12 +2432,17 @@ defmodule ExOpenAI.Organization do
     * `role` - **required** - `String.t()`  
       Identifier of the project role to grant to the group.
     """
-    @spec add_project_group(
-            group_id :: String.t(),
-            project_id :: String.t(),
-            role :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectGroup.t()} | {:error, any()}
+    (
+      nil
+
+      @spec add_project_group(
+              group_id :: String.t(),
+              project_id :: String.t(),
+              role :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectGroup.t()} | {:error, any()}
+    )
+
     def add_project_group(group_id, project_id, role, opts \\ []) do
       url = "/organization/projects/{project_id}/groups"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2314,11 +2492,16 @@ defmodule ExOpenAI.Organization do
     * `:group_id` - **required** - `String.t()`  
       The ID of the group to remove from the project.
     """
-    @spec remove_project_group(
-            group_id :: String.t(),
-            project_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectGroupDeletedResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec remove_project_group(
+              group_id :: String.t(),
+              project_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectGroupDeletedResource.t()} | {:error, any()}
+    )
+
     def remove_project_group(group_id, project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/groups/{group_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2380,10 +2563,15 @@ defmodule ExOpenAI.Organization do
     * `:before` - **optional** - `String.t()`  
       A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, beginning with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
     """
-    @spec list_project_rate_limits(
-            project_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:before, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ProjectRateLimitListResponse.t()} | {:error, any()}
+    (
+      @type list_project_rate_limits_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:before, String.t()}
+      @spec list_project_rate_limits(
+              project_id :: String.t(),
+              opts :: [list_project_rate_limits_opt()]
+            ) :: {:ok, ExOpenAI.Components.ProjectRateLimitListResponse.t()} | {:error, any()}
+    )
+
     def list_project_rate_limits(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/rate_limits"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2455,18 +2643,21 @@ defmodule ExOpenAI.Organization do
     * `max_tokens_per_1_minute` - **optional** - `integer()`  
       The maximum tokens per minute.
     """
-    @spec update_project_rate_limits(
-            project_id :: String.t(),
-            rate_limit_id :: String.t(),
-            opts :: [
+    (
+      @type update_project_rate_limits_opt() ::
               (((({:batch_1_day_max_input_tokens, integer()}
                   | {:max_audio_megabytes_per_1_minute, integer()})
                  | {:max_images_per_1_minute, integer()})
                 | {:max_requests_per_1_day, integer()})
                | {:max_requests_per_1_minute, integer()})
               | {:max_tokens_per_1_minute, integer()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ProjectRateLimit.t()} | {:error, any()}
+      @spec update_project_rate_limits(
+              project_id :: String.t(),
+              rate_limit_id :: String.t(),
+              opts :: [update_project_rate_limits_opt()]
+            ) :: {:ok, ExOpenAI.Components.ProjectRateLimit.t()} | {:error, any()}
+    )
+
     def update_project_rate_limits(project_id, rate_limit_id, opts \\ []) do
       url = "/organization/projects/{project_id}/rate_limits/{rate_limit_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2544,10 +2735,15 @@ defmodule ExOpenAI.Organization do
     * `:after` - **optional** - `String.t()`  
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
     """
-    @spec list_project_service_accounts(
-            project_id :: String.t(),
-            opts :: [{:limit, integer()} | {:after, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ProjectServiceAccountListResponse.t()} | {:error, any()}
+    (
+      @type list_project_service_accounts_opt() :: {:limit, integer()} | {:after, String.t()}
+      @spec list_project_service_accounts(
+              project_id :: String.t(),
+              opts :: [list_project_service_accounts_opt()]
+            ) ::
+              {:ok, ExOpenAI.Components.ProjectServiceAccountListResponse.t()} | {:error, any()}
+    )
+
     def list_project_service_accounts(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/service_accounts"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2599,12 +2795,17 @@ defmodule ExOpenAI.Organization do
     * `name` - **required** - `String.t()`  
       The name of the service account being created.
     """
-    @spec create_project_service_account(
-            name :: String.t(),
-            project_id :: String.t(),
-            opts :: keyword()
-          ) ::
-            {:ok, ExOpenAI.Components.ProjectServiceAccountCreateResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_project_service_account(
+              name :: String.t(),
+              project_id :: String.t(),
+              opts :: keyword()
+            ) ::
+              {:ok, ExOpenAI.Components.ProjectServiceAccountCreateResponse.t()} | {:error, any()}
+    )
+
     def create_project_service_account(name, project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/service_accounts"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2660,12 +2861,17 @@ defmodule ExOpenAI.Organization do
     * `:service_account_id` - **required** - `String.t()`  
       The ID of the service account.
     """
-    @spec delete_project_service_account(
-            project_id :: String.t(),
-            service_account_id :: String.t(),
-            opts :: keyword()
-          ) ::
-            {:ok, ExOpenAI.Components.ProjectServiceAccountDeleteResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_project_service_account(
+              project_id :: String.t(),
+              service_account_id :: String.t(),
+              opts :: keyword()
+            ) ::
+              {:ok, ExOpenAI.Components.ProjectServiceAccountDeleteResponse.t()} | {:error, any()}
+    )
+
     def delete_project_service_account(project_id, service_account_id, opts \\ []) do
       url = "/organization/projects/{project_id}/service_accounts/{service_account_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2718,11 +2924,16 @@ defmodule ExOpenAI.Organization do
     * `:service_account_id` - **required** - `String.t()`  
       The ID of the service account.
     """
-    @spec retrieve_project_service_account(
-            project_id :: String.t(),
-            service_account_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectServiceAccount.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_project_service_account(
+              project_id :: String.t(),
+              service_account_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectServiceAccount.t()} | {:error, any()}
+    )
+
     def retrieve_project_service_account(project_id, service_account_id, opts \\ []) do
       url = "/organization/projects/{project_id}/service_accounts/{service_account_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2779,10 +2990,12 @@ defmodule ExOpenAI.Organization do
     * `:after` - **optional** - `String.t()`  
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
     """
-    @spec list_project_users(
-            project_id :: String.t(),
-            opts :: [{:limit, integer()} | {:after, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ProjectUserListResponse.t()} | {:error, any()}
+    (
+      @type list_project_users_opt() :: {:limit, integer()} | {:after, String.t()}
+      @spec list_project_users(project_id :: String.t(), opts :: [list_project_users_opt()]) ::
+              {:ok, ExOpenAI.Components.ProjectUserListResponse.t()} | {:error, any()}
+    )
+
     def list_project_users(project_id, opts \\ []) do
       url = "/organization/projects/{project_id}/users"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2836,12 +3049,17 @@ defmodule ExOpenAI.Organization do
     * `user_id` - **required** - `String.t()`  
       The ID of the user.
     """
-    @spec create_project_user(
-            project_id :: String.t(),
-            role :: :owner | :member,
-            user_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectUser.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_project_user(
+              project_id :: String.t(),
+              role :: :owner | :member,
+              user_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectUser.t()} | {:error, any()}
+    )
+
     def create_project_user(project_id, role, user_id, opts \\ []) do
       url = "/organization/projects/{project_id}/users"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2895,8 +3113,16 @@ defmodule ExOpenAI.Organization do
     * `:user_id` - **required** - `String.t()`  
       The ID of the user.
     """
-    @spec delete_project_user(project_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ProjectUserDeleteResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_project_user(
+              project_id :: String.t(),
+              user_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectUserDeleteResponse.t()} | {:error, any()}
+    )
+
     def delete_project_user(project_id, user_id, opts \\ []) do
       url = "/organization/projects/{project_id}/users/{user_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -2949,11 +3175,16 @@ defmodule ExOpenAI.Organization do
     * `:user_id` - **required** - `String.t()`  
       The ID of the user.
     """
-    @spec retrieve_project_user(
-            project_id :: String.t(),
-            user_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectUser.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_project_user(
+              project_id :: String.t(),
+              user_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectUser.t()} | {:error, any()}
+    )
+
     def retrieve_project_user(project_id, user_id, opts \\ []) do
       url = "/organization/projects/{project_id}/users/{user_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -3008,12 +3239,17 @@ defmodule ExOpenAI.Organization do
       `owner` or `member`  
       Allowed values: `"owner"`, `"member"`
     """
-    @spec modify_project_user(
-            project_id :: String.t(),
-            role :: :owner | :member,
-            user_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ProjectUser.t()} | {:error, any()}
+    (
+      nil
+
+      @spec modify_project_user(
+              project_id :: String.t(),
+              role :: :owner | :member,
+              user_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ProjectUser.t()} | {:error, any()}
+    )
+
     def modify_project_user(project_id, role, user_id, opts \\ []) do
       url = "/organization/projects/{project_id}/users/{user_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -3071,9 +3307,13 @@ defmodule ExOpenAI.Organization do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"asc"`
     """
-    @spec list_roles(
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.PublicRoleListResource.t()} | {:error, any()}
+    (
+      @type list_roles_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_roles(opts :: [list_roles_opt()]) ::
+              {:ok, ExOpenAI.Components.PublicRoleListResource.t()} | {:error, any()}
+    )
+
     def list_roles(opts \\ []) do
       url = "/organization/roles"
       query_params = Keyword.take(opts, [:limit, :after, :order])
@@ -3127,11 +3367,15 @@ defmodule ExOpenAI.Organization do
     * `description` - **optional** - `String.t() | any()`  
       Optional description of the role.
     """
-    @spec create_role(
-            permissions :: list(String.t()),
-            role_name :: String.t(),
-            opts :: [description: String.t() | any()]
-          ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+    (
+      @type create_role_opt() :: {:description, String.t() | any()}
+      @spec create_role(
+              permissions :: list(String.t()),
+              role_name :: String.t(),
+              opts :: [create_role_opt()]
+            ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+    )
+
     def create_role(permissions, role_name, opts \\ []) do
       url = "/organization/roles"
       query_params = Keyword.take(opts, [])
@@ -3177,8 +3421,13 @@ defmodule ExOpenAI.Organization do
     * `:role_id` - **required** - `String.t()`  
       The ID of the role to delete.
     """
-    @spec delete_role(role_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.RoleDeletedResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_role(role_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.RoleDeletedResource.t()} | {:error, any()}
+    )
+
     def delete_role(role_id, opts \\ []) do
       url = "/organization/roles/{role_id}"
       url = String.replace(url, "{role_id}", to_string(role_id))
@@ -3236,13 +3485,14 @@ defmodule ExOpenAI.Organization do
     * `role_name` - **optional** - `String.t() | any()`  
       New name for the role.
     """
-    @spec update_role(
-            role_id :: String.t(),
-            opts :: [
+    (
+      @type update_role_opt() ::
               ({:description, String.t() | any()} | {:permissions, list(String.t()) | any()})
               | {:role_name, String.t() | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+      @spec update_role(role_id :: String.t(), opts :: [update_role_opt()]) ::
+              {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+    )
+
     def update_role(role_id, opts \\ []) do
       url = "/organization/roles/{role_id}"
       url = String.replace(url, "{role_id}", to_string(role_id))
@@ -3324,8 +3574,8 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_audio_speeches(
-            opts :: [
+    (
+      @type usage_audio_speeches_opt() ::
               (((((((({:start_time, integer()} | {:end_time, integer()})
                      | {:bucket_width, String.t()})
                     | {:project_ids, any()})
@@ -3335,8 +3585,10 @@ defmodule ExOpenAI.Organization do
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_audio_speeches(opts :: [usage_audio_speeches_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_audio_speeches(opts \\ []) do
       url = "/organization/usage/audio_speeches"
 
@@ -3456,8 +3708,8 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_audio_transcriptions(
-            opts :: [
+    (
+      @type usage_audio_transcriptions_opt() ::
               (((((((({:start_time, integer()} | {:end_time, integer()})
                      | {:bucket_width, String.t()})
                     | {:project_ids, any()})
@@ -3467,8 +3719,10 @@ defmodule ExOpenAI.Organization do
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_audio_transcriptions(opts :: [usage_audio_transcriptions_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_audio_transcriptions(opts \\ []) do
       url = "/organization/usage/audio_transcriptions"
 
@@ -3579,16 +3833,18 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_code_interpreter_sessions(
-            opts :: [
+    (
+      @type usage_code_interpreter_sessions_opt() ::
               ((((({:start_time, integer()} | {:end_time, integer()})
                   | {:bucket_width, String.t()})
                  | {:project_ids, any()})
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_code_interpreter_sessions(opts :: [usage_code_interpreter_sessions_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_code_interpreter_sessions(opts \\ []) do
       url = "/organization/usage/code_interpreter_sessions"
 
@@ -3694,8 +3950,8 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_completions(
-            opts :: [
+    (
+      @type usage_completions_opt() ::
               ((((((((({:start_time, integer()} | {:end_time, integer()})
                       | {:bucket_width, String.t()})
                      | {:project_ids, any()})
@@ -3706,8 +3962,10 @@ defmodule ExOpenAI.Organization do
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_completions(opts :: [usage_completions_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_completions(opts \\ []) do
       url = "/organization/usage/completions"
 
@@ -3830,8 +4088,8 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_embeddings(
-            opts :: [
+    (
+      @type usage_embeddings_opt() ::
               (((((((({:start_time, integer()} | {:end_time, integer()})
                      | {:bucket_width, String.t()})
                     | {:project_ids, any()})
@@ -3841,8 +4099,10 @@ defmodule ExOpenAI.Organization do
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_embeddings(opts :: [usage_embeddings_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_embeddings(opts \\ []) do
       url = "/organization/usage/embeddings"
 
@@ -3968,8 +4228,8 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_images(
-            opts :: [
+    (
+      @type usage_images_opt() ::
               (((((((((({:start_time, integer()} | {:end_time, integer()})
                        | {:bucket_width, String.t()})
                       | {:sources, any()})
@@ -3981,8 +4241,10 @@ defmodule ExOpenAI.Organization do
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_images(opts :: [usage_images_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_images(opts \\ []) do
       url = "/organization/usage/images"
 
@@ -4108,8 +4370,8 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_moderations(
-            opts :: [
+    (
+      @type usage_moderations_opt() ::
               (((((((({:start_time, integer()} | {:end_time, integer()})
                      | {:bucket_width, String.t()})
                     | {:project_ids, any()})
@@ -4119,8 +4381,10 @@ defmodule ExOpenAI.Organization do
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_moderations(opts :: [usage_moderations_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_moderations(opts \\ []) do
       url = "/organization/usage/moderations"
 
@@ -4231,16 +4495,18 @@ defmodule ExOpenAI.Organization do
     * `:page` - **optional** - `String.t()`  
       A cursor for use in pagination. Corresponding to the `next_page` field from the previous response.
     """
-    @spec usage_vector_stores(
-            opts :: [
+    (
+      @type usage_vector_stores_opt() ::
               ((((({:start_time, integer()} | {:end_time, integer()})
                   | {:bucket_width, String.t()})
                  | {:project_ids, any()})
                 | {:group_by, any()})
                | {:limit, integer()})
               | {:page, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+      @spec usage_vector_stores(opts :: [usage_vector_stores_opt()]) ::
+              {:ok, ExOpenAI.Components.UsageResponse.t()} | {:error, any()}
+    )
+
     def usage_vector_stores(opts \\ []) do
       url = "/organization/usage/vector_stores"
 
@@ -4318,8 +4584,12 @@ defmodule ExOpenAI.Organization do
     * `:emails` - **optional** - `[String.t()]`  
       Filter by the email address of users.
     """
-    @spec list_users(opts :: [({:limit, integer()} | {:after, String.t()}) | {:emails, any()}]) ::
-            {:ok, ExOpenAI.Components.UserListResponse.t()} | {:error, any()}
+    (
+      @type list_users_opt() :: ({:limit, integer()} | {:after, String.t()}) | {:emails, any()}
+      @spec list_users(opts :: [list_users_opt()]) ::
+              {:ok, ExOpenAI.Components.UserListResponse.t()} | {:error, any()}
+    )
+
     def list_users(opts \\ []) do
       url = "/organization/users"
       query_params = Keyword.take(opts, [:limit, :after, :emails])
@@ -4365,8 +4635,13 @@ defmodule ExOpenAI.Organization do
     * `:user_id` - **required** - `String.t()`  
       The ID of the user.
     """
-    @spec delete_user(user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.UserDeleteResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_user(user_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.UserDeleteResponse.t()} | {:error, any()}
+    )
+
     def delete_user(user_id, opts \\ []) do
       url = "/organization/users/{user_id}"
       url = String.replace(url, "{user_id}", to_string(user_id))
@@ -4413,8 +4688,13 @@ defmodule ExOpenAI.Organization do
     * `:user_id` - **required** - `String.t()`  
       The ID of the user.
     """
-    @spec retrieve_user(user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.User.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_user(user_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.User.t()} | {:error, any()}
+    )
+
     def retrieve_user(user_id, opts \\ []) do
       url = "/organization/users/{user_id}"
       url = String.replace(url, "{user_id}", to_string(user_id))
@@ -4465,8 +4745,13 @@ defmodule ExOpenAI.Organization do
       `owner` or `reader`  
       Allowed values: `"owner"`, `"reader"`
     """
-    @spec modify_user(role :: :owner | :reader, user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.User.t()} | {:error, any()}
+    (
+      nil
+
+      @spec modify_user(role :: :owner | :reader, user_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.User.t()} | {:error, any()}
+    )
+
     def modify_user(role, user_id, opts \\ []) do
       url = "/organization/users/{user_id}"
       url = String.replace(url, "{user_id}", to_string(user_id))
@@ -4526,10 +4811,15 @@ defmodule ExOpenAI.Organization do
       Sort order for the returned organization roles.  
       Allowed values: `"asc"`, `"desc"`
     """
-    @spec list_user_role_assignments(
-            user_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    (
+      @type list_user_role_assignments_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_user_role_assignments(
+              user_id :: String.t(),
+              opts :: [list_user_role_assignments_opt()]
+            ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    )
+
     def list_user_role_assignments(user_id, opts \\ []) do
       url = "/organization/users/{user_id}/roles"
       url = String.replace(url, "{user_id}", to_string(user_id))
@@ -4579,8 +4869,13 @@ defmodule ExOpenAI.Organization do
     * `role_id` - **required** - `String.t()`  
       Identifier of the role to assign.
     """
-    @spec assign_user_role(role_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.UserRoleAssignment.t()} | {:error, any()}
+    (
+      nil
+
+      @spec assign_user_role(role_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.UserRoleAssignment.t()} | {:error, any()}
+    )
+
     def assign_user_role(role_id, user_id, opts \\ []) do
       url = "/organization/users/{user_id}/roles"
       url = String.replace(url, "{user_id}", to_string(user_id))
@@ -4630,8 +4925,13 @@ defmodule ExOpenAI.Organization do
     * `:role_id` - **required** - `String.t()`  
       The ID of the organization role to remove from the user.
     """
-    @spec unassign_user_role(role_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec unassign_user_role(role_id :: String.t(), user_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    )
+
     def unassign_user_role(role_id, user_id, opts \\ []) do
       url = "/organization/users/{user_id}/roles/{role_id}"
       url = String.replace(url, "{user_id}", to_string(user_id))

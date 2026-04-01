@@ -116,11 +116,8 @@ defmodule ExOpenAI.Completions do
       A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).  
       Example: `"user-1234"`
     """
-    @spec create_completion(
-            model :: String.t() | (:"gpt-3.5-turbo-instruct" | :"davinci-002") | :"babbage-002",
-            prompt ::
-              (((String.t() | list(String.t())) | list(integer())) | list(list(integer()))) | nil,
-            opts :: [
+    (
+      @type create_completion_opt() ::
               (((((((((((((({:best_of, integer() | nil} | {:echo, boolean() | nil})
                            | {:frequency_penalty, number() | nil})
                           | {:logit_bias, map() | nil})
@@ -136,8 +133,17 @@ defmodule ExOpenAI.Completions do
                 | {:temperature, number() | nil})
                | {:top_p, number() | nil})
               | {:user, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.CreateCompletionResponse.t()} | {:error, any()}
+      @spec create_completion(
+              model :: String.t() | (:"gpt-3.5-turbo-instruct" | :"davinci-002") | :"babbage-002",
+              prompt ::
+                (((String.t() | list(String.t())) | list(integer())) | list(list(integer())))
+                | nil,
+              opts :: [create_completion_opt()]
+            ) ::
+              {:ok, ExOpenAI.Components.CreateCompletionResponse.t() | reference()}
+              | {:error, any()}
+    )
+
     def create_completion(model, prompt, opts \\ []) do
       url = "/completions"
       query_params = Keyword.take(opts, [])

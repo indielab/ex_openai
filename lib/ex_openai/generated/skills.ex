@@ -16,8 +16,12 @@ defmodule ExOpenAI.Skills do
     * `:after` - **optional** - `String.t()`  
       Identifier for the last item from the previous pagination request
     """
-    @spec list_skills(opts :: [({:limit, integer()} | {:order, any()}) | {:after, String.t()}]) ::
-            {:ok, ExOpenAI.Components.SkillListResource.t()} | {:error, any()}
+    (
+      @type list_skills_opt() :: ({:limit, integer()} | {:order, any()}) | {:after, String.t()}
+      @spec list_skills(opts :: [list_skills_opt()]) ::
+              {:ok, ExOpenAI.Components.SkillListResource.t()} | {:error, any()}
+    )
+
     def list_skills(opts \\ []) do
       url = "/skills"
       query_params = Keyword.take(opts, [:limit, :order, :after])
@@ -62,8 +66,13 @@ defmodule ExOpenAI.Skills do
 
     * `files` - **required** - `[binary()] | binary()`
     """
-    @spec create_skill(opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.SkillResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_skill(opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.SkillResource.t()} | {:error, any()}
+    )
+
     def create_skill(opts \\ []) do
       url = "/skills"
       query_params = Keyword.take(opts, [])
@@ -109,8 +118,13 @@ defmodule ExOpenAI.Skills do
     * `:skill_id` - **required** - `String.t()`  
       The identifier of the skill to delete.
     """
-    @spec delete_skill(skill_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeletedSkillResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_skill(skill_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeletedSkillResource.t()} | {:error, any()}
+    )
+
     def delete_skill(skill_id, opts \\ []) do
       url = "/skills/{skill_id}"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -157,8 +171,13 @@ defmodule ExOpenAI.Skills do
     * `:skill_id` - **required** - `String.t()`  
       The identifier of the skill to retrieve.
     """
-    @spec get_skill(skill_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.SkillResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_skill(skill_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.SkillResource.t()} | {:error, any()}
+    )
+
     def get_skill(skill_id, opts \\ []) do
       url = "/skills/{skill_id}"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -208,8 +227,13 @@ defmodule ExOpenAI.Skills do
     * `default_version` - **required** - `String.t()`  
       The skill version number to set as default.
     """
-    @spec update_skill_default_version(skill_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.SkillResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec update_skill_default_version(skill_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.SkillResource.t()} | {:error, any()}
+    )
+
     def update_skill_default_version(skill_id, opts \\ []) do
       url = "/skills/{skill_id}"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -256,8 +280,13 @@ defmodule ExOpenAI.Skills do
     * `:skill_id` - **required** - `String.t()`  
       The identifier of the skill to download.
     """
-    @spec get_skill_content(skill_id :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec get_skill_content(skill_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def get_skill_content(skill_id, opts \\ []) do
       url = "/skills/{skill_id}/content"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -313,10 +342,13 @@ defmodule ExOpenAI.Skills do
     * `:after` - **optional** - `String.t()`  
       The skill version ID to start after.
     """
-    @spec list_skill_versions(
-            skill_id :: String.t(),
-            opts :: [({:limit, integer()} | {:order, any()}) | {:after, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.SkillVersionListResource.t()} | {:error, any()}
+    (
+      @type list_skill_versions_opt() ::
+              ({:limit, integer()} | {:order, any()}) | {:after, String.t()}
+      @spec list_skill_versions(skill_id :: String.t(), opts :: [list_skill_versions_opt()]) ::
+              {:ok, ExOpenAI.Components.SkillVersionListResource.t()} | {:error, any()}
+    )
+
     def list_skill_versions(skill_id, opts \\ []) do
       url = "/skills/{skill_id}/versions"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -372,8 +404,12 @@ defmodule ExOpenAI.Skills do
     * `default` - **optional** - `boolean()`  
       Whether to set this version as the default.
     """
-    @spec create_skill_version(skill_id :: String.t(), opts :: [default: boolean()]) ::
-            {:ok, ExOpenAI.Components.SkillVersionResource.t()} | {:error, any()}
+    (
+      @type create_skill_version_opt() :: {:default, boolean()}
+      @spec create_skill_version(skill_id :: String.t(), opts :: [create_skill_version_opt()]) ::
+              {:ok, ExOpenAI.Components.SkillVersionResource.t()} | {:error, any()}
+    )
+
     def create_skill_version(skill_id, opts \\ []) do
       url = "/skills/{skill_id}/versions"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -423,8 +459,13 @@ defmodule ExOpenAI.Skills do
     * `:version` - **required** - `String.t()`  
       The skill version number.
     """
-    @spec delete_skill_version(skill_id :: String.t(), version :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeletedSkillVersionResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_skill_version(skill_id :: String.t(), version :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeletedSkillVersionResource.t()} | {:error, any()}
+    )
+
     def delete_skill_version(skill_id, version, opts \\ []) do
       url = "/skills/{skill_id}/versions/{version}"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -477,8 +518,13 @@ defmodule ExOpenAI.Skills do
     * `:version` - **required** - `String.t()`  
       The version number to retrieve.
     """
-    @spec get_skill_version(skill_id :: String.t(), version :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.SkillVersionResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_skill_version(skill_id :: String.t(), version :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.SkillVersionResource.t()} | {:error, any()}
+    )
+
     def get_skill_version(skill_id, version, opts \\ []) do
       url = "/skills/{skill_id}/versions/{version}"
       url = String.replace(url, "{skill_id}", to_string(skill_id))
@@ -529,11 +575,16 @@ defmodule ExOpenAI.Skills do
     * `:version` - **required** - `String.t()`  
       The skill version number.
     """
-    @spec get_skill_version_content(
-            skill_id :: String.t(),
-            version :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec get_skill_version_content(
+              skill_id :: String.t(),
+              version :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def get_skill_version_content(skill_id, version, opts \\ []) do
       url = "/skills/{skill_id}/versions/{version}/content"
       url = String.replace(url, "{skill_id}", to_string(skill_id))

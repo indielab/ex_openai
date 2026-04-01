@@ -17,69 +17,71 @@ defmodule ExOpenAI.Realtime do
     created. Use the same parameters you would send in a [`create client secret`](/docs/api-reference/realtime-sessions/create-realtime-client-secret)
     request.
     """
-    @spec create_realtime_call(
-            sdp :: String.t(),
-            opts :: [
-              session: %{
-                optional(:audio) => %{
-                  optional(:input) => %{
-                    optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.t(),
-                    optional(:noise_reduction) => %{
-                      optional(:type) => ExOpenAI.Components.NoiseReductionType.t()
-                    },
-                    optional(:transcription) => ExOpenAI.Components.AudioTranscription.t(),
-                    optional(:turn_detection) => ExOpenAI.Components.RealtimeTurnDetection.t()
-                  },
-                  optional(:output) => %{
-                    optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.t(),
-                    optional(:speed) => number(),
-                    optional(:voice) => ExOpenAI.Components.VoiceIdsOrCustomVoice.t()
-                  }
-                },
-                optional(:include) => list(:"item.input_audio_transcription.logprobs"),
-                optional(:instructions) => String.t(),
-                optional(:max_output_tokens) => integer() | :inf,
-                optional(:model) =>
-                  String.t()
-                  | ((((((((((((((:"gpt-realtime" | :"gpt-realtime-1.5")
-                                 | :"gpt-realtime-2025-08-28")
-                                | :"gpt-4o-realtime-preview")
-                               | :"gpt-4o-realtime-preview-2024-10-01")
-                              | :"gpt-4o-realtime-preview-2024-12-17")
-                             | :"gpt-4o-realtime-preview-2025-06-03")
-                            | :"gpt-4o-mini-realtime-preview")
-                           | :"gpt-4o-mini-realtime-preview-2024-12-17")
-                          | :"gpt-realtime-mini")
-                         | :"gpt-realtime-mini-2025-10-06")
-                        | :"gpt-realtime-mini-2025-12-15")
-                       | :"gpt-audio-1.5")
-                      | :"gpt-audio-mini")
-                     | :"gpt-audio-mini-2025-10-06")
-                  | :"gpt-audio-mini-2025-12-15",
-                optional(:output_modalities) => list(:text | :audio),
-                optional(:prompt) => ExOpenAI.Components.Prompt.t(),
-                optional(:tool_choice) =>
-                  (ExOpenAI.Components.ToolChoiceOptions.t()
-                   | ExOpenAI.Components.ToolChoiceFunction.t())
-                  | ExOpenAI.Components.ToolChoiceMCP.t(),
-                optional(:tools) =>
-                  list(
-                    ExOpenAI.Components.RealtimeFunctionTool.t()
-                    | ExOpenAI.Components.MCPTool.t()
-                  ),
-                optional(:tracing) =>
-                  (:auto
-                   | %{
-                       optional(:group_id) => String.t(),
-                       optional(:metadata) => map(),
-                       optional(:workflow_name) => String.t()
-                     })
-                  | nil,
-                optional(:truncation) => ExOpenAI.Components.RealtimeTruncation.t(),
-                required(:type) => :realtime
-              }
-            ]
-          ) :: {:ok, map()} | {:error, any()}
+    (
+      @type create_realtime_call_opt() ::
+              {:session,
+               %{
+                 optional(:audio) => %{
+                   optional(:input) => %{
+                     optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.t(),
+                     optional(:noise_reduction) => %{
+                       optional(:type) => ExOpenAI.Components.NoiseReductionType.t()
+                     },
+                     optional(:transcription) => ExOpenAI.Components.AudioTranscription.t(),
+                     optional(:turn_detection) => ExOpenAI.Components.RealtimeTurnDetection.t()
+                   },
+                   optional(:output) => %{
+                     optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.t(),
+                     optional(:speed) => number(),
+                     optional(:voice) => ExOpenAI.Components.VoiceIdsOrCustomVoice.t()
+                   }
+                 },
+                 optional(:include) => list(:"item.input_audio_transcription.logprobs"),
+                 optional(:instructions) => String.t(),
+                 optional(:max_output_tokens) => integer() | :inf,
+                 optional(:model) =>
+                   String.t()
+                   | ((((((((((((((:"gpt-realtime" | :"gpt-realtime-1.5")
+                                  | :"gpt-realtime-2025-08-28")
+                                 | :"gpt-4o-realtime-preview")
+                                | :"gpt-4o-realtime-preview-2024-10-01")
+                               | :"gpt-4o-realtime-preview-2024-12-17")
+                              | :"gpt-4o-realtime-preview-2025-06-03")
+                             | :"gpt-4o-mini-realtime-preview")
+                            | :"gpt-4o-mini-realtime-preview-2024-12-17")
+                           | :"gpt-realtime-mini")
+                          | :"gpt-realtime-mini-2025-10-06")
+                         | :"gpt-realtime-mini-2025-12-15")
+                        | :"gpt-audio-1.5")
+                       | :"gpt-audio-mini")
+                      | :"gpt-audio-mini-2025-10-06")
+                   | :"gpt-audio-mini-2025-12-15",
+                 optional(:output_modalities) => list(:text | :audio),
+                 optional(:prompt) => ExOpenAI.Components.Prompt.t(),
+                 optional(:tool_choice) =>
+                   (ExOpenAI.Components.ToolChoiceOptions.t()
+                    | ExOpenAI.Components.ToolChoiceFunction.t())
+                   | ExOpenAI.Components.ToolChoiceMCP.t(),
+                 optional(:tools) =>
+                   list(
+                     ExOpenAI.Components.RealtimeFunctionTool.t()
+                     | ExOpenAI.Components.MCPTool.t()
+                   ),
+                 optional(:tracing) =>
+                   (:auto
+                    | %{
+                        optional(:group_id) => String.t(),
+                        optional(:metadata) => map(),
+                        optional(:workflow_name) => String.t()
+                      })
+                   | nil,
+                 optional(:truncation) => ExOpenAI.Components.RealtimeTruncation.t(),
+                 required(:type) => :realtime
+               }}
+      @spec create_realtime_call(sdp :: String.t(), opts :: [create_realtime_call_opt()]) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def create_realtime_call(sdp, opts \\ []) do
       url = "/realtime/calls"
       query_params = Keyword.take(opts, [])
@@ -178,10 +180,8 @@ defmodule ExOpenAI.Realtime do
 
     * `truncation` - **optional** - `any()`
     """
-    @spec accept_realtime_call(
-            call_id :: String.t(),
-            type :: :realtime,
-            opts :: [
+    (
+      @type accept_realtime_call_opt() ::
               ((((((((({:audio,
                         %{
                           optional(:input) => %{
@@ -240,8 +240,13 @@ defmodule ExOpenAI.Realtime do
                      })
                   | nil})
               | {:truncation, ExOpenAI.Components.RealtimeTruncation.t()}
-            ]
-          ) :: {:ok, map()} | {:error, any()}
+      @spec accept_realtime_call(
+              call_id :: String.t(),
+              type :: :realtime,
+              opts :: [accept_realtime_call_opt()]
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def accept_realtime_call(call_id, type, opts \\ []) do
       url = "/realtime/calls/{call_id}/accept"
       url = String.replace(url, "{call_id}", to_string(call_id))
@@ -321,8 +326,13 @@ defmodule ExOpenAI.Realtime do
     header when creating the call with
     [`POST /v1/realtime/calls`](/docs/api-reference/realtime/create-call).
     """
-    @spec hangup_realtime_call(call_id :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec hangup_realtime_call(call_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def hangup_realtime_call(call_id, opts \\ []) do
       url = "/realtime/calls/{call_id}/hangup"
       url = String.replace(url, "{call_id}", to_string(call_id))
@@ -373,8 +383,16 @@ defmodule ExOpenAI.Realtime do
     `tel:+14155550123` or `sip:agent@example.com`.  
       Example: `"tel:+14155550123"`
     """
-    @spec refer_realtime_call(call_id :: String.t(), target_uri :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec refer_realtime_call(
+              call_id :: String.t(),
+              target_uri :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def refer_realtime_call(call_id, target_uri, opts \\ []) do
       url = "/realtime/calls/{call_id}/refer"
       url = String.replace(url, "{call_id}", to_string(call_id))
@@ -427,8 +445,12 @@ defmodule ExOpenAI.Realtime do
     when omitted.  
       Example: `486`
     """
-    @spec reject_realtime_call(call_id :: String.t(), opts :: [status_code: integer()]) ::
-            {:ok, map()} | {:error, any()}
+    (
+      @type reject_realtime_call_opt() :: {:status_code, integer()}
+      @spec reject_realtime_call(call_id :: String.t(), opts :: [reject_realtime_call_opt()]) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def reject_realtime_call(call_id, opts \\ []) do
       url = "/realtime/calls/{call_id}/reject"
       url = String.replace(url, "{call_id}", to_string(call_id))
@@ -492,15 +514,17 @@ defmodule ExOpenAI.Realtime do
       Session configuration to use for the client secret. Choose either a realtime
     session or a transcription session.
     """
-    @spec create_realtime_client_secret(
-            opts :: [
+    (
+      @type create_realtime_client_secret_opt() ::
               {:expires_after,
                %{optional(:anchor) => :created_at, optional(:seconds) => integer()}}
               | {:session,
                  ExOpenAI.Components.RealtimeSessionCreateRequestGA.t()
                  | ExOpenAI.Components.RealtimeTranscriptionSessionCreateRequestGA.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.RealtimeCreateClientSecretResponse.t()} | {:error, any()}
+      @spec create_realtime_client_secret(opts :: [create_realtime_client_secret_opt()]) ::
+              {:ok, ExOpenAI.Components.RealtimeCreateClientSecretResponse.t()} | {:error, any()}
+    )
+
     def create_realtime_client_secret(opts \\ []) do
       url = "/realtime/client_secrets"
       query_params = Keyword.take(opts, [])
@@ -626,9 +650,8 @@ defmodule ExOpenAI.Realtime do
     `id`, for example `{ "id": "voice_1234" }`. Voice cannot be changed during
     the session once the model has responded with audio at least once.
     """
-    @spec create_realtime_session(
-            client_secret :: %{required(:expires_at) => integer(), required(:value) => String.t()},
-            opts :: [
+    (
+      @type create_realtime_session_opt() ::
               ((((((((((((({:input_audio_format, String.t()}
                            | {:input_audio_transcription, %{optional(:model) => String.t()}})
                           | {:instructions, String.t()})
@@ -662,8 +685,15 @@ defmodule ExOpenAI.Realtime do
                     optional(:type) => String.t()
                   }})
               | {:voice, ExOpenAI.Components.VoiceIdsOrCustomVoice.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.RealtimeSessionCreateResponse.t()} | {:error, any()}
+      @spec create_realtime_session(
+              client_secret :: %{
+                required(:expires_at) => integer(),
+                required(:value) => String.t()
+              },
+              opts :: [create_realtime_session_opt()]
+            ) :: {:ok, ExOpenAI.Components.RealtimeSessionCreateResponse.t()} | {:error, any()}
+    )
+
     def create_realtime_session(client_secret, opts \\ []) do
       url = "/realtime/sessions"
       query_params = Keyword.take(opts, [])
@@ -778,8 +808,8 @@ defmodule ExOpenAI.Realtime do
     * `turn_detection` - **optional** - `any()`  
       Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech.
     """
-    @spec create_realtime_transcription_session(
-            opts :: [
+    (
+      @type create_realtime_transcription_session_opt() ::
               ((({:include, list(:"item.input_audio_transcription.logprobs")}
                  | {:input_audio_format, (:pcm16 | :g711_ulaw) | :g711_alaw})
                 | {:input_audio_noise_reduction,
@@ -792,10 +822,13 @@ defmodule ExOpenAI.Realtime do
                    optional(:threshold) => number(),
                    optional(:type) => :server_vad
                  }}
-            ]
-          ) ::
-            {:ok, ExOpenAI.Components.RealtimeTranscriptionSessionCreateResponse.t()}
-            | {:error, any()}
+      @spec create_realtime_transcription_session(
+              opts :: [create_realtime_transcription_session_opt()]
+            ) ::
+              {:ok, ExOpenAI.Components.RealtimeTranscriptionSessionCreateResponse.t()}
+              | {:error, any()}
+    )
+
     def create_realtime_transcription_session(opts \\ []) do
       url = "/realtime/transcription_sessions"
       query_params = Keyword.take(opts, [])

@@ -13,8 +13,8 @@ defmodule ExOpenAI.Threads do
 
     * `tool_resources` - **optional** - `any() | any()`
     """
-    @spec create_thread(
-            opts :: [
+    (
+      @type create_thread_opt() ::
               ({:messages, list(ExOpenAI.Components.CreateMessageRequest.t())}
                | {:metadata, ExOpenAI.Components.Metadata.t()})
               | {:tool_resources,
@@ -31,8 +31,10 @@ defmodule ExOpenAI.Threads do
                    }
                  }
                  | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ThreadObject.t()} | {:error, any()}
+      @spec create_thread(opts :: [create_thread_opt()]) ::
+              {:ok, ExOpenAI.Components.ThreadObject.t()} | {:error, any()}
+    )
+
     def create_thread(opts \\ []) do
       url = "/threads"
       query_params = Keyword.take(opts, [])
@@ -134,9 +136,8 @@ defmodule ExOpenAI.Threads do
 
     * `truncation_strategy` - **optional** - `map()`
     """
-    @spec create_thread_and_run(
-            assistant_id :: String.t(),
-            opts :: [
+    (
+      @type create_thread_and_run_opt() ::
               ((((((((((((({:instructions, String.t() | nil}
                            | {:max_completion_tokens, integer() | nil})
                           | {:max_prompt_tokens, integer() | nil})
@@ -207,8 +208,12 @@ defmodule ExOpenAI.Threads do
                    optional(:last_messages) => integer() | any(),
                    required(:type) => :auto | :last_messages
                  }}
-            ]
-          ) :: {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+      @spec create_thread_and_run(
+              assistant_id :: String.t(),
+              opts :: [create_thread_and_run_opt()]
+            ) :: {:ok, ExOpenAI.Components.RunObject.t() | reference()} | {:error, any()}
+    )
+
     def create_thread_and_run(assistant_id, opts \\ []) do
       url = "/threads/runs"
       query_params = Keyword.take(opts, [])
@@ -303,8 +308,13 @@ defmodule ExOpenAI.Threads do
     * `:thread_id` - **required** - `String.t()`  
       The ID of the thread to delete.
     """
-    @spec delete_thread(thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeleteThreadResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_thread(thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeleteThreadResponse.t()} | {:error, any()}
+    )
+
     def delete_thread(thread_id, opts \\ []) do
       url = "/threads/{thread_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -351,8 +361,13 @@ defmodule ExOpenAI.Threads do
     * `:thread_id` - **required** - `String.t()`  
       The ID of the thread to retrieve.
     """
-    @spec get_thread(thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ThreadObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_thread(thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ThreadObject.t()} | {:error, any()}
+    )
+
     def get_thread(thread_id, opts \\ []) do
       url = "/threads/{thread_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -405,9 +420,8 @@ defmodule ExOpenAI.Threads do
 
     * `tool_resources` - **optional** - `any() | any()`
     """
-    @spec modify_thread(
-            thread_id :: String.t(),
-            opts :: [
+    (
+      @type modify_thread_opt() ::
               {:metadata, ExOpenAI.Components.Metadata.t()}
               | {:tool_resources,
                  %{
@@ -415,8 +429,10 @@ defmodule ExOpenAI.Threads do
                    optional(:file_search) => %{optional(:vector_store_ids) => list(String.t())}
                  }
                  | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ThreadObject.t()} | {:error, any()}
+      @spec modify_thread(thread_id :: String.t(), opts :: [modify_thread_opt()]) ::
+              {:ok, ExOpenAI.Components.ThreadObject.t()} | {:error, any()}
+    )
+
     def modify_thread(thread_id, opts \\ []) do
       url = "/threads/{thread_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -483,14 +499,15 @@ defmodule ExOpenAI.Threads do
     * `:run_id` - **optional** - `String.t()`  
       Filter messages by the run ID that generated them.
     """
-    @spec list_messages(
-            thread_id :: String.t(),
-            opts :: [
+    (
+      @type list_messages_opt() ::
               ((({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
                | {:before, String.t()})
               | {:run_id, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListMessagesResponse.t()} | {:error, any()}
+      @spec list_messages(thread_id :: String.t(), opts :: [list_messages_opt()]) ::
+              {:ok, ExOpenAI.Components.ListMessagesResponse.t()} | {:error, any()}
+    )
+
     def list_messages(thread_id, opts \\ []) do
       url = "/threads/{thread_id}/messages"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -554,17 +571,8 @@ defmodule ExOpenAI.Threads do
 
     * `metadata` - **optional** - `any()`
     """
-    @spec create_message(
-            content ::
-              String.t()
-              | list(
-                  (ExOpenAI.Components.MessageContentImageFileObject.t()
-                   | ExOpenAI.Components.MessageContentImageUrlObject.t())
-                  | ExOpenAI.Components.MessageRequestContentTextObject.t()
-                ),
-            role :: :user | :assistant,
-            thread_id :: String.t(),
-            opts :: [
+    (
+      @type create_message_opt() ::
               {:attachments,
                list(%{
                  optional(:file_id) => String.t(),
@@ -576,8 +584,20 @@ defmodule ExOpenAI.Threads do
                })
                | any()}
               | {:metadata, ExOpenAI.Components.Metadata.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.MessageObject.t()} | {:error, any()}
+      @spec create_message(
+              content ::
+                String.t()
+                | list(
+                    (ExOpenAI.Components.MessageContentImageFileObject.t()
+                     | ExOpenAI.Components.MessageContentImageUrlObject.t())
+                    | ExOpenAI.Components.MessageRequestContentTextObject.t()
+                  ),
+              role :: :user | :assistant,
+              thread_id :: String.t(),
+              opts :: [create_message_opt()]
+            ) :: {:ok, ExOpenAI.Components.MessageObject.t()} | {:error, any()}
+    )
+
     def create_message(content, role, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/messages"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -627,8 +647,13 @@ defmodule ExOpenAI.Threads do
     * `:message_id` - **required** - `String.t()`  
       The ID of the message to delete.
     """
-    @spec delete_message(message_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeleteMessageResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_message(message_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeleteMessageResponse.t()} | {:error, any()}
+    )
+
     def delete_message(message_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/messages/{message_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -679,8 +704,13 @@ defmodule ExOpenAI.Threads do
     * `:message_id` - **required** - `String.t()`  
       The ID of the message to retrieve.
     """
-    @spec get_message(message_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.MessageObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_message(message_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.MessageObject.t()} | {:error, any()}
+    )
+
     def get_message(message_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/messages/{message_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -735,11 +765,15 @@ defmodule ExOpenAI.Threads do
 
     * `metadata` - **optional** - `any()`
     """
-    @spec modify_message(
-            message_id :: String.t(),
-            thread_id :: String.t(),
-            opts :: [metadata: ExOpenAI.Components.Metadata.t()]
-          ) :: {:ok, ExOpenAI.Components.MessageObject.t()} | {:error, any()}
+    (
+      @type modify_message_opt() :: {:metadata, ExOpenAI.Components.Metadata.t()}
+      @spec modify_message(
+              message_id :: String.t(),
+              thread_id :: String.t(),
+              opts :: [modify_message_opt()]
+            ) :: {:ok, ExOpenAI.Components.MessageObject.t()} | {:error, any()}
+    )
+
     def modify_message(message_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/messages/{message_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -804,13 +838,14 @@ defmodule ExOpenAI.Threads do
     * `:before` - **optional** - `String.t()`  
       A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
     """
-    @spec list_runs(
-            thread_id :: String.t(),
-            opts :: [
+    (
+      @type list_runs_opt() ::
               (({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
               | {:before, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListRunsResponse.t()} | {:error, any()}
+      @spec list_runs(thread_id :: String.t(), opts :: [list_runs_opt()]) ::
+              {:ok, ExOpenAI.Components.ListRunsResponse.t()} | {:error, any()}
+    )
+
     def list_runs(thread_id, opts \\ []) do
       url = "/threads/{thread_id}/runs"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -921,10 +956,8 @@ defmodule ExOpenAI.Threads do
 
     * `truncation_strategy` - **optional** - `map()`
     """
-    @spec create_run(
-            assistant_id :: String.t(),
-            thread_id :: String.t(),
-            opts :: [
+    (
+      @type create_run_opt() ::
               ((((((((((((((({:"include[]", any()} | {:additional_instructions, String.t() | nil})
                             | {:additional_messages,
                                list(ExOpenAI.Components.CreateMessageRequest.t()) | nil})
@@ -954,8 +987,13 @@ defmodule ExOpenAI.Threads do
                    optional(:last_messages) => integer() | any(),
                    required(:type) => :auto | :last_messages
                  }}
-            ]
-          ) :: {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+      @spec create_run(
+              assistant_id :: String.t(),
+              thread_id :: String.t(),
+              opts :: [create_run_opt()]
+            ) :: {:ok, ExOpenAI.Components.RunObject.t() | reference()} | {:error, any()}
+    )
+
     def create_run(assistant_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/runs"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -1058,8 +1096,13 @@ defmodule ExOpenAI.Threads do
     * `:run_id` - **required** - `String.t()`  
       The ID of the run to retrieve.
     """
-    @spec get_run(run_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_run(run_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+    )
+
     def get_run(run_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/runs/{run_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -1114,11 +1157,12 @@ defmodule ExOpenAI.Threads do
 
     * `metadata` - **optional** - `any()`
     """
-    @spec modify_run(
-            run_id :: String.t(),
-            thread_id :: String.t(),
-            opts :: [metadata: ExOpenAI.Components.Metadata.t()]
-          ) :: {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+    (
+      @type modify_run_opt() :: {:metadata, ExOpenAI.Components.Metadata.t()}
+      @spec modify_run(run_id :: String.t(), thread_id :: String.t(), opts :: [modify_run_opt()]) ::
+              {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+    )
+
     def modify_run(run_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/runs/{run_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -1169,8 +1213,13 @@ defmodule ExOpenAI.Threads do
     * `:run_id` - **required** - `String.t()`  
       The ID of the run to cancel.
     """
-    @spec cancel_run(run_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_run(run_id :: String.t(), thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+    )
+
     def cancel_run(run_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/runs/{run_id}/cancel"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -1243,15 +1292,18 @@ defmodule ExOpenAI.Threads do
 
     See the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.
     """
-    @spec list_run_steps(
-            run_id :: String.t(),
-            thread_id :: String.t(),
-            opts :: [
+    (
+      @type list_run_steps_opt() ::
               ((({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
                | {:before, String.t()})
               | {:"include[]", any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListRunStepsResponse.t()} | {:error, any()}
+      @spec list_run_steps(
+              run_id :: String.t(),
+              thread_id :: String.t(),
+              opts :: [list_run_steps_opt()]
+            ) :: {:ok, ExOpenAI.Components.ListRunStepsResponse.t()} | {:error, any()}
+    )
+
     def list_run_steps(run_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/runs/{run_id}/steps"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -1315,12 +1367,16 @@ defmodule ExOpenAI.Threads do
 
     See the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.
     """
-    @spec get_run_step(
-            run_id :: String.t(),
-            step_id :: String.t(),
-            thread_id :: String.t(),
-            opts :: ["include[]": any()]
-          ) :: {:ok, ExOpenAI.Components.RunStepObject.t()} | {:error, any()}
+    (
+      @type get_run_step_opt() :: {:"include[]", any()}
+      @spec get_run_step(
+              run_id :: String.t(),
+              step_id :: String.t(),
+              thread_id :: String.t(),
+              opts :: [get_run_step_opt()]
+            ) :: {:ok, ExOpenAI.Components.RunStepObject.t()} | {:error, any()}
+    )
+
     def get_run_step(run_id, step_id, thread_id, opts \\ []) do
       url = "/threads/{thread_id}/runs/{run_id}/steps/{step_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -1380,13 +1436,17 @@ defmodule ExOpenAI.Threads do
 
     * `stream` - **optional** - `boolean() | any()`
     """
-    @spec submit_tool_ouputs_to_run(
-            run_id :: String.t(),
-            thread_id :: String.t(),
-            tool_outputs ::
-              list(%{optional(:output) => String.t(), optional(:tool_call_id) => String.t()}),
-            opts :: [stream: boolean() | any()]
-          ) :: {:ok, ExOpenAI.Components.RunObject.t()} | {:error, any()}
+    (
+      @type submit_tool_ouputs_to_run_opt() :: {:stream, boolean() | any()}
+      @spec submit_tool_ouputs_to_run(
+              run_id :: String.t(),
+              thread_id :: String.t(),
+              tool_outputs ::
+                list(%{optional(:output) => String.t(), optional(:tool_call_id) => String.t()}),
+              opts :: [submit_tool_ouputs_to_run_opt()]
+            ) :: {:ok, ExOpenAI.Components.RunObject.t() | reference()} | {:error, any()}
+    )
+
     def submit_tool_ouputs_to_run(run_id, thread_id, tool_outputs, opts \\ []) do
       url = "/threads/{thread_id}/runs/{run_id}/submit_tool_outputs"
       url = String.replace(url, "{thread_id}", to_string(thread_id))

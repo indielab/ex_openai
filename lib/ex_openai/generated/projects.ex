@@ -25,11 +25,16 @@ defmodule ExOpenAI.Projects do
       Sort order for the returned project roles.  
       Allowed values: `"asc"`, `"desc"`
     """
-    @spec list_project_group_role_assignments(
-            group_id :: String.t(),
-            project_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    (
+      @type list_project_group_role_assignments_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_project_group_role_assignments(
+              group_id :: String.t(),
+              project_id :: String.t(),
+              opts :: [list_project_group_role_assignments_opt()]
+            ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    )
+
     def list_project_group_role_assignments(group_id, project_id, opts \\ []) do
       url = "/projects/{project_id}/groups/{group_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -83,12 +88,17 @@ defmodule ExOpenAI.Projects do
     * `role_id` - **required** - `String.t()`  
       Identifier of the role to assign.
     """
-    @spec assign_project_group_role(
-            group_id :: String.t(),
-            project_id :: String.t(),
-            role_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.GroupRoleAssignment.t()} | {:error, any()}
+    (
+      nil
+
+      @spec assign_project_group_role(
+              group_id :: String.t(),
+              project_id :: String.t(),
+              role_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.GroupRoleAssignment.t()} | {:error, any()}
+    )
+
     def assign_project_group_role(group_id, project_id, role_id, opts \\ []) do
       url = "/projects/{project_id}/groups/{group_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -142,12 +152,17 @@ defmodule ExOpenAI.Projects do
     * `:role_id` - **required** - `String.t()`  
       The ID of the project role to remove from the group.
     """
-    @spec unassign_project_group_role(
-            group_id :: String.t(),
-            project_id :: String.t(),
-            role_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec unassign_project_group_role(
+              group_id :: String.t(),
+              project_id :: String.t(),
+              role_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    )
+
     def unassign_project_group_role(group_id, project_id, role_id, opts \\ []) do
       url = "/projects/{project_id}/groups/{group_id}/roles/{role_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -213,10 +228,13 @@ defmodule ExOpenAI.Projects do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"asc"`
     """
-    @spec list_project_roles(
-            project_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.PublicRoleListResource.t()} | {:error, any()}
+    (
+      @type list_project_roles_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_project_roles(project_id :: String.t(), opts :: [list_project_roles_opt()]) ::
+              {:ok, ExOpenAI.Components.PublicRoleListResource.t()} | {:error, any()}
+    )
+
     def list_project_roles(project_id, opts \\ []) do
       url = "/projects/{project_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -274,12 +292,16 @@ defmodule ExOpenAI.Projects do
     * `description` - **optional** - `String.t() | any()`  
       Optional description of the role.
     """
-    @spec create_project_role(
-            permissions :: list(String.t()),
-            project_id :: String.t(),
-            role_name :: String.t(),
-            opts :: [description: String.t() | any()]
-          ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+    (
+      @type create_project_role_opt() :: {:description, String.t() | any()}
+      @spec create_project_role(
+              permissions :: list(String.t()),
+              project_id :: String.t(),
+              role_name :: String.t(),
+              opts :: [create_project_role_opt()]
+            ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+    )
+
     def create_project_role(permissions, project_id, role_name, opts \\ []) do
       url = "/projects/{project_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -329,8 +351,16 @@ defmodule ExOpenAI.Projects do
     * `:role_id` - **required** - `String.t()`  
       The ID of the role to delete.
     """
-    @spec delete_project_role(project_id :: String.t(), role_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.RoleDeletedResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_project_role(
+              project_id :: String.t(),
+              role_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.RoleDeletedResource.t()} | {:error, any()}
+    )
+
     def delete_project_role(project_id, role_id, opts \\ []) do
       url = "/projects/{project_id}/roles/{role_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -392,14 +422,17 @@ defmodule ExOpenAI.Projects do
     * `role_name` - **optional** - `String.t() | any()`  
       New name for the role.
     """
-    @spec update_project_role(
-            project_id :: String.t(),
-            role_id :: String.t(),
-            opts :: [
+    (
+      @type update_project_role_opt() ::
               ({:description, String.t() | any()} | {:permissions, list(String.t()) | any()})
               | {:role_name, String.t() | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+      @spec update_project_role(
+              project_id :: String.t(),
+              role_id :: String.t(),
+              opts :: [update_project_role_opt()]
+            ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+    )
+
     def update_project_role(project_id, role_id, opts \\ []) do
       url = "/projects/{project_id}/roles/{role_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -466,11 +499,16 @@ defmodule ExOpenAI.Projects do
       Sort order for the returned project roles.  
       Allowed values: `"asc"`, `"desc"`
     """
-    @spec list_project_user_role_assignments(
-            project_id :: String.t(),
-            user_id :: String.t(),
-            opts :: [({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    (
+      @type list_project_user_role_assignments_opt() ::
+              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+      @spec list_project_user_role_assignments(
+              project_id :: String.t(),
+              user_id :: String.t(),
+              opts :: [list_project_user_role_assignments_opt()]
+            ) :: {:ok, ExOpenAI.Components.RoleListResource.t()} | {:error, any()}
+    )
+
     def list_project_user_role_assignments(project_id, user_id, opts \\ []) do
       url = "/projects/{project_id}/users/{user_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -524,12 +562,17 @@ defmodule ExOpenAI.Projects do
     * `role_id` - **required** - `String.t()`  
       Identifier of the role to assign.
     """
-    @spec assign_project_user_role(
-            project_id :: String.t(),
-            role_id :: String.t(),
-            user_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.UserRoleAssignment.t()} | {:error, any()}
+    (
+      nil
+
+      @spec assign_project_user_role(
+              project_id :: String.t(),
+              role_id :: String.t(),
+              user_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.UserRoleAssignment.t()} | {:error, any()}
+    )
+
     def assign_project_user_role(project_id, role_id, user_id, opts \\ []) do
       url = "/projects/{project_id}/users/{user_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
@@ -583,12 +626,17 @@ defmodule ExOpenAI.Projects do
     * `:role_id` - **required** - `String.t()`  
       The ID of the project role to remove from the user.
     """
-    @spec unassign_project_user_role(
-            project_id :: String.t(),
-            role_id :: String.t(),
-            user_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec unassign_project_user_role(
+              project_id :: String.t(),
+              role_id :: String.t(),
+              user_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
+    )
+
     def unassign_project_user_role(project_id, role_id, user_id, opts \\ []) do
       url = "/projects/{project_id}/users/{user_id}/roles/{role_id}"
       url = String.replace(url, "{project_id}", to_string(project_id))

@@ -22,8 +22,12 @@ defmodule ExOpenAI.FineTuning do
       The dataset item provided to the grader. This will be used to populate 
     the `item` namespace. See [the guide](/docs/guides/graders) for more details.
     """
-    @spec run_grader(grader :: map(), model_sample :: String.t(), opts :: [item: map()]) ::
-            {:ok, ExOpenAI.Components.RunGraderResponse.t()} | {:error, any()}
+    (
+      @type run_grader_opt() :: {:item, map()}
+      @spec run_grader(grader :: map(), model_sample :: String.t(), opts :: [run_grader_opt()]) ::
+              {:ok, ExOpenAI.Components.RunGraderResponse.t()} | {:error, any()}
+    )
+
     def run_grader(grader, model_sample, opts \\ []) do
       url = "/fine_tuning/alpha/graders/run"
       query_params = Keyword.take(opts, [])
@@ -70,8 +74,13 @@ defmodule ExOpenAI.FineTuning do
     * `grader` - **required** - `map()`  
       The grader used for the fine-tuning job.
     """
-    @spec validate_grader(grader :: map(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ValidateGraderResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec validate_grader(grader :: map(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ValidateGraderResponse.t()} | {:error, any()}
+    )
+
     def validate_grader(grader, opts \\ []) do
       url = "/fine_tuning/alpha/graders/validate"
       query_params = Keyword.take(opts, [])
@@ -137,15 +146,18 @@ defmodule ExOpenAI.FineTuning do
       Allowed values: `"ascending"`, `"descending"`  
       Default: `"descending"`
     """
-    @spec list_fine_tuning_checkpoint_permissions(
-            fine_tuned_model_checkpoint :: String.t(),
-            opts :: [
+    (
+      @type list_fine_tuning_checkpoint_permissions_opt() ::
               (({:project_id, String.t()} | {:after, String.t()}) | {:limit, integer()})
               | {:order, String.t()}
-            ]
-          ) ::
-            {:ok, ExOpenAI.Components.ListFineTuningCheckpointPermissionResponse.t()}
-            | {:error, any()}
+      @spec list_fine_tuning_checkpoint_permissions(
+              fine_tuned_model_checkpoint :: String.t(),
+              opts :: [list_fine_tuning_checkpoint_permissions_opt()]
+            ) ::
+              {:ok, ExOpenAI.Components.ListFineTuningCheckpointPermissionResponse.t()}
+              | {:error, any()}
+    )
+
     def list_fine_tuning_checkpoint_permissions(fine_tuned_model_checkpoint, opts \\ []) do
       url = "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions"
 
@@ -210,13 +222,18 @@ defmodule ExOpenAI.FineTuning do
     * `project_ids` - **required** - `[String.t()]`  
       The project identifiers to grant access to.
     """
-    @spec create_fine_tuning_checkpoint_permission(
-            fine_tuned_model_checkpoint :: String.t(),
-            project_ids :: list(String.t()),
-            opts :: keyword()
-          ) ::
-            {:ok, ExOpenAI.Components.ListFineTuningCheckpointPermissionResponse.t()}
-            | {:error, any()}
+    (
+      nil
+
+      @spec create_fine_tuning_checkpoint_permission(
+              fine_tuned_model_checkpoint :: String.t(),
+              project_ids :: list(String.t()),
+              opts :: keyword()
+            ) ::
+              {:ok, ExOpenAI.Components.ListFineTuningCheckpointPermissionResponse.t()}
+              | {:error, any()}
+    )
+
     def create_fine_tuning_checkpoint_permission(
           fine_tuned_model_checkpoint,
           project_ids,
@@ -282,13 +299,18 @@ defmodule ExOpenAI.FineTuning do
     * `:permission_id` - **required** - `String.t()`  
       The ID of the fine-tuned model checkpoint permission to delete.
     """
-    @spec delete_fine_tuning_checkpoint_permission(
-            fine_tuned_model_checkpoint :: String.t(),
-            permission_id :: String.t(),
-            opts :: keyword()
-          ) ::
-            {:ok, ExOpenAI.Components.DeleteFineTuningCheckpointPermissionResponse.t()}
-            | {:error, any()}
+    (
+      nil
+
+      @spec delete_fine_tuning_checkpoint_permission(
+              fine_tuned_model_checkpoint :: String.t(),
+              permission_id :: String.t(),
+              opts :: keyword()
+            ) ::
+              {:ok, ExOpenAI.Components.DeleteFineTuningCheckpointPermissionResponse.t()}
+              | {:error, any()}
+    )
+
     def delete_fine_tuning_checkpoint_permission(
           fine_tuned_model_checkpoint,
           permission_id,
@@ -357,10 +379,13 @@ defmodule ExOpenAI.FineTuning do
     * `:metadata` - **optional** - `any()`  
       Optional metadata filter. To filter, use the syntax `metadata[k]=v`. Alternatively, set `metadata=null` to indicate no metadata.
     """
-    @spec list_paginated_fine_tuning_jobs(
-            opts :: [({:after, String.t()} | {:limit, integer()}) | {:metadata, any()}]
-          ) ::
-            {:ok, ExOpenAI.Components.ListPaginatedFineTuningJobsResponse.t()} | {:error, any()}
+    (
+      @type list_paginated_fine_tuning_jobs_opt() ::
+              ({:after, String.t()} | {:limit, integer()}) | {:metadata, any()}
+      @spec list_paginated_fine_tuning_jobs(opts :: [list_paginated_fine_tuning_jobs_opt()]) ::
+              {:ok, ExOpenAI.Components.ListPaginatedFineTuningJobsResponse.t()} | {:error, any()}
+    )
+
     def list_paginated_fine_tuning_jobs(opts \\ []) do
       url = "/fine_tuning/jobs"
       query_params = Keyword.take(opts, [:after, :limit, :metadata])
@@ -465,11 +490,8 @@ defmodule ExOpenAI.FineTuning do
     See the [fine-tuning guide](/docs/guides/model-optimization) for more details.  
       Example: `"file-abc123"`
     """
-    @spec create_fine_tuning_job(
-            model ::
-              String.t() | ((:"babbage-002" | :"davinci-002") | :"gpt-3.5-turbo") | :"gpt-4o-mini",
-            training_file :: String.t(),
-            opts :: [
+    (
+      @type create_fine_tuning_job_opt() ::
               ((((({:hyperparameters,
                     %{
                       optional(:batch_size) => :auto | integer(),
@@ -492,8 +514,16 @@ defmodule ExOpenAI.FineTuning do
                 | {:seed, integer() | nil})
                | {:suffix, String.t() | nil})
               | {:validation_file, String.t() | nil}
-            ]
-          ) :: {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+      @spec create_fine_tuning_job(
+              model ::
+                String.t()
+                | ((:"babbage-002" | :"davinci-002") | :"gpt-3.5-turbo")
+                | :"gpt-4o-mini",
+              training_file :: String.t(),
+              opts :: [create_fine_tuning_job_opt()]
+            ) :: {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    )
+
     def create_fine_tuning_job(model, training_file, opts \\ []) do
       url = "/fine_tuning/jobs"
       query_params = Keyword.take(opts, [])
@@ -557,8 +587,13 @@ defmodule ExOpenAI.FineTuning do
     * `:fine_tuning_job_id` - **required** - `String.t()`  
       The ID of the fine-tuning job.
     """
-    @spec retrieve_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    )
+
     def retrieve_fine_tuning_job(fine_tuning_job_id, opts \\ []) do
       url = "/fine_tuning/jobs/{fine_tuning_job_id}"
       url = String.replace(url, "{fine_tuning_job_id}", to_string(fine_tuning_job_id))
@@ -606,8 +641,13 @@ defmodule ExOpenAI.FineTuning do
     * `:fine_tuning_job_id` - **required** - `String.t()`  
       The ID of the fine-tuning job to cancel.
     """
-    @spec cancel_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    )
+
     def cancel_fine_tuning_job(fine_tuning_job_id, opts \\ []) do
       url = "/fine_tuning/jobs/{fine_tuning_job_id}/cancel"
       url = String.replace(url, "{fine_tuning_job_id}", to_string(fine_tuning_job_id))
@@ -664,11 +704,16 @@ defmodule ExOpenAI.FineTuning do
       Number of checkpoints to retrieve.  
       Default: `10`
     """
-    @spec list_fine_tuning_job_checkpoints(
-            fine_tuning_job_id :: String.t(),
-            opts :: [{:after, String.t()} | {:limit, integer()}]
-          ) ::
-            {:ok, ExOpenAI.Components.ListFineTuningJobCheckpointsResponse.t()} | {:error, any()}
+    (
+      @type list_fine_tuning_job_checkpoints_opt() :: {:after, String.t()} | {:limit, integer()}
+      @spec list_fine_tuning_job_checkpoints(
+              fine_tuning_job_id :: String.t(),
+              opts :: [list_fine_tuning_job_checkpoints_opt()]
+            ) ::
+              {:ok, ExOpenAI.Components.ListFineTuningJobCheckpointsResponse.t()}
+              | {:error, any()}
+    )
+
     def list_fine_tuning_job_checkpoints(fine_tuning_job_id, opts \\ []) do
       url = "/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints"
       url = String.replace(url, "{fine_tuning_job_id}", to_string(fine_tuning_job_id))
@@ -727,10 +772,14 @@ defmodule ExOpenAI.FineTuning do
       Number of events to retrieve.  
       Default: `20`
     """
-    @spec list_fine_tuning_events(
-            fine_tuning_job_id :: String.t(),
-            opts :: [{:after, String.t()} | {:limit, integer()}]
-          ) :: {:ok, ExOpenAI.Components.ListFineTuningJobEventsResponse.t()} | {:error, any()}
+    (
+      @type list_fine_tuning_events_opt() :: {:after, String.t()} | {:limit, integer()}
+      @spec list_fine_tuning_events(
+              fine_tuning_job_id :: String.t(),
+              opts :: [list_fine_tuning_events_opt()]
+            ) :: {:ok, ExOpenAI.Components.ListFineTuningJobEventsResponse.t()} | {:error, any()}
+    )
+
     def list_fine_tuning_events(fine_tuning_job_id, opts \\ []) do
       url = "/fine_tuning/jobs/{fine_tuning_job_id}/events"
       url = String.replace(url, "{fine_tuning_job_id}", to_string(fine_tuning_job_id))
@@ -780,8 +829,13 @@ defmodule ExOpenAI.FineTuning do
     * `:fine_tuning_job_id` - **required** - `String.t()`  
       The ID of the fine-tuning job to pause.
     """
-    @spec pause_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    (
+      nil
+
+      @spec pause_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    )
+
     def pause_fine_tuning_job(fine_tuning_job_id, opts \\ []) do
       url = "/fine_tuning/jobs/{fine_tuning_job_id}/pause"
       url = String.replace(url, "{fine_tuning_job_id}", to_string(fine_tuning_job_id))
@@ -829,8 +883,13 @@ defmodule ExOpenAI.FineTuning do
     * `:fine_tuning_job_id` - **required** - `String.t()`  
       The ID of the fine-tuning job to resume.
     """
-    @spec resume_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    (
+      nil
+
+      @spec resume_fine_tuning_job(fine_tuning_job_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.FineTuningJob.t()} | {:error, any()}
+    )
+
     def resume_fine_tuning_job(fine_tuning_job_id, opts \\ []) do
       url = "/fine_tuning/jobs/{fine_tuning_job_id}/resume"
       url = String.replace(url, "{fine_tuning_job_id}", to_string(fine_tuning_job_id))

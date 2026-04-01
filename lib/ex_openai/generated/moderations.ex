@@ -21,24 +21,27 @@ defmodule ExOpenAI.Moderations do
       Default: `"omni-moderation-latest"`  
       Example: `"omni-moderation-2024-09-26"`
     """
-    @spec create_moderation(
-            input ::
-              (String.t() | list(String.t()))
-              | list(
-                  %{
-                    required(:image_url) => %{required(:url) => String.t()},
-                    required(:type) => :image_url
-                  }
-                  | %{required(:text) => String.t(), required(:type) => :text}
-                ),
-            opts :: [
-              model:
-                String.t()
-                | ((:"omni-moderation-latest" | :"omni-moderation-2024-09-26")
-                   | :"text-moderation-latest")
-                | :"text-moderation-stable"
-            ]
-          ) :: {:ok, ExOpenAI.Components.CreateModerationResponse.t()} | {:error, any()}
+    (
+      @type create_moderation_opt() ::
+              {:model,
+               String.t()
+               | ((:"omni-moderation-latest" | :"omni-moderation-2024-09-26")
+                  | :"text-moderation-latest")
+               | :"text-moderation-stable"}
+      @spec create_moderation(
+              input ::
+                (String.t() | list(String.t()))
+                | list(
+                    %{
+                      required(:image_url) => %{required(:url) => String.t()},
+                      required(:type) => :image_url
+                    }
+                    | %{required(:text) => String.t(), required(:type) => :text}
+                  ),
+              opts :: [create_moderation_opt()]
+            ) :: {:ok, ExOpenAI.Components.CreateModerationResponse.t()} | {:error, any()}
+    )
+
     def create_moderation(input, opts \\ []) do
       url = "/moderations"
       query_params = Keyword.take(opts, [])

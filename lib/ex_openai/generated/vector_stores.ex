@@ -21,12 +21,14 @@ defmodule ExOpenAI.VectorStores do
     * `:before` - **optional** - `String.t()`  
       A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
     """
-    @spec list_vector_stores(
-            opts :: [
+    (
+      @type list_vector_stores_opt() ::
               (({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
               | {:before, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListVectorStoresResponse.t()} | {:error, any()}
+      @spec list_vector_stores(opts :: [list_vector_stores_opt()]) ::
+              {:ok, ExOpenAI.Components.ListVectorStoresResponse.t()} | {:error, any()}
+    )
+
     def list_vector_stores(opts \\ []) do
       url = "/vector_stores"
       query_params = Keyword.take(opts, [:limit, :order, :after, :before])
@@ -88,15 +90,17 @@ defmodule ExOpenAI.VectorStores do
     * `name` - **optional** - `String.t()`  
       The name of the vector store.
     """
-    @spec create_vector_store(
-            opts :: [
+    (
+      @type create_vector_store_opt() ::
               (((({:chunking_strategy, map()} | {:description, String.t()})
                  | {:expires_after, ExOpenAI.Components.VectorStoreExpirationAfter.t()})
                 | {:file_ids, list(String.t())})
                | {:metadata, ExOpenAI.Components.Metadata.t()})
               | {:name, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.VectorStoreObject.t()} | {:error, any()}
+      @spec create_vector_store(opts :: [create_vector_store_opt()]) ::
+              {:ok, ExOpenAI.Components.VectorStoreObject.t()} | {:error, any()}
+    )
+
     def create_vector_store(opts \\ []) do
       url = "/vector_stores"
       query_params = Keyword.take(opts, [])
@@ -156,8 +160,13 @@ defmodule ExOpenAI.VectorStores do
     * `:vector_store_id` - **required** - `String.t()`  
       The ID of the vector store to delete.
     """
-    @spec delete_vector_store(vector_store_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeleteVectorStoreResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_vector_store(vector_store_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeleteVectorStoreResponse.t()} | {:error, any()}
+    )
+
     def delete_vector_store(vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -206,8 +215,13 @@ defmodule ExOpenAI.VectorStores do
     * `:vector_store_id` - **required** - `String.t()`  
       The ID of the vector store to retrieve.
     """
-    @spec get_vector_store(vector_store_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VectorStoreObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_vector_store(vector_store_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VectorStoreObject.t()} | {:error, any()}
+    )
+
     def get_vector_store(vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -263,15 +277,18 @@ defmodule ExOpenAI.VectorStores do
     * `name` - **optional** - `String.t() | nil`  
       The name of the vector store.
     """
-    @spec modify_vector_store(
-            vector_store_id :: String.t(),
-            opts :: [
+    (
+      @type modify_vector_store_opt() ::
               ({:expires_after,
                 %{required(:anchor) => :last_active_at, required(:days) => integer()}}
                | {:metadata, ExOpenAI.Components.Metadata.t()})
               | {:name, String.t() | nil}
-            ]
-          ) :: {:ok, ExOpenAI.Components.VectorStoreObject.t()} | {:error, any()}
+      @spec modify_vector_store(
+              vector_store_id :: String.t(),
+              opts :: [modify_vector_store_opt()]
+            ) :: {:ok, ExOpenAI.Components.VectorStoreObject.t()} | {:error, any()}
+    )
+
     def modify_vector_store(vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -340,15 +357,18 @@ defmodule ExOpenAI.VectorStores do
       A list of objects that each include a `file_id` plus optional `attributes` or `chunking_strategy`. Use this when you need to override metadata for specific files. The global `attributes` or `chunking_strategy` will be ignored and must be specified for each file. The maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with `file_ids`.  
       Constraints: minItems: 1, maxItems: 2000
     """
-    @spec create_vector_store_file_batch(
-            vector_store_id :: String.t(),
-            opts :: [
+    (
+      @type create_vector_store_file_batch_opt() ::
               (({:attributes, ExOpenAI.Components.VectorStoreFileAttributes.t()}
                 | {:chunking_strategy, ExOpenAI.Components.ChunkingStrategyRequestParam.t()})
                | {:file_ids, list(String.t())})
               | {:files, list(ExOpenAI.Components.CreateVectorStoreFileRequest.t())}
-            ]
-          ) :: {:ok, ExOpenAI.Components.VectorStoreFileBatchObject.t()} | {:error, any()}
+      @spec create_vector_store_file_batch(
+              vector_store_id :: String.t(),
+              opts :: [create_vector_store_file_batch_opt()]
+            ) :: {:ok, ExOpenAI.Components.VectorStoreFileBatchObject.t()} | {:error, any()}
+    )
+
     def create_vector_store_file_batch(vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/file_batches"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -406,11 +426,16 @@ defmodule ExOpenAI.VectorStores do
     * `:batch_id` - **required** - `String.t()`  
       The ID of the file batch being retrieved.
     """
-    @spec get_vector_store_file_batch(
-            batch_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.VectorStoreFileBatchObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_vector_store_file_batch(
+              batch_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.VectorStoreFileBatchObject.t()} | {:error, any()}
+    )
+
     def get_vector_store_file_batch(batch_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/file_batches/{batch_id}"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -463,11 +488,16 @@ defmodule ExOpenAI.VectorStores do
     * `:batch_id` - **required** - `String.t()`  
       The ID of the file batch to cancel.
     """
-    @spec cancel_vector_store_file_batch(
-            batch_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.VectorStoreFileBatchObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_vector_store_file_batch(
+              batch_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.VectorStoreFileBatchObject.t()} | {:error, any()}
+    )
+
     def cancel_vector_store_file_batch(batch_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -541,15 +571,18 @@ defmodule ExOpenAI.VectorStores do
       Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.  
       Allowed values: `"in_progress"`, `"completed"`, `"failed"`, `"cancelled"`
     """
-    @spec list_files_in_vector_store_batch(
-            batch_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: [
+    (
+      @type list_files_in_vector_store_batch_opt() ::
               ((({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
                | {:before, String.t()})
               | {:filter, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListVectorStoreFilesResponse.t()} | {:error, any()}
+      @spec list_files_in_vector_store_batch(
+              batch_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: [list_files_in_vector_store_batch_opt()]
+            ) :: {:ok, ExOpenAI.Components.ListVectorStoreFilesResponse.t()} | {:error, any()}
+    )
+
     def list_files_in_vector_store_batch(batch_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/file_batches/{batch_id}/files"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -623,14 +656,17 @@ defmodule ExOpenAI.VectorStores do
       Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.  
       Allowed values: `"in_progress"`, `"completed"`, `"failed"`, `"cancelled"`
     """
-    @spec list_vector_store_files(
-            vector_store_id :: String.t(),
-            opts :: [
+    (
+      @type list_vector_store_files_opt() ::
               ((({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
                | {:before, String.t()})
               | {:filter, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListVectorStoreFilesResponse.t()} | {:error, any()}
+      @spec list_vector_store_files(
+              vector_store_id :: String.t(),
+              opts :: [list_vector_store_files_opt()]
+            ) :: {:ok, ExOpenAI.Components.ListVectorStoreFilesResponse.t()} | {:error, any()}
+    )
+
     def list_vector_store_files(vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/files"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -694,14 +730,17 @@ defmodule ExOpenAI.VectorStores do
 
     * `chunking_strategy` - **optional** - `any()`
     """
-    @spec create_vector_store_file(
-            file_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: [
+    (
+      @type create_vector_store_file_opt() ::
               {:attributes, ExOpenAI.Components.VectorStoreFileAttributes.t()}
               | {:chunking_strategy, ExOpenAI.Components.ChunkingStrategyRequestParam.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.VectorStoreFileObject.t()} | {:error, any()}
+      @spec create_vector_store_file(
+              file_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: [create_vector_store_file_opt()]
+            ) :: {:ok, ExOpenAI.Components.VectorStoreFileObject.t()} | {:error, any()}
+    )
+
     def create_vector_store_file(file_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/files"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -751,11 +790,16 @@ defmodule ExOpenAI.VectorStores do
     * `:file_id` - **required** - `String.t()`  
       The ID of the file to delete.
     """
-    @spec delete_vector_store_file(
-            file_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.DeleteVectorStoreFileResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_vector_store_file(
+              file_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.DeleteVectorStoreFileResponse.t()} | {:error, any()}
+    )
+
     def delete_vector_store_file(file_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/files/{file_id}"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -808,11 +852,16 @@ defmodule ExOpenAI.VectorStores do
     * `:file_id` - **required** - `String.t()`  
       The ID of the file being retrieved.
     """
-    @spec get_vector_store_file(
-            file_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.VectorStoreFileObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_vector_store_file(
+              file_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.VectorStoreFileObject.t()} | {:error, any()}
+    )
+
     def get_vector_store_file(file_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/files/{file_id}"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -865,12 +914,17 @@ defmodule ExOpenAI.VectorStores do
 
     * `attributes` - **required** - `any()`
     """
-    @spec update_vector_store_file_attributes(
-            attributes :: ExOpenAI.Components.VectorStoreFileAttributes.t(),
-            file_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.VectorStoreFileObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec update_vector_store_file_attributes(
+              attributes :: ExOpenAI.Components.VectorStoreFileAttributes.t(),
+              file_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.VectorStoreFileObject.t()} | {:error, any()}
+    )
+
     def update_vector_store_file_attributes(attributes, file_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/files/{file_id}"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -921,11 +975,16 @@ defmodule ExOpenAI.VectorStores do
     * `:file_id` - **required** - `String.t()`  
       The ID of the file within the vector store.
     """
-    @spec retrieve_vector_store_file_content(
-            file_id :: String.t(),
-            vector_store_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.VectorStoreFileContentResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_vector_store_file_content(
+              file_id :: String.t(),
+              vector_store_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.VectorStoreFileContentResponse.t()} | {:error, any()}
+    )
+
     def retrieve_vector_store_file_content(file_id, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/files/{file_id}/content"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))
@@ -995,10 +1054,8 @@ defmodule ExOpenAI.VectorStores do
       Whether to rewrite the natural language query for vector search.  
       Default: `false`
     """
-    @spec search_vector_store(
-            query :: String.t() | list(String.t()),
-            vector_store_id :: String.t(),
-            opts :: [
+    (
+      @type search_vector_store_opt() ::
               (({:filters,
                  ExOpenAI.Components.ComparisonFilter.t() | ExOpenAI.Components.CompoundFilter.t()}
                 | {:max_num_results, integer()})
@@ -1008,8 +1065,13 @@ defmodule ExOpenAI.VectorStores do
                     optional(:score_threshold) => number()
                   }})
               | {:rewrite_query, boolean()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.VectorStoreSearchResultsPage.t()} | {:error, any()}
+      @spec search_vector_store(
+              query :: String.t() | list(String.t()),
+              vector_store_id :: String.t(),
+              opts :: [search_vector_store_opt()]
+            ) :: {:ok, ExOpenAI.Components.VectorStoreSearchResultsPage.t()} | {:error, any()}
+    )
+
     def search_vector_store(query, vector_store_id, opts \\ []) do
       url = "/vector_stores/{vector_store_id}/search"
       url = String.replace(url, "{vector_store_id}", to_string(vector_store_id))

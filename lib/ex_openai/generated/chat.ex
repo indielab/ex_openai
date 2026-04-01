@@ -28,13 +28,15 @@ defmodule ExOpenAI.Chat do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"asc"`
     """
-    @spec list_chat_completions(
-            opts :: [
+    (
+      @type list_chat_completions_opt() ::
               ((({:model, String.t()} | {:metadata, any()}) | {:after, String.t()})
                | {:limit, integer()})
               | {:order, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ChatCompletionList.t()} | {:error, any()}
+      @spec list_chat_completions(opts :: [list_chat_completions_opt()]) ::
+              {:ok, ExOpenAI.Components.ChatCompletionList.t()} | {:error, any()}
+    )
+
     def list_chat_completions(opts \\ []) do
       url = "/chat/completions"
       query_params = Keyword.take(opts, [:model, :metadata, :after, :limit, :order])
@@ -282,10 +284,8 @@ defmodule ExOpenAI.Chat do
     `logprobs` must be set to `true` if this parameter is used.  
       Constraints: minimum: 0, maximum: 20
     """
-    @spec create_chat_completion(
-            messages :: list(ExOpenAI.Components.ChatCompletionRequestMessage.t()),
-            model :: ExOpenAI.Components.ModelIdsShared.t(),
-            opts :: [
+    (
+      @type create_chat_completion_opt() ::
               ((((((((((((((((((((((((((((((({:prompt_cache_key, String.t()}
                                              | {:audio,
                                                 %{
@@ -349,8 +349,15 @@ defmodule ExOpenAI.Chat do
                 | {:prediction, ExOpenAI.Components.PredictionContent.t() | nil})
                | {:prompt_cache_retention, (:"in-memory" | :"24h") | any()})
               | {:top_logprobs, integer() | nil}
-            ]
-          ) :: {:ok, ExOpenAI.Components.CreateChatCompletionResponse.t()} | {:error, any()}
+      @spec create_chat_completion(
+              messages :: list(ExOpenAI.Components.ChatCompletionRequestMessage.t()),
+              model :: ExOpenAI.Components.ModelIdsShared.t(),
+              opts :: [create_chat_completion_opt()]
+            ) ::
+              {:ok, ExOpenAI.Components.CreateChatCompletionResponse.t() | reference()}
+              | {:error, any()}
+    )
+
     def create_chat_completion(messages, model, opts \\ []) do
       url = "/chat/completions"
       query_params = Keyword.take(opts, [])
@@ -487,8 +494,13 @@ defmodule ExOpenAI.Chat do
     * `:completion_id` - **required** - `String.t()`  
       The ID of the chat completion to delete.
     """
-    @spec delete_chat_completion(completion_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ChatCompletionDeleted.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_chat_completion(completion_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ChatCompletionDeleted.t()} | {:error, any()}
+    )
+
     def delete_chat_completion(completion_id, opts \\ []) do
       url = "/chat/completions/{completion_id}"
       url = String.replace(url, "{completion_id}", to_string(completion_id))
@@ -537,8 +549,13 @@ defmodule ExOpenAI.Chat do
     * `:completion_id` - **required** - `String.t()`  
       The ID of the chat completion to retrieve.
     """
-    @spec get_chat_completion(completion_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.CreateChatCompletionResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_chat_completion(completion_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.CreateChatCompletionResponse.t()} | {:error, any()}
+    )
+
     def get_chat_completion(completion_id, opts \\ []) do
       url = "/chat/completions/{completion_id}"
       url = String.replace(url, "{completion_id}", to_string(completion_id))
@@ -590,8 +607,13 @@ defmodule ExOpenAI.Chat do
     * `:completion_id` - **required** - `String.t()`  
       The ID of the chat completion to update.
     """
-    @spec update_chat_completion(completion_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.CreateChatCompletionResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec update_chat_completion(completion_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.CreateChatCompletionResponse.t()} | {:error, any()}
+    )
+
     def update_chat_completion(completion_id, opts \\ []) do
       url = "/chat/completions/{completion_id}"
       url = String.replace(url, "{completion_id}", to_string(completion_id))
@@ -657,10 +679,15 @@ defmodule ExOpenAI.Chat do
       Allowed values: `"asc"`, `"desc"`  
       Default: `"asc"`
     """
-    @spec get_chat_completion_messages(
-            completion_id :: String.t(),
-            opts :: [({:after, String.t()} | {:limit, integer()}) | {:order, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ChatCompletionMessageList.t()} | {:error, any()}
+    (
+      @type get_chat_completion_messages_opt() ::
+              ({:after, String.t()} | {:limit, integer()}) | {:order, String.t()}
+      @spec get_chat_completion_messages(
+              completion_id :: String.t(),
+              opts :: [get_chat_completion_messages_opt()]
+            ) :: {:ok, ExOpenAI.Components.ChatCompletionMessageList.t()} | {:error, any()}
+    )
+
     def get_chat_completion_messages(completion_id, opts \\ []) do
       url = "/chat/completions/{completion_id}/messages"
       url = String.replace(url, "{completion_id}", to_string(completion_id))

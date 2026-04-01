@@ -13,8 +13,12 @@ defmodule ExOpenAI.Batches do
       A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.  
       Default: `20`
     """
-    @spec list_batches(opts :: [{:after, String.t()} | {:limit, integer()}]) ::
-            {:ok, ExOpenAI.Components.ListBatchesResponse.t()} | {:error, any()}
+    (
+      @type list_batches_opt() :: {:after, String.t()} | {:limit, integer()}
+      @spec list_batches(opts :: [list_batches_opt()]) ::
+              {:ok, ExOpenAI.Components.ListBatchesResponse.t()} | {:error, any()}
+    )
+
     def list_batches(opts \\ []) do
       url = "/batches"
       query_params = Keyword.take(opts, [:after, :limit])
@@ -55,8 +59,13 @@ defmodule ExOpenAI.Batches do
     @doc """
     Creates and executes a batch from an uploaded file of requests
     """
-    @spec create_batch(opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Batch.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_batch(opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Batch.t()} | {:error, any()}
+    )
+
     def create_batch(opts \\ []) do
       url = "/batches"
       query_params = Keyword.take(opts, [])
@@ -102,8 +111,13 @@ defmodule ExOpenAI.Batches do
     * `:batch_id` - **required** - `String.t()`  
       The ID of the batch to retrieve.
     """
-    @spec retrieve_batch(batch_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Batch.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_batch(batch_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Batch.t()} | {:error, any()}
+    )
+
     def retrieve_batch(batch_id, opts \\ []) do
       url = "/batches/{batch_id}"
       url = String.replace(url, "{batch_id}", to_string(batch_id))
@@ -150,8 +164,13 @@ defmodule ExOpenAI.Batches do
     * `:batch_id` - **required** - `String.t()`  
       The ID of the batch to cancel.
     """
-    @spec cancel_batch(batch_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.Batch.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_batch(batch_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.Batch.t()} | {:error, any()}
+    )
+
     def cancel_batch(batch_id, opts \\ []) do
       url = "/batches/{batch_id}/cancel"
       url = String.replace(url, "{batch_id}", to_string(batch_id))

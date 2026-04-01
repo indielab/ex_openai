@@ -23,12 +23,14 @@ defmodule ExOpenAI.Containers do
     * `:name` - **optional** - `String.t()`  
       Filter results by container name.
     """
-    @spec list_containers(
-            opts :: [
+    (
+      @type list_containers_opt() ::
               (({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
               | {:name, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ContainerListResource.t()} | {:error, any()}
+      @spec list_containers(opts :: [list_containers_opt()]) ::
+              {:ok, ExOpenAI.Components.ContainerListResource.t()} | {:error, any()}
+    )
+
     def list_containers(opts \\ []) do
       url = "/containers"
       query_params = Keyword.take(opts, [:limit, :order, :after, :name])
@@ -94,8 +96,8 @@ defmodule ExOpenAI.Containers do
     * `skills` - **optional** - `[any() | any()]`  
       An optional list of skills referenced by id or inline data.
     """
-    @spec create_container(
-            opts :: [
+    (
+      @type create_container_opt() ::
               ((({:expires_after,
                   %{required(:anchor) => :last_active_at, required(:minutes) => integer()}}
                  | {:file_ids, list(String.t())})
@@ -108,8 +110,10 @@ defmodule ExOpenAI.Containers do
                    ExOpenAI.Components.SkillReferenceParam.t()
                    | ExOpenAI.Components.InlineSkillParam.t()
                  )}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ContainerResource.t()} | {:error, any()}
+      @spec create_container(opts :: [create_container_opt()]) ::
+              {:ok, ExOpenAI.Components.ContainerResource.t()} | {:error, any()}
+    )
+
     def create_container(opts \\ []) do
       url = "/containers"
       query_params = Keyword.take(opts, [])
@@ -164,8 +168,13 @@ defmodule ExOpenAI.Containers do
     * `:container_id` - **required** - `String.t()`  
       The ID of the container to delete.
     """
-    @spec delete_container(container_id :: String.t(), opts :: keyword()) ::
-            {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_container(container_id :: String.t(), opts :: keyword()) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def delete_container(container_id, opts \\ []) do
       url = "/containers/{container_id}"
       url = String.replace(url, "{container_id}", to_string(container_id))
@@ -210,8 +219,13 @@ defmodule ExOpenAI.Containers do
 
     * `:container_id` - **required** - `String.t()`
     """
-    @spec retrieve_container(container_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ContainerResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_container(container_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ContainerResource.t()} | {:error, any()}
+    )
+
     def retrieve_container(container_id, opts \\ []) do
       url = "/containers/{container_id}"
       url = String.replace(url, "{container_id}", to_string(container_id))
@@ -273,10 +287,13 @@ defmodule ExOpenAI.Containers do
     * `:after` - **optional** - `String.t()`  
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
     """
-    @spec list_container_files(
-            container_id :: String.t(),
-            opts :: [({:limit, integer()} | {:order, String.t()}) | {:after, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ContainerFileListResource.t()} | {:error, any()}
+    (
+      @type list_container_files_opt() ::
+              ({:limit, integer()} | {:order, String.t()}) | {:after, String.t()}
+      @spec list_container_files(container_id :: String.t(), opts :: [list_container_files_opt()]) ::
+              {:ok, ExOpenAI.Components.ContainerFileListResource.t()} | {:error, any()}
+    )
+
     def list_container_files(container_id, opts \\ []) do
       url = "/containers/{container_id}/files"
       url = String.replace(url, "{container_id}", to_string(container_id))
@@ -339,10 +356,14 @@ defmodule ExOpenAI.Containers do
     * `file_id` - **optional** - `String.t()`  
       Name of the file to create.
     """
-    @spec create_container_file(
-            container_id :: String.t(),
-            opts :: [{:file, binary()} | {:file_id, String.t()}]
-          ) :: {:ok, ExOpenAI.Components.ContainerFileResource.t()} | {:error, any()}
+    (
+      @type create_container_file_opt() :: {:file, binary()} | {:file_id, String.t()}
+      @spec create_container_file(
+              container_id :: String.t(),
+              opts :: [create_container_file_opt()]
+            ) :: {:ok, ExOpenAI.Components.ContainerFileResource.t()} | {:error, any()}
+    )
+
     def create_container_file(container_id, opts \\ []) do
       url = "/containers/{container_id}/files"
       url = String.replace(url, "{container_id}", to_string(container_id))
@@ -392,11 +413,16 @@ defmodule ExOpenAI.Containers do
 
     * `:file_id` - **required** - `String.t()`
     """
-    @spec delete_container_file(
-            container_id :: String.t(),
-            file_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_container_file(
+              container_id :: String.t(),
+              file_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def delete_container_file(container_id, file_id, opts \\ []) do
       url = "/containers/{container_id}/files/{file_id}"
       url = String.replace(url, "{container_id}", to_string(container_id))
@@ -444,11 +470,16 @@ defmodule ExOpenAI.Containers do
 
     * `:file_id` - **required** - `String.t()`
     """
-    @spec retrieve_container_file(
-            container_id :: String.t(),
-            file_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, ExOpenAI.Components.ContainerFileResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_container_file(
+              container_id :: String.t(),
+              file_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, ExOpenAI.Components.ContainerFileResource.t()} | {:error, any()}
+    )
+
     def retrieve_container_file(container_id, file_id, opts \\ []) do
       url = "/containers/{container_id}/files/{file_id}"
       url = String.replace(url, "{container_id}", to_string(container_id))
@@ -499,11 +530,16 @@ defmodule ExOpenAI.Containers do
 
     * `:file_id` - **required** - `String.t()`
     """
-    @spec retrieve_container_file_content(
-            container_id :: String.t(),
-            file_id :: String.t(),
-            opts :: keyword()
-          ) :: {:ok, map()} | {:error, any()}
+    (
+      nil
+
+      @spec retrieve_container_file_content(
+              container_id :: String.t(),
+              file_id :: String.t(),
+              opts :: keyword()
+            ) :: {:ok, map()} | {:error, any()}
+    )
+
     def retrieve_container_file_content(container_id, file_id, opts \\ []) do
       url = "/containers/{container_id}/files/{file_id}/content"
       url = String.replace(url, "{container_id}", to_string(container_id))

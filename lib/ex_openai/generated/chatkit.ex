@@ -24,13 +24,15 @@ defmodule ExOpenAI.Chatkit do
     * `rate_limits` - **optional** - `any()`  
       Optional override for per-minute request limits. When omitted, defaults to 10.
     """
-    @spec create_chat_session_method(
-            opts :: [
+    (
+      @type create_chat_session_method_opt() ::
               ({:chatkit_configuration, ExOpenAI.Components.ChatkitConfigurationParam.t()}
                | {:expires_after, ExOpenAI.Components.ExpiresAfterParam.t()})
               | {:rate_limits, ExOpenAI.Components.RateLimitsParam.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ChatSessionResource.t()} | {:error, any()}
+      @spec create_chat_session_method(opts :: [create_chat_session_method_opt()]) ::
+              {:ok, ExOpenAI.Components.ChatSessionResource.t()} | {:error, any()}
+    )
+
     def create_chat_session_method(opts \\ []) do
       url = "/chatkit/sessions"
       query_params = Keyword.take(opts, [])
@@ -84,8 +86,13 @@ defmodule ExOpenAI.Chatkit do
     * `:session_id` - **required** - `String.t()`  
       Unique identifier for the ChatKit session to cancel.
     """
-    @spec cancel_chat_session_method(session_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ChatSessionResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec cancel_chat_session_method(session_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ChatSessionResource.t()} | {:error, any()}
+    )
+
     def cancel_chat_session_method(session_id, opts \\ []) do
       url = "/chatkit/sessions/{session_id}/cancel"
       url = String.replace(url, "{session_id}", to_string(session_id))
@@ -146,13 +153,15 @@ defmodule ExOpenAI.Chatkit do
       Filter threads that belong to this user identifier. Defaults to null to return all users.  
       Constraints: minLength: 1, maxLength: 512
     """
-    @spec list_threads_method(
-            opts :: [
+    (
+      @type list_threads_method_opt() ::
               ((({:limit, integer()} | {:order, any()}) | {:after, String.t()})
                | {:before, String.t()})
               | {:user, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ThreadListResource.t()} | {:error, any()}
+      @spec list_threads_method(opts :: [list_threads_method_opt()]) ::
+              {:ok, ExOpenAI.Components.ThreadListResource.t()} | {:error, any()}
+    )
+
     def list_threads_method(opts \\ []) do
       url = "/chatkit/threads"
       query_params = Keyword.take(opts, [:limit, :order, :after, :before, :user])
@@ -201,8 +210,13 @@ defmodule ExOpenAI.Chatkit do
     * `:thread_id` - **required** - `String.t()`  
       Identifier of the ChatKit thread to delete.
     """
-    @spec delete_thread_method(thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeletedThreadResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_thread_method(thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeletedThreadResource.t()} | {:error, any()}
+    )
+
     def delete_thread_method(thread_id, opts \\ []) do
       url = "/chatkit/threads/{thread_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -249,8 +263,13 @@ defmodule ExOpenAI.Chatkit do
     * `:thread_id` - **required** - `String.t()`  
       Identifier of the ChatKit thread to retrieve.
     """
-    @spec get_thread_method(thread_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.ThreadResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_thread_method(thread_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.ThreadResource.t()} | {:error, any()}
+    )
+
     def get_thread_method(thread_id, opts \\ []) do
       url = "/chatkit/threads/{thread_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
@@ -312,13 +331,16 @@ defmodule ExOpenAI.Chatkit do
     * `:before` - **optional** - `String.t()`  
       List items created before this thread item ID. Defaults to null for the newest results.
     """
-    @spec list_thread_items_method(
-            thread_id :: String.t(),
-            opts :: [
+    (
+      @type list_thread_items_method_opt() ::
               (({:limit, integer()} | {:order, any()}) | {:after, String.t()})
               | {:before, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ThreadItemListResource.t()} | {:error, any()}
+      @spec list_thread_items_method(
+              thread_id :: String.t(),
+              opts :: [list_thread_items_method_opt()]
+            ) :: {:ok, ExOpenAI.Components.ThreadItemListResource.t()} | {:error, any()}
+    )
+
     def list_thread_items_method(thread_id, opts \\ []) do
       url = "/chatkit/threads/{thread_id}/items"
       url = String.replace(url, "{thread_id}", to_string(thread_id))

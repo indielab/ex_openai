@@ -16,8 +16,12 @@ defmodule ExOpenAI.Videos do
     * `:after` - **optional** - `String.t()`  
       Identifier for the last item from the previous pagination request
     """
-    @spec list_videos(opts :: [({:limit, integer()} | {:order, any()}) | {:after, String.t()}]) ::
-            {:ok, ExOpenAI.Components.VideoListResource.t()} | {:error, any()}
+    (
+      @type list_videos_opt() :: ({:limit, integer()} | {:order, any()}) | {:after, String.t()}
+      @spec list_videos(opts :: [list_videos_opt()]) ::
+              {:ok, ExOpenAI.Components.VideoListResource.t()} | {:error, any()}
+    )
+
     def list_videos(opts \\ []) do
       url = "/videos"
       query_params = Keyword.take(opts, [:limit, :order, :after])
@@ -78,14 +82,16 @@ defmodule ExOpenAI.Videos do
     * `size` - **optional** - `any()`  
       Output resolution formatted as width x height (allowed values: 720x1280, 1280x720, 1024x1792, 1792x1024). Defaults to 720x1280.
     """
-    @spec create_video(
-            opts :: [
+    (
+      @type create_video_opt() ::
               (({:input_reference, :"Elixir.ExOpenAI.Components.ImageRefParam-2".t()}
                 | {:model, ExOpenAI.Components.VideoModel.t()})
                | {:seconds, ExOpenAI.Components.VideoSeconds.t()})
               | {:size, ExOpenAI.Components.VideoSize.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+      @spec create_video(opts :: [create_video_opt()]) ::
+              {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    )
+
     def create_video(opts \\ []) do
       url = "/videos"
       query_params = Keyword.take(opts, [])
@@ -139,8 +145,13 @@ defmodule ExOpenAI.Videos do
       Video file used to create a character.  
       Format: `binary`
     """
-    @spec create_video_character(opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VideoCharacterResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_video_character(opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VideoCharacterResource.t()} | {:error, any()}
+    )
+
     def create_video_character(opts \\ []) do
       url = "/videos/characters"
       query_params = Keyword.take(opts, [])
@@ -186,8 +197,13 @@ defmodule ExOpenAI.Videos do
     * `:character_id` - **required** - `String.t()`  
       The identifier of the character to retrieve.
     """
-    @spec get_video_character(character_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VideoCharacterResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_video_character(character_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VideoCharacterResource.t()} | {:error, any()}
+    )
+
     def get_video_character(character_id, opts \\ []) do
       url = "/videos/characters/{character_id}"
       url = String.replace(url, "{character_id}", to_string(character_id))
@@ -238,8 +254,13 @@ defmodule ExOpenAI.Videos do
     * `video` - **required** - `any()`  
       Reference to the completed video to edit.
     """
-    @spec create_video_edit(opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_video_edit(opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    )
+
     def create_video_edit(opts \\ []) do
       url = "/videos/edits"
       query_params = Keyword.take(opts, [])
@@ -292,8 +313,13 @@ defmodule ExOpenAI.Videos do
     * `video` - **required** - `any()`  
       Reference to the completed video to extend.
     """
-    @spec create_video_extend(opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_video_extend(opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    )
+
     def create_video_extend(opts \\ []) do
       url = "/videos/extensions"
       query_params = Keyword.take(opts, [])
@@ -339,8 +365,13 @@ defmodule ExOpenAI.Videos do
     * `:video_id` - **required** - `String.t()`  
       The identifier of the video to delete.
     """
-    @spec delete_video(video_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeletedVideoResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_video(video_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeletedVideoResource.t()} | {:error, any()}
+    )
+
     def delete_video(video_id, opts \\ []) do
       url = "/videos/{video_id}"
       url = String.replace(url, "{video_id}", to_string(video_id))
@@ -387,8 +418,13 @@ defmodule ExOpenAI.Videos do
     * `:video_id` - **required** - `String.t()`  
       The identifier of the video to retrieve.
     """
-    @spec get_video(video_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_video(video_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    )
+
     def get_video(video_id, opts \\ []) do
       url = "/videos/{video_id}"
       url = String.replace(url, "{video_id}", to_string(video_id))
@@ -442,8 +478,12 @@ defmodule ExOpenAI.Videos do
     * `:variant` - **optional** - `any()`  
       Which downloadable asset to return. Defaults to the MP4 video.
     """
-    @spec retrieve_video_content(video_id :: String.t(), opts :: [variant: any()]) ::
-            {:ok, map()} | {:error, any()}
+    (
+      @type retrieve_video_content_opt() :: {:variant, any()}
+      @spec retrieve_video_content(video_id :: String.t(), opts :: [retrieve_video_content_opt()]) ::
+              {:ok, map()} | {:error, any()}
+    )
+
     def retrieve_video_content(video_id, opts \\ []) do
       url = "/videos/{video_id}/content"
       url = String.replace(url, "{video_id}", to_string(video_id))
@@ -491,8 +531,13 @@ defmodule ExOpenAI.Videos do
       Updated text prompt that directs the remix generation.  
       Constraints: minLength: 1, maxLength: 32000
     """
-    @spec create_video_remix(video_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    (
+      nil
+
+      @spec create_video_remix(video_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
+    )
+
     def create_video_remix(video_id, opts \\ []) do
       url = "/videos/{video_id}/remix"
       url = String.replace(url, "{video_id}", to_string(video_id))

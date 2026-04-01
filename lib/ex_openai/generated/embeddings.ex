@@ -30,17 +30,21 @@ defmodule ExOpenAI.Embeddings do
       A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).  
       Example: `"user-1234"`
     """
-    @spec create_embedding(
-            input :: ((String.t() | list(String.t())) | list(integer())) | list(list(integer())),
-            model ::
-              String.t()
-              | (:"text-embedding-ada-002" | :"text-embedding-3-small")
-              | :"text-embedding-3-large",
-            opts :: [
+    (
+      @type create_embedding_opt() ::
               ({:dimensions, integer()} | {:encoding_format, :float | :base64})
               | {:user, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.CreateEmbeddingResponse.t()} | {:error, any()}
+      @spec create_embedding(
+              input ::
+                ((String.t() | list(String.t())) | list(integer())) | list(list(integer())),
+              model ::
+                String.t()
+                | (:"text-embedding-ada-002" | :"text-embedding-3-small")
+                | :"text-embedding-3-large",
+              opts :: [create_embedding_opt()]
+            ) :: {:ok, ExOpenAI.Components.CreateEmbeddingResponse.t()} | {:error, any()}
+    )
+
     def create_embedding(input, model, opts \\ []) do
       url = "/embeddings"
       query_params = Keyword.take(opts, [])

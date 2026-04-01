@@ -21,12 +21,14 @@ defmodule ExOpenAI.Assistants do
     * `:before` - **optional** - `String.t()`  
       A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
     """
-    @spec list_assistants(
-            opts :: [
+    (
+      @type list_assistants_opt() ::
               (({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
               | {:before, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ListAssistantsResponse.t()} | {:error, any()}
+      @spec list_assistants(opts :: [list_assistants_opt()]) ::
+              {:ok, ExOpenAI.Components.ListAssistantsResponse.t()} | {:error, any()}
+    )
+
     def list_assistants(opts \\ []) do
       url = "/assistants"
       query_params = Keyword.take(opts, [:limit, :order, :after, :before])
@@ -98,9 +100,8 @@ defmodule ExOpenAI.Assistants do
 
     * `top_p` - **optional** - `number() | any()`
     """
-    @spec create_assistant(
-            model :: String.t() | ExOpenAI.Components.AssistantSupportedModels.t(),
-            opts :: [
+    (
+      @type create_assistant_opt() ::
               (((((((({:description, String.t() | any()} | {:instructions, String.t() | any()})
                      | {:metadata, ExOpenAI.Components.Metadata.t()})
                     | {:name, String.t() | any()})
@@ -129,8 +130,12 @@ defmodule ExOpenAI.Assistants do
                     | ExOpenAI.Components.AssistantToolsFunction.t()
                   )})
               | {:top_p, number() | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
+      @spec create_assistant(
+              model :: String.t() | ExOpenAI.Components.AssistantSupportedModels.t(),
+              opts :: [create_assistant_opt()]
+            ) :: {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
+    )
+
     def create_assistant(model, opts \\ []) do
       url = "/assistants"
       query_params = Keyword.take(opts, [])
@@ -205,8 +210,13 @@ defmodule ExOpenAI.Assistants do
     * `:assistant_id` - **required** - `String.t()`  
       The ID of the assistant to delete.
     """
-    @spec delete_assistant(assistant_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.DeleteAssistantResponse.t()} | {:error, any()}
+    (
+      nil
+
+      @spec delete_assistant(assistant_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.DeleteAssistantResponse.t()} | {:error, any()}
+    )
+
     def delete_assistant(assistant_id, opts \\ []) do
       url = "/assistants/{assistant_id}"
       url = String.replace(url, "{assistant_id}", to_string(assistant_id))
@@ -253,8 +263,13 @@ defmodule ExOpenAI.Assistants do
     * `:assistant_id` - **required** - `String.t()`  
       The ID of the assistant to retrieve.
     """
-    @spec get_assistant(assistant_id :: String.t(), opts :: keyword()) ::
-            {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
+    (
+      nil
+
+      @spec get_assistant(assistant_id :: String.t(), opts :: keyword()) ::
+              {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
+    )
+
     def get_assistant(assistant_id, opts \\ []) do
       url = "/assistants/{assistant_id}"
       url = String.replace(url, "{assistant_id}", to_string(assistant_id))
@@ -329,9 +344,8 @@ defmodule ExOpenAI.Assistants do
 
     * `top_p` - **optional** - `number() | any()`
     """
-    @spec modify_assistant(
-            assistant_id :: String.t(),
-            opts :: [
+    (
+      @type modify_assistant_opt() ::
               ((((((((({:description, String.t() | any()} | {:instructions, String.t() | any()})
                       | {:metadata, ExOpenAI.Components.Metadata.t()})
                      | {:model, String.t() | ExOpenAI.Components.AssistantSupportedModels.t()})
@@ -353,8 +367,10 @@ defmodule ExOpenAI.Assistants do
                     | ExOpenAI.Components.AssistantToolsFunction.t()
                   )})
               | {:top_p, number() | any()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
+      @spec modify_assistant(assistant_id :: String.t(), opts :: [modify_assistant_opt()]) ::
+              {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
+    )
+
     def modify_assistant(assistant_id, opts \\ []) do
       url = "/assistants/{assistant_id}"
       url = String.replace(url, "{assistant_id}", to_string(assistant_id))

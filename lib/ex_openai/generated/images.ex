@@ -82,10 +82,8 @@ defmodule ExOpenAI.Images do
     monitor and detect abuse.  
       Example: `"user-1234"`
     """
-    @spec create_image_edit(
-            images :: list(ExOpenAI.Components.ImageRefParam.t()),
-            prompt :: String.t(),
-            opts :: [
+    (
+      @type create_image_edit_opt() ::
               ((((((((((({:background, ((:transparent | :opaque) | :auto) | any()}
                          | {:input_fidelity, (:high | :low) | any()})
                         | {:mask, ExOpenAI.Components.ImageRefParam.t()})
@@ -103,8 +101,13 @@ defmodule ExOpenAI.Images do
                 | {:size, (((:auto | :"1024x1024") | :"1536x1024") | :"1024x1536") | any()})
                | {:stream, boolean() | any()})
               | {:user, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ImagesResponse.t()} | {:error, any()}
+      @spec create_image_edit(
+              images :: list(ExOpenAI.Components.ImageRefParam.t()),
+              prompt :: String.t(),
+              opts :: [create_image_edit_opt()]
+            ) :: {:ok, ExOpenAI.Components.ImagesResponse.t() | reference()} | {:error, any()}
+    )
+
     def create_image_edit(images, prompt, opts \\ []) do
       url = "/images/edits"
       query_params = Keyword.take(opts, [])
@@ -283,9 +286,8 @@ defmodule ExOpenAI.Images do
       A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).  
       Example: `"user-1234"`
     """
-    @spec create_image(
-            prompt :: String.t(),
-            opts :: [
+    (
+      @type create_image_opt() ::
               ((((((((((({:background, ((:transparent | :opaque) | :auto) | nil}
                          | {:model,
                             (String.t()
@@ -308,8 +310,10 @@ defmodule ExOpenAI.Images do
                 | {:stream, boolean() | nil})
                | {:style, (:vivid | :natural) | nil})
               | {:user, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ImagesResponse.t()} | {:error, any()}
+      @spec create_image(prompt :: String.t(), opts :: [create_image_opt()]) ::
+              {:ok, ExOpenAI.Components.ImagesResponse.t() | reference()} | {:error, any()}
+    )
+
     def create_image(prompt, opts \\ []) do
       url = "/images/generations"
       query_params = Keyword.take(opts, [])
@@ -430,15 +434,16 @@ defmodule ExOpenAI.Images do
       A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).  
       Example: `"user-1234"`
     """
-    @spec create_image_variation(
-            image :: binary(),
-            opts :: [
+    (
+      @type create_image_variation_opt() ::
               ((({:model, (String.t() | :"dall-e-2") | nil} | {:n, integer() | nil})
                 | {:response_format, (:url | :b64_json) | nil})
                | {:size, ((:"256x256" | :"512x512") | :"1024x1024") | nil})
               | {:user, String.t()}
-            ]
-          ) :: {:ok, ExOpenAI.Components.ImagesResponse.t()} | {:error, any()}
+      @spec create_image_variation(image :: binary(), opts :: [create_image_variation_opt()]) ::
+              {:ok, ExOpenAI.Components.ImagesResponse.t()} | {:error, any()}
+    )
+
     def create_image_variation(image, opts \\ []) do
       url = "/images/variations"
       query_params = Keyword.take(opts, [])
