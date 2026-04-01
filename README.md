@@ -156,7 +156,7 @@ mix update_openai_docs
 ## Projects Using ExOpenAI
 
 - [Elixir ChatGPT](https://github.com/dvcrn/elixir-chatgpt)
-- [FixMyJP](https://fixmyjp.d.sh)
+- [FixMyJP](https://fixmyjapanese.com)
 - [GPT Slack Bot](https://github.com/dvcrn/gpt-slack-bot)
 
 _Add yours with a PR!_

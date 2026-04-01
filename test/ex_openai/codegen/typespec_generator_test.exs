@@ -295,19 +295,58 @@ defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
     end
 
     test "handles type: nil with allOf" do
+      schemas = %{
+        "Base" => %Schema{
+          type: "object",
+          properties: %{
+            "id" => %Schema{type: "integer"}
+          },
+          required: ["id"]
+        }
+      }
+
       schema = %Schema{
         type: nil,
         all_of: [
           %Schema{ref: "#/components/schemas/Base"},
-          %Schema{type: "object", properties: %{"extra" => %Schema{type: "string"}}}
+          %Schema{
+            type: "object",
+            properties: %{"extra" => %Schema{type: "string"}},
+            required: ["extra"]
+          }
+        ]
+      }
+
+      ast = TypespecGenerator.schema_to_typespec(schema, schemas)
+
+      assert_map_typespec_equal(ast, [
+        "required(:extra) => String.t()",
+        "required(:id) => integer()"
+      ])
+    end
+
+    test "handles inline allOf without component refs" do
+      schema = %Schema{
+        type: nil,
+        all_of: [
+          %Schema{
+            type: "object",
+            properties: %{"id" => %Schema{type: "integer"}},
+            required: ["id"]
+          },
+          %Schema{
+            type: "object",
+            properties: %{"name" => %Schema{type: "string"}}
+          }
         ]
       }
 
       ast = TypespecGenerator.schema_to_typespec(schema)
-      typespec_string = Macro.to_string(ast)
 
-      # For now, allOf returns any()
-      assert typespec_string == "any()"
+      assert_map_typespec_equal(ast, [
+        "required(:id) => integer()",
+        "optional(:name) => String.t()"
+      ])
     end
 
     test "handles type: nil with enum" do

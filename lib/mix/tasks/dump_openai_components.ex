@@ -64,11 +64,11 @@ defmodule Mix.Tasks.DumpOpenaiComponents do
     File.write!(file_path, content)
   end
 
-  defp format_component_as_elixir(name, schema) do
+  defp format_component_as_elixir(_name, schema) do
     inspect(schema, pretty: true)
   end
 
-  defp format_path_as_elixir(path, path_data) do
+  defp format_path_as_elixir(_path, path_data) do
     inspect(path_data, pretty: true)
   end
 

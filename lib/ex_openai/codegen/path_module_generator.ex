@@ -90,7 +90,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   defp generate_function(%Operation{operation_id: op_id} = operation, schemas, path) do
     function_name = operation_id_to_function_name(op_id)
     {args, arg_names, optional_param_names} = build_function_args(operation, schemas)
-    
+
     # Get the response schema reference for this operation
     response_schema_ref = get_response_schema(operation, "200", schemas)
 
@@ -383,31 +383,42 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     |> String.downcase()
     |> String.to_atom()
   end
-  
+
   # Extract and resolve the response schema for a given status code
   def get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
-  def get_response_schema(%Operation{responses: responses}, status_code, schemas) do
+
+  def get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
     case Map.get(responses, status_code) do
       %{content: %{"application/json" => %{"schema" => %{"$ref" => ref}}}} ->
         %Schema{ref: ref}
 
-      %{content: %{"application/json" => %{"schema" => %{"oneOf" => one_of}}}} when is_list(one_of) ->
+      %{content: %{"application/json" => %{"schema" => %{"oneOf" => one_of}}}}
+      when is_list(one_of) ->
         %Schema{
           one_of:
-            Enum.map(one_of, fn
-              %{"$ref" => ref} -> %Schema{ref: ref}
-              %{"type" => _} = schema_map -> ExOpenAI.Codegen.DocsParser.parse_schema(schema_map, schemas)
-              _ -> %Schema{}
+            one_of
+            |> Enum.with_index()
+            |> Enum.map(fn {schema_entry, index} ->
+              case schema_entry do
+                %{"$ref" => ref} -> %Schema{ref: ref}
+                %{"type" => _} = schema_map -> Schema.parse_schema("one_of_#{index}", schema_map)
+                _ -> %Schema{}
+              end
             end)
         }
 
-      %{content: %{"application/json" => %{"schema" => %{"anyOf" => any_of}}}} when is_list(any_of) ->
+      %{content: %{"application/json" => %{"schema" => %{"anyOf" => any_of}}}}
+      when is_list(any_of) ->
         %Schema{
           any_of:
-            Enum.map(any_of, fn
-              %{"$ref" => ref} -> %Schema{ref: ref}
-              %{"type" => _} = schema_map -> ExOpenAI.Codegen.DocsParser.parse_schema(schema_map, schemas)
-              _ -> %Schema{}
+            any_of
+            |> Enum.with_index()
+            |> Enum.map(fn {schema_entry, index} ->
+              case schema_entry do
+                %{"$ref" => ref} -> %Schema{ref: ref}
+                %{"type" => _} = schema_map -> Schema.parse_schema("any_of_#{index}", schema_map)
+                _ -> %Schema{}
+              end
             end)
         }
 

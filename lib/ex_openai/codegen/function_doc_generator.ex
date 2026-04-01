@@ -14,7 +14,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   @spec generate_doc(Operation.t(), %{String.t() => Schema.t()}) :: Macro.t()
   def generate_doc(%Operation{} = operation, schemas \\ %{}) do
     doc_content = build_doc_content(operation, schemas)
-    
+
     quote do
       @doc unquote(doc_content)
     end
@@ -22,14 +22,14 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
   @doc """
   Generates @spec attribute for an operation function.
-  
+
   Builds proper typespecs for all parameters and return types.
   """
   @spec generate_spec(Operation.t(), atom(), [atom()], %{String.t() => Schema.t()}) :: Macro.t()
   def generate_spec(%Operation{} = operation, function_name, arg_names, schemas) do
     param_specs = build_param_specs(operation, arg_names, schemas)
     return_spec = build_return_spec(operation, function_name, schemas)
-    
+
     quote do
       @spec unquote(function_name)(unquote_splicing(param_specs)) :: unquote(return_spec)
     end
@@ -38,163 +38,178 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   # Build the documentation string
   defp build_doc_content(%Operation{} = operation, schemas) do
     sections = []
-    
+
     # Add summary
-    sections = if operation.summary do
-      [operation.summary | sections]
-    else
-      sections
-    end
-    
+    sections =
+      if operation.summary do
+        [operation.summary | sections]
+      else
+        sections
+      end
+
     # Add description if different from summary
-    sections = if operation.description && operation.description != operation.summary do
-      sections ++ ["", operation.description]
-    else
-      sections
-    end
-    
+    sections =
+      if operation.description && operation.description != operation.summary do
+        sections ++ ["", operation.description]
+      else
+        sections
+      end
+
     # Add comprehensive parameter documentation
     {params_section, opts_section} = build_comprehensive_parameter_docs(operation, schemas)
-    
-    sections = if params_section != "" do
-      sections ++ ["", "## Parameters", "", params_section]
-    else
-      sections
-    end
-    
-    sections = if opts_section != "" do
-      sections ++ ["", "## Options", "", opts_section]
-    else
-      sections
-    end
-    
+
+    sections =
+      if params_section != "" do
+        sections ++ ["", "## Parameters", "", params_section]
+      else
+        sections
+      end
+
+    sections =
+      if opts_section != "" do
+        sections ++ ["", "## Options", "", opts_section]
+      else
+        sections
+      end
+
     Enum.join(sections, "\n")
   end
 
-
   @doc """
   Builds parameter type specifications for a function.
-  
+
   Takes an operation and its argument names, and generates proper typespecs
   for each parameter. This includes:
-  
+
   - Path parameters (from operation.parameters where in="path")
   - Required body parameters (from request body schema)
   - Optional parameters in the opts keyword list
-  
+
   ## Parameters
-  
+
     * `operation` - The Operation struct containing parameter definitions
     * `arg_names` - List of argument names (atoms) for the function
     * `schemas` - Map of component schemas for type resolution
     
   ## Returns
-  
+
   A list of AST nodes representing the typespec for each parameter.
-  
+
   ## Example
-  
+
       iex> operation = %Operation{
       ...>   parameters: [%{name: "id", in: "path", schema: %{"type" => "string"}}],
       ...>   request_body: %{content: %{"application/json" => %{...}}}
       ...> }
       iex> build_param_specs(operation, [:id, :name, :opts], schemas)
       [{:"::", [], [{:id, [], nil}, {:remote_type, [], [...]}]}, ...]
-  
+
   """
   @spec build_param_specs(Operation.t(), [atom()], %{String.t() => Schema.t()}) :: [Macro.t()]
   def build_param_specs(%Operation{} = operation, arg_names, schemas) do
     # Remove :opts from arg_names for now, we'll add it specially
     positional_args = Enum.filter(arg_names, &(&1 != :opts))
-    
+
     # Get the resolved schema for the request body
     body_schema = SchemaResolver.get_request_body_schema(operation.request_body, schemas)
-    
+
     # Build specs for positional arguments
-    positional_specs = Enum.map(positional_args, fn arg_name ->
-      build_positional_param_spec(operation, arg_name, body_schema)
-    end)
-    
+    positional_specs =
+      Enum.map(positional_args, fn arg_name ->
+        build_positional_param_spec(operation, arg_name, body_schema, schemas)
+      end)
+
     # Build opts spec with specific optional parameters
-    opts_spec = build_opts_spec(operation, body_schema)
-    
+    opts_spec = build_opts_spec(operation, body_schema, schemas)
+
     positional_specs ++ [opts_spec]
   end
-  
+
   @doc """
   Builds the typespec for a single positional parameter.
-  
+
   Determines whether the parameter is a path parameter or body parameter
   and generates the appropriate typespec.
-  
+
   ## Parameters
-  
+
     * `operation` - The Operation struct
     * `arg_name` - The parameter name as an atom
     * `body_schema` - The resolved request body schema (may be nil)
     
   ## Returns
-  
+
   An AST node representing the parameter typespec.
   """
-  @spec build_positional_param_spec(Operation.t(), atom(), Schema.t() | nil) :: Macro.t()
-  def build_positional_param_spec(operation, arg_name, body_schema) do
-    type_spec = determine_param_type(operation, arg_name, body_schema)
-    
+  @spec build_positional_param_spec(
+          Operation.t(),
+          atom(),
+          Schema.t() | nil,
+          %{optional(String.t()) => Schema.t()}
+        ) :: Macro.t()
+  def build_positional_param_spec(operation, arg_name, body_schema, schemas) do
+    type_spec = determine_param_type(operation, arg_name, body_schema, schemas)
+
     quote do
       unquote(Macro.var(arg_name, nil)) :: unquote(type_spec)
     end
   end
-  
+
   @doc """
   Determines the type specification for a parameter.
-  
+
   Checks if the parameter is a path parameter first, then checks if it's
   a body parameter. Returns the appropriate typespec AST.
-  
+
   ## Parameters
-  
+
     * `operation` - The Operation struct containing parameter definitions
     * `arg_name` - The parameter name as an atom
     * `body_schema` - The resolved request body schema (may be nil)
     
   ## Returns
-  
+
   An AST node representing the type (e.g., `String.t()`, `integer()`, etc.)
   """
-  @spec determine_param_type(Operation.t(), atom(), Schema.t() | nil) :: Macro.t()
-  def determine_param_type(operation, arg_name, body_schema) do
+  @spec determine_param_type(
+          Operation.t(),
+          atom(),
+          Schema.t() | nil,
+          %{optional(String.t()) => Schema.t()}
+        ) :: Macro.t()
+  def determine_param_type(operation, arg_name, body_schema, schemas) do
     # Check if this is a path parameter
     path_param = find_path_parameter(operation, arg_name)
-    
+
     cond do
       # Path parameter
       path_param != nil ->
         derive_type_from_parameter(path_param)
-        
+
       # Body parameter - look it up in the resolved schema
       body_schema != nil && body_schema.properties != nil ->
         case Map.get(body_schema.properties, Atom.to_string(arg_name)) do
           %Schema{} = prop_schema ->
-            TypespecGenerator.schema_to_typespec(prop_schema)
+            TypespecGenerator.schema_to_typespec(prop_schema, schemas)
+
           _ ->
             quote do: any()
         end
-        
+
       true ->
         quote do: any()
     end
   end
-  
-  
+
   # Find a path parameter by name
   defp find_path_parameter(%Operation{parameters: nil}, _name), do: nil
+
   defp find_path_parameter(%Operation{parameters: params}, name) do
     Enum.find(params, fn param ->
       param.in == "path" && String.to_atom(param.name) == name
     end)
   end
-  
+
   # Derive type from parameter schema
   defp derive_type_from_parameter(param) do
     case param.schema do
@@ -205,47 +220,56 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       _ -> quote do: any()
     end
   end
-  
+
   # Build opts typespec with all optional parameters
-  defp build_opts_spec(operation, body_schema) do
+  defp build_opts_spec(operation, body_schema, schemas) do
     # Collect all optional parameters from different sources
     query_params = get_query_parameters(operation)
     optional_body_params = get_optional_body_parameters(body_schema)
-    
+
     # Build type specs for each optional parameter
     opt_types = []
-    
+
     # Add query parameters
-    opt_types = opt_types ++ Enum.map(query_params, fn param ->
-      param_name = String.to_atom(param.name)
-      param_type = derive_type_from_parameter(param)
-      quote do
-        {unquote(param_name), unquote(param_type)}
-      end
-    end)
-    
+    opt_types =
+      opt_types ++
+        Enum.map(query_params, fn param ->
+          param_name = String.to_atom(param.name)
+          param_type = derive_type_from_parameter(param)
+
+          quote do
+            {unquote(param_name), unquote(param_type)}
+          end
+        end)
+
     # Add optional body parameters
-    opt_types = opt_types ++ Enum.map(optional_body_params, fn {name, schema} ->
-      param_name = String.to_atom(name)
-      param_type = TypespecGenerator.schema_to_typespec(schema)
-      quote do
-        {unquote(param_name), unquote(param_type)}
-      end
-    end)
-    
+    opt_types =
+      opt_types ++
+        Enum.map(optional_body_params, fn {name, schema} ->
+          param_name = String.to_atom(name)
+          param_type = TypespecGenerator.schema_to_typespec(schema, schemas)
+
+          quote do
+            {unquote(param_name), unquote(param_type)}
+          end
+        end)
+
     # If we have specific optional parameters, build a union type
     if length(opt_types) > 0 do
       # Build the union of all option tuples
-      opts_union = case opt_types do
-        [single] -> single
-        [first | rest] ->
-          Enum.reduce(rest, first, fn opt, acc ->
-            quote do
-              unquote(acc) | unquote(opt)
-            end
-          end)
-      end
-      
+      opts_union =
+        case opt_types do
+          [single] ->
+            single
+
+          [first | rest] ->
+            Enum.reduce(rest, first, fn opt, acc ->
+              quote do
+                unquote(acc) | unquote(opt)
+              end
+            end)
+        end
+
       quote do
         opts :: [unquote(opts_union)]
       end
@@ -256,19 +280,21 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       end
     end
   end
-  
+
   # Get query parameters from operation
   defp get_query_parameters(%Operation{parameters: nil}), do: []
+
   defp get_query_parameters(%Operation{parameters: params}) do
     Enum.filter(params, fn p -> p.in == "query" end)
   end
-  
+
   # Get optional body parameters (those not in required list)
   defp get_optional_body_parameters(nil), do: []
   defp get_optional_body_parameters(%Schema{properties: nil}), do: []
+
   defp get_optional_body_parameters(%Schema{properties: props, required: required}) do
     required_list = required || []
-    
+
     props
     |> Enum.filter(fn {name, _schema} -> name not in required_list end)
     |> Enum.into([])
@@ -276,19 +302,19 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
   @doc """
   Builds the return type specification for a function.
-  
+
   Determines the appropriate return type based on:
   - Response schemas defined in the operation
   - Whether the function is a streaming endpoint (ends with "_stream")
-  
+
   ## Parameters
-  
+
     * `operation` - The Operation struct containing response definitions
     * `function_name` - The function name (used to detect streaming endpoints)
     * `schemas` - Map of component schemas for type resolution
     
   ## Returns
-  
+
   An AST node representing the return type, typically:
   - `{:ok, ComponentType.t()} | {:error, any()}` for normal endpoints
   - `{:ok, pid()} | {:error, any()}` for streaming endpoints
@@ -296,10 +322,11 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   @spec build_return_spec(Operation.t(), atom(), %{String.t() => Schema.t()}) :: Macro.t()
   def build_return_spec(%Operation{} = operation, function_name, schemas) do
     # Check if this is a streaming endpoint
-    is_streaming = function_name
-                   |> Atom.to_string()
-                   |> String.ends_with?("_stream")
-    
+    is_streaming =
+      function_name
+      |> Atom.to_string()
+      |> String.ends_with?("_stream")
+
     if is_streaming do
       # For streaming endpoints, we return a PID
       # Note: We could potentially use the text/event-stream schema here
@@ -310,11 +337,12 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       # For non-streaming endpoints, derive type from response schema
       case get_response_schema(operation, "200", schemas) do
         %Schema{} = response_schema ->
-          response_type = TypespecGenerator.schema_to_typespec(response_schema)
+          response_type = TypespecGenerator.schema_to_typespec(response_schema, schemas)
+
           quote do
             {:ok, unquote(response_type)} | {:error, any()}
           end
-          
+
         nil ->
           # Fallback to generic map if no schema found
           quote do
@@ -323,185 +351,218 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       end
     end
   end
-  
+
   # Extract and resolve the response schema for a given status code
   defp get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
+
   defp get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
     case Map.get(responses, status_code) do
       %{content: %{"application/json" => %{"schema" => %{"$ref" => ref}}}} ->
         # Return a schema with the ref so TypespecGenerator can create proper component reference
         %Schema{ref: ref}
-        
-      _ -> nil
+
+      _ ->
+        nil
     end
   end
-  
+
   # Builds comprehensive parameter documentation for both positional and optional parameters.
   # Returns a tuple of {positional_params_doc, optional_params_doc}.
-  @spec build_comprehensive_parameter_docs(Operation.t(), %{String.t() => Schema.t()}) :: {String.t(), String.t()}
+  @spec build_comprehensive_parameter_docs(Operation.t(), %{String.t() => Schema.t()}) ::
+          {String.t(), String.t()}
   defp build_comprehensive_parameter_docs(%Operation{} = operation, schemas) do
     # Get the resolved request body schema
     body_schema = SchemaResolver.get_request_body_schema(operation.request_body, schemas)
-    
+
     # Build positional parameter docs (path params + required body params)
     positional_docs = build_positional_parameter_docs(operation, body_schema, schemas)
-    
+
     # Build optional parameter docs (query params + optional body params)
     optional_docs = build_optional_parameter_docs(operation, body_schema, schemas)
-    
+
     {positional_docs, optional_docs}
   end
-  
-  @spec build_positional_parameter_docs(Operation.t(), Schema.t() | nil, %{String.t() => Schema.t()}) :: String.t()
+
+  @spec build_positional_parameter_docs(Operation.t(), Schema.t() | nil, %{
+          String.t() => Schema.t()
+        }) :: String.t()
   defp build_positional_parameter_docs(%Operation{} = operation, body_schema, schemas) do
     # Document path parameters
     path_params = get_path_parameters(operation)
-    path_docs = Enum.map(path_params, fn param ->
-      format_parameter_doc(param.name, param, true, :path, schemas)
-    end)
-    
-    # Document required body parameters
-    required_body_docs = if body_schema && body_schema.properties && body_schema.required do
-      body_schema.required
-      |> Enum.sort()
-      |> Enum.map(fn prop_name ->
-        prop_schema = Map.get(body_schema.properties, prop_name)
-        if prop_schema do
-          format_parameter_doc(prop_name, prop_schema, true, :body, schemas)
-        else
-          nil
-        end
+
+    path_docs =
+      Enum.map(path_params, fn param ->
+        format_parameter_doc(param.name, param, true, :path, schemas)
       end)
-      |> Enum.filter(&(&1 != nil))
-    else
-      []
-    end
-    
+
+    # Document required body parameters
+    required_body_docs =
+      if body_schema && body_schema.properties && body_schema.required do
+        body_schema.required
+        |> Enum.sort()
+        |> Enum.map(fn prop_name ->
+          prop_schema = Map.get(body_schema.properties, prop_name)
+
+          if prop_schema do
+            format_parameter_doc(prop_name, prop_schema, true, :body, schemas)
+          else
+            nil
+          end
+        end)
+        |> Enum.filter(&(&1 != nil))
+      else
+        []
+      end
+
     all_docs = path_docs ++ required_body_docs
     Enum.join(all_docs, "\n\n")
   end
-  
-  @spec build_optional_parameter_docs(Operation.t(), Schema.t() | nil, %{String.t() => Schema.t()}) :: String.t()
+
+  @spec build_optional_parameter_docs(Operation.t(), Schema.t() | nil, %{String.t() => Schema.t()}) ::
+          String.t()
   defp build_optional_parameter_docs(%Operation{} = operation, body_schema, schemas) do
     docs = []
-    
+
     # Document query parameters
     query_params = get_query_parameters(operation)
-    query_docs = Enum.map(query_params, fn param ->
-      format_parameter_doc(param.name, param, false, :query, schemas)
-    end)
+
+    query_docs =
+      Enum.map(query_params, fn param ->
+        format_parameter_doc(param.name, param, false, :query, schemas)
+      end)
+
     docs = docs ++ query_docs
-    
+
     # Document optional body parameters
     optional_body_params = get_optional_body_parameters(body_schema)
-    optional_body_docs = Enum.map(optional_body_params, fn {name, schema} ->
-      format_parameter_doc(name, schema, false, :body, schemas)
-    end)
+
+    optional_body_docs =
+      Enum.map(optional_body_params, fn {name, schema} ->
+        format_parameter_doc(name, schema, false, :body, schemas)
+      end)
+
     docs = docs ++ optional_body_docs
-    
+
     # Document header parameters
     header_params = get_header_parameters(operation)
-    header_docs = Enum.map(header_params, fn param ->
-      format_parameter_doc(param.name, param, false, :header, schemas)
-    end)
+
+    header_docs =
+      Enum.map(header_params, fn param ->
+        format_parameter_doc(param.name, param, false, :header, schemas)
+      end)
+
     docs = docs ++ header_docs
-    
+
     Enum.join(docs, "\n\n")
   end
-  
-  @spec format_parameter_doc(String.t(), any(), boolean(), atom(), %{String.t() => Schema.t()}) :: String.t()
+
+  @spec format_parameter_doc(String.t(), any(), boolean(), atom(), %{String.t() => Schema.t()}) ::
+          String.t()
   defp format_parameter_doc(name, param_or_schema, is_required, param_type, schemas) do
     param_name = if param_type == :body, do: name, else: ":#{name}"
     requirement = if is_required, do: "**required**", else: "**optional**"
-    
+
     # Get type string
-    type_str = case param_type do
-      :path -> derive_type_string_from_parameter(param_or_schema)
-      :query -> derive_type_string_from_parameter(param_or_schema)
-      :header -> derive_type_string_from_parameter(param_or_schema)
-      :body -> derive_type_string_from_schema(param_or_schema, schemas)
-    end
-    
+    type_str =
+      case param_type do
+        :path -> derive_type_string_from_parameter(param_or_schema)
+        :query -> derive_type_string_from_parameter(param_or_schema)
+        :header -> derive_type_string_from_parameter(param_or_schema)
+        :body -> derive_type_string_from_schema(param_or_schema, schemas)
+      end
+
     parts = ["* `#{param_name}` - #{requirement} - `#{type_str}`"]
-    
+
     # Add description
-    description = case param_or_schema do
-      %{description: desc} when is_binary(desc) -> String.trim(desc)
-      %Schema{description: desc} when is_binary(desc) -> String.trim(desc)
-      _ -> nil
-    end
-    
-    parts = if description do
-      parts ++ ["  \n  #{description}"]
-    else
-      parts
-    end
-    
+    description =
+      case param_or_schema do
+        %{description: desc} when is_binary(desc) -> String.trim(desc)
+        %Schema{description: desc} when is_binary(desc) -> String.trim(desc)
+        _ -> nil
+      end
+
+    parts =
+      if description do
+        parts ++ ["  \n  #{description}"]
+      else
+        parts
+      end
+
     # Add enum values
-    enum_values = case param_or_schema do
-      %Schema{enum: enum} when is_list(enum) and length(enum) > 0 -> enum
-      %{schema: %{"enum" => enum}} when is_list(enum) and length(enum) > 0 -> enum
-      _ -> nil
-    end
-    
-    parts = if enum_values do
-      values_str = Enum.map(enum_values, &"`#{inspect(&1)}`") |> Enum.join(", ")
-      parts ++ ["  \n  Allowed values: #{values_str}"]
-    else
-      parts
-    end
-    
+    enum_values =
+      case param_or_schema do
+        %Schema{enum: enum} when is_list(enum) and length(enum) > 0 -> enum
+        %{schema: %{"enum" => enum}} when is_list(enum) and length(enum) > 0 -> enum
+        _ -> nil
+      end
+
+    parts =
+      if enum_values do
+        values_str = Enum.map(enum_values, &"`#{inspect(&1)}`") |> Enum.join(", ")
+        parts ++ ["  \n  Allowed values: #{values_str}"]
+      else
+        parts
+      end
+
     # Add default value
-    default = case param_or_schema do
-      %{schema: %{"default" => default}} -> default
-      %Schema{raw: %{"default" => default}} -> default
-      _ -> nil
-    end
-    
-    parts = if default != nil do
-      parts ++ ["  \n  Default: `#{inspect(default)}`"]
-    else
-      parts
-    end
-    
+    default =
+      case param_or_schema do
+        %{schema: %{"default" => default}} -> default
+        %Schema{raw: %{"default" => default}} -> default
+        _ -> nil
+      end
+
+    parts =
+      if default != nil do
+        parts ++ ["  \n  Default: `#{inspect(default)}`"]
+      else
+        parts
+      end
+
     # Add format
-    format = case param_or_schema do
-      %{schema: %{"format" => format}} -> format
-      %Schema{format: format} when is_binary(format) -> format
-      _ -> nil
-    end
-    
-    parts = if format do
-      parts ++ ["  \n  Format: `#{format}`"]
-    else
-      parts
-    end
-    
+    format =
+      case param_or_schema do
+        %{schema: %{"format" => format}} -> format
+        %Schema{format: format} when is_binary(format) -> format
+        _ -> nil
+      end
+
+    parts =
+      if format do
+        parts ++ ["  \n  Format: `#{format}`"]
+      else
+        parts
+      end
+
     # Add constraints
     constraints = extract_parameter_constraints(param_or_schema)
-    parts = if constraints != [] do
-      constraint_str = Enum.join(constraints, ", ")
-      parts ++ ["  \n  Constraints: #{constraint_str}"]
-    else
-      parts
-    end
-    
+
+    parts =
+      if constraints != [] do
+        constraint_str = Enum.join(constraints, ", ")
+        parts ++ ["  \n  Constraints: #{constraint_str}"]
+      else
+        parts
+      end
+
     # Add example if available
-    example = case param_or_schema do
-      %{example: ex} when not is_nil(ex) -> ex
-      %Schema{example: ex} when not is_nil(ex) -> ex
-      _ -> nil
-    end
-    
-    parts = if example != nil do
-      parts ++ ["  \n  Example: `#{inspect(example)}`"]
-    else
-      parts
-    end
-    
+    example =
+      case param_or_schema do
+        %{example: ex} when not is_nil(ex) -> ex
+        %Schema{example: ex} when not is_nil(ex) -> ex
+        _ -> nil
+      end
+
+    parts =
+      if example != nil do
+        parts ++ ["  \n  Example: `#{inspect(example)}`"]
+      else
+        parts
+      end
+
     Enum.join(parts)
   end
-  
+
   defp derive_type_string_from_parameter(param) do
     case param.schema do
       %{"type" => "string"} -> "String.t()"
@@ -512,7 +573,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       _ -> "any()"
     end
   end
-  
+
   defp derive_type_string_from_schema(schema, _schemas) do
     try do
       typespec_ast = TypespecGenerator.schema_to_typespec(schema)
@@ -521,96 +582,124 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       _ -> basic_schema_type_string(schema)
     end
   end
-  
+
   defp ast_to_type_string({:|, _, types}) do
     types
     |> Enum.map(&ast_to_type_string/1)
     |> Enum.join(" | ")
   end
-  
+
   defp ast_to_type_string({:__aliases__, _, parts}) do
     "#{Enum.join(parts, ".")}.t()"
   end
-  
+
   defp ast_to_type_string({{:., _, [{:__aliases__, _, mod_parts}, :t]}, _, []}) do
     "#{Enum.join(mod_parts, ".")}.t()"
   end
-  
+
   defp ast_to_type_string({:., _, [{:__aliases__, _, mod_parts}, :t]}) do
     "#{Enum.join(mod_parts, ".")}.t()"
   end
-  
+
   defp ast_to_type_string({fun, _, []}) when is_atom(fun) do
     "#{fun}()"
   end
-  
+
   defp ast_to_type_string({:list, _, [type]}) do
     "[#{ast_to_type_string(type)}]"
   end
-  
+
   defp ast_to_type_string(nil) do
     "nil"
   end
-  
+
   defp ast_to_type_string(atom) when is_atom(atom) do
     inspect(atom)
   end
-  
+
   defp ast_to_type_string(_other) do
     "any()"
   end
-  
+
   defp basic_schema_type_string(%Schema{ref: "#/components/schemas/" <> name}) do
     "ExOpenAI.Components.#{name}.t()"
   end
-  
+
   defp basic_schema_type_string(%Schema{type: type}) when is_binary(type) do
     "#{type}()"
   end
-  
+
   defp basic_schema_type_string(_) do
     "any()"
   end
-  
+
   defp type_to_elixir("string"), do: "String.t()"
   defp type_to_elixir("integer"), do: "integer()"
   defp type_to_elixir("number"), do: "number()"
   defp type_to_elixir("boolean"), do: "boolean()"
   defp type_to_elixir(_), do: "any()"
-  
+
   defp extract_parameter_constraints(param_or_schema) do
     constraints = []
-    
-    raw = case param_or_schema do
-      %Schema{raw: raw} when is_map(raw) -> raw
-      %{schema: schema} when is_map(schema) -> schema
-      _ -> %{}
-    end
-    
+
+    raw =
+      case param_or_schema do
+        %Schema{raw: raw} when is_map(raw) -> raw
+        %{schema: schema} when is_map(schema) -> schema
+        _ -> %{}
+      end
+
     # Numeric constraints
-    constraints = if Map.has_key?(raw, "minimum"), do: constraints ++ ["minimum: #{raw["minimum"]}"], else: constraints
-    constraints = if Map.has_key?(raw, "maximum"), do: constraints ++ ["maximum: #{raw["maximum"]}"], else: constraints
-    
+    constraints =
+      if Map.has_key?(raw, "minimum"),
+        do: constraints ++ ["minimum: #{raw["minimum"]}"],
+        else: constraints
+
+    constraints =
+      if Map.has_key?(raw, "maximum"),
+        do: constraints ++ ["maximum: #{raw["maximum"]}"],
+        else: constraints
+
     # String constraints
-    constraints = if Map.has_key?(raw, "minLength"), do: constraints ++ ["minLength: #{raw["minLength"]}"], else: constraints
-    constraints = if Map.has_key?(raw, "maxLength"), do: constraints ++ ["maxLength: #{raw["maxLength"]}"], else: constraints
-    constraints = if Map.has_key?(raw, "pattern"), do: constraints ++ ["pattern: #{inspect(raw["pattern"])}"], else: constraints
-    
+    constraints =
+      if Map.has_key?(raw, "minLength"),
+        do: constraints ++ ["minLength: #{raw["minLength"]}"],
+        else: constraints
+
+    constraints =
+      if Map.has_key?(raw, "maxLength"),
+        do: constraints ++ ["maxLength: #{raw["maxLength"]}"],
+        else: constraints
+
+    constraints =
+      if Map.has_key?(raw, "pattern"),
+        do: constraints ++ ["pattern: #{inspect(raw["pattern"])}"],
+        else: constraints
+
     # Array constraints
-    constraints = if Map.has_key?(raw, "minItems"), do: constraints ++ ["minItems: #{raw["minItems"]}"], else: constraints
-    constraints = if Map.has_key?(raw, "maxItems"), do: constraints ++ ["maxItems: #{raw["maxItems"]}"], else: constraints
-    
+    constraints =
+      if Map.has_key?(raw, "minItems"),
+        do: constraints ++ ["minItems: #{raw["minItems"]}"],
+        else: constraints
+
+    constraints =
+      if Map.has_key?(raw, "maxItems"),
+        do: constraints ++ ["maxItems: #{raw["maxItems"]}"],
+        else: constraints
+
     constraints
   end
-  
+
   # Get path parameters from operation
   defp get_path_parameters(%Operation{parameters: nil}), do: []
+
   defp get_path_parameters(%Operation{parameters: params}) do
     Enum.filter(params, fn p -> p.in == "path" end)
   end
-  
+
   # Get header parameters from operation
   defp get_header_parameters(%Operation{parameters: nil}), do: []
+
   defp get_header_parameters(%Operation{parameters: params}) do
     Enum.filter(params, fn p -> p.in == "header" end)
   end
