@@ -317,7 +317,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
   An AST node representing the return type, typically:
   - `{:ok, ComponentType.t()} | {:error, any()}` for normal endpoints
-  - `{:ok, pid()} | {:error, any()}` for streaming endpoints
+  - `{:ok, reference()} | {:error, any()}` for streaming endpoints
   """
   @spec build_return_spec(Operation.t(), atom(), %{String.t() => Schema.t()}) :: Macro.t()
   def build_return_spec(%Operation{} = operation, function_name, schemas) do
@@ -328,10 +328,10 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       |> String.ends_with?("_stream")
 
     if is_streaming do
-      # For streaming endpoints, we return a PID
-      # Note: We could potentially use the text/event-stream schema here
+      # Streaming API calls return the HTTP async reference.
+      # Note: We could potentially use the text/event-stream schema here for chunk payload typing.
       quote do
-        {:ok, pid()} | {:error, any()}
+        {:ok, reference()} | {:error, any()}
       end
     else
       # For non-streaming endpoints, derive type from response schema

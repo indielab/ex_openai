@@ -222,7 +222,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
       assert spec_string =~ "} | {:error, any()}"
     end
     
-    test "returns pid type for streaming endpoints" do
+    test "returns async reference type for streaming endpoints" do
       operation = %Operation{
         responses: %{
           "200" => %{
@@ -243,7 +243,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGeneratorTest do
         %{}
       )
       
-      assert Macro.to_string(return_spec) == "{:ok, pid()} | {:error, any()}"
+      assert Macro.to_string(return_spec) == "{:ok, reference()} | {:error, any()}"
     end
     
     test "returns generic map when no response schema found" do
