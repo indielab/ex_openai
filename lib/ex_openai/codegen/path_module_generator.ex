@@ -125,7 +125,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         url = unquote(path)
 
         # Replace path parameters
-        unquote(
+        unquote_splicing(
           path_params
           |> Enum.map(fn param ->
             param_name = String.to_atom(param.name)

@@ -1,0 +1,51 @@
+defmodule ExOpenAI.Components.ResponseOutputTextAnnotationAddedEvent do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  Emitted when an annotation is added to output text content.
+
+
+  ## Fields
+
+  * `:annotation` - **required** - `map()`  
+    The annotation object being added. (See annotation schema for details.)
+
+  * `:annotation_index` - **required** - `integer()`  
+    The index of the annotation within the content part.
+
+  * `:content_index` - **required** - `integer()`  
+    The index of the content part within the output item.
+
+  * `:item_id` - **required** - `String.t()`  
+    The unique identifier of the item to which the annotation is being added.
+
+  * `:output_index` - **required** - `integer()`  
+    The index of the output item in the response's output array.
+
+  * `:sequence_number` - **required** - `integer()`  
+    The sequence number of this event.
+
+  * `:type` - **required** - `:"response.output_text.annotation.added"`  
+    The type of the event. Always 'response.output_text.annotation.added'.  
+    Allowed values: `"response.output_text.annotation.added"`
+  """
+  @type t() :: %{
+          __struct__: __MODULE__,
+          annotation: map(),
+          annotation_index: integer(),
+          content_index: integer(),
+          item_id: String.t(),
+          output_index: integer(),
+          sequence_number: integer(),
+          type: :"response.output_text.annotation.added"
+        }
+  defstruct [
+    :annotation,
+    :annotation_index,
+    :content_index,
+    :item_id,
+    :output_index,
+    :sequence_number,
+    :type
+  ]
+end

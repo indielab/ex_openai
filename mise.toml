@@ -1,0 +1,3 @@
+[tasks.generate_openai]
+run = "mix generate_openai_sources"
+description = "Generate OpenAI SDK source files under lib/ex_openai/generated"

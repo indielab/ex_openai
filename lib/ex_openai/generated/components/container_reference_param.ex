@@ -1,0 +1,19 @@
+defmodule ExOpenAI.Components.ContainerReferenceParam do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  Module for representing the OpenAI schema ContainerReferenceParam.
+
+  ## Fields
+
+  * `:container_id` - **required** - `String.t()`  
+    The ID of the referenced container.
+
+  * `:type` - **required** - `:container_reference`  
+    References a container created with the /v1/containers endpoint  
+    Allowed values: `"container_reference"`  
+    Default: `"container_reference"`
+  """
+  @type t() :: %{__struct__: __MODULE__, container_id: String.t(), type: :container_reference}
+  defstruct [:container_id, :type]
+end

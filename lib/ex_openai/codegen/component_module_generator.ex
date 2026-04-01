@@ -55,7 +55,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     struct_fields = get_struct_fields(schema)
 
     # Generate comprehensive moduledoc with field documentation
-    moduledoc_content = generate_comprehensive_moduledoc(schema)
+    moduledoc_content = generate_comprehensive_moduledoc(schema, schemas)
 
     moduledoc =
       quote do
@@ -84,7 +84,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     typespec_ast = TypespecGenerator.schema_to_typespec(schema, schemas)
 
     # Generate comprehensive moduledoc
-    moduledoc_content = generate_comprehensive_moduledoc(schema)
+    moduledoc_content = generate_comprehensive_moduledoc(schema, schemas)
 
     moduledoc =
       quote do
@@ -164,8 +164,11 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
   For object schemas, this includes a fields section with details about each property.
   For non-object schemas, this provides type information.
   """
-  @spec generate_comprehensive_moduledoc(Schema.t()) :: String.t()
-  def generate_comprehensive_moduledoc(%Schema{name: name, type: "object"} = schema) do
+  @spec generate_comprehensive_moduledoc(Schema.t(), %{optional(String.t()) => Schema.t()}) ::
+          String.t()
+  def generate_comprehensive_moduledoc(%Schema{} = schema), do: generate_comprehensive_moduledoc(schema, %{})
+
+  def generate_comprehensive_moduledoc(%Schema{name: name, type: "object"} = schema, schemas) do
     description_part =
       if schema.description do
         schema.description
@@ -173,7 +176,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
         "Module for representing the OpenAI schema #{name}."
       end
 
-    fields_doc = generate_fields_documentation(schema)
+    fields_doc = generate_fields_documentation(schema, schemas)
 
     if fields_doc != "" do
       "#{description_part}\n\n#{fields_doc}"
@@ -182,7 +185,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     end
   end
 
-  def generate_comprehensive_moduledoc(%Schema{name: name} = schema) do
+  def generate_comprehensive_moduledoc(%Schema{name: name} = schema, schemas) do
     description_part =
       if schema.description do
         schema.description
@@ -190,7 +193,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
         "Module for representing the OpenAI schema #{name}."
       end
 
-    type_info = generate_type_info(schema)
+    type_info = generate_type_info(schema, schemas)
 
     if type_info != "" do
       "#{description_part}\n\n#{type_info}"
@@ -204,10 +207,11 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
 
   Returns a formatted string with field names, types, requirements, and descriptions.
   """
-  @spec generate_fields_documentation(Schema.t()) :: String.t()
-  def generate_fields_documentation(%Schema{properties: nil}), do: ""
+  @spec generate_fields_documentation(Schema.t(), %{optional(String.t()) => Schema.t()}) ::
+          String.t()
+  def generate_fields_documentation(%Schema{properties: nil}, _schemas), do: ""
 
-  def generate_fields_documentation(%Schema{properties: properties, required: required})
+  def generate_fields_documentation(%Schema{properties: properties, required: required}, schemas)
       when is_map(properties) do
     required_list = required || []
 
@@ -215,7 +219,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
       properties
       |> Enum.sort_by(fn {name, _} -> name end)
       |> Enum.map(fn {prop_name, prop_schema} ->
-        generate_field_doc(prop_name, prop_schema, prop_name in required_list)
+        generate_field_doc(prop_name, prop_schema, prop_name in required_list, schemas)
       end)
       |> Enum.join("\n\n")
 
@@ -226,15 +230,16 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     end
   end
 
-  def generate_fields_documentation(_), do: ""
+  def generate_fields_documentation(_, _schemas), do: ""
 
-  @spec generate_field_doc(String.t(), Schema.t(), boolean()) :: String.t()
-  defp generate_field_doc(name, schema, is_required) do
+  @spec generate_field_doc(String.t(), Schema.t(), boolean(), %{optional(String.t()) => Schema.t()}) ::
+          String.t()
+  defp generate_field_doc(name, schema, is_required, schemas) do
     field_name = "`:#{name}`"
     requirement = if is_required, do: "**required**", else: "**optional**"
 
     # Generate the type string
-    type_str = type_to_string(schema)
+    type_str = type_to_string(schema, schemas)
 
     # Build the field documentation
     parts = ["* #{field_name} - #{requirement} - `#{type_str}`"]
@@ -287,11 +292,11 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     Enum.join(parts)
   end
 
-  @spec type_to_string(Schema.t()) :: String.t()
-  defp type_to_string(schema) do
+  @spec type_to_string(Schema.t(), %{optional(String.t()) => Schema.t()}) :: String.t()
+  defp type_to_string(schema, schemas) do
     # Try to generate a readable type string
     try do
-      typespec_ast = TypespecGenerator.schema_to_typespec(schema)
+      typespec_ast = TypespecGenerator.schema_to_typespec(schema, schemas)
       # Convert the AST to a string representation
       ast_to_type_string(typespec_ast)
     rescue
@@ -315,6 +320,10 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
   defp ast_to_type_string({{:., _, [{:__aliases__, _, mod_parts}, :t]}, _, []}) do
     module_name = Enum.join(mod_parts, ".")
     "#{module_name}.t()"
+  end
+
+  defp ast_to_type_string({{:., _, [module, :t]}, _, []}) when is_atom(module) do
+    "#{inspect(module)}.t()"
   end
 
   defp ast_to_type_string({:., _, [{:__aliases__, _, mod_parts}, :t]}) do
@@ -443,12 +452,12 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     constraints
   end
 
-  @spec generate_type_info(Schema.t()) :: String.t()
-  defp generate_type_info(schema) do
+  @spec generate_type_info(Schema.t(), %{optional(String.t()) => Schema.t()}) :: String.t()
+  defp generate_type_info(schema, schemas) do
     sections = []
 
     # Add type information
-    type_str = type_to_string(schema)
+    type_str = type_to_string(schema, schemas)
     sections = sections ++ ["## Type\n\n`#{type_str}`"]
 
     # Add enum values if present
