@@ -2,8 +2,8 @@ defmodule ExOpenAI.Codegen.DocsParserTest do
   use ExUnit.Case
   alias ExOpenAI.Codegen.DocsParser
   alias ExOpenAI.Codegen.DocsParser.Documentation
+  alias ExOpenAI.Codegen.DocsParser.{Operation, Parameter, Path, RequestBody, Response}
   alias ExOpenAI.Codegen.DocsParser.Schema
-  alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Parameter, Response, RequestBody}
 
   @minimal_yaml """
   openapi: 3.0.0

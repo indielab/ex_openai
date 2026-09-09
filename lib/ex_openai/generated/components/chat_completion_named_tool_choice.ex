@@ -6,10 +6,10 @@ defmodule ExOpenAI.Components.ChatCompletionNamedToolChoice do
 
   ## Fields
 
-  * `:function` - **required** - `{:%{}, [], [{{:required, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:function` - **required** - `%{required(:name) => String.t()}`
 
-  * `:type` - **required** - `:function`  
-    For function calling, the type is always `function`.  
+  * `:type` - **required** - `:function`
+    For function calling, the type is always `function`.
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -17,5 +17,12 @@ defmodule ExOpenAI.Components.ChatCompletionNamedToolChoice do
           function: %{required(:name) => String.t()},
           type: :function
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:function) => %{required(:name) => String.t()},
+              required(:type) => :function | String.t()
+            }
   defstruct [:function, :type]
 end

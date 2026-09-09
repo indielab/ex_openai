@@ -6,9 +6,11 @@ defmodule ExOpenAI.Components.ChatSessionAutomaticThreadTitling do
 
   ## Fields
 
-  * `:enabled` - **required** - `boolean()`  
+  * `:enabled` - **required** - `boolean()`
     Whether automatic thread titling is enabled.
   """
   @type t() :: %{__struct__: __MODULE__, enabled: boolean()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:enabled) => boolean()}
   defstruct [:enabled]
 end

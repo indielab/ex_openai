@@ -6,10 +6,10 @@ defmodule ExOpenAI.Components.RunStepDeltaStepDetailsMessageCreationObject do
 
   ## Fields
 
-  * `:message_creation` - **optional** - `{:%{}, [], [{{:optional, [], [:message_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:message_creation` - **optional** - `%{optional(:message_id) => String.t()}`
 
-  * `:type` - **required** - `:message_creation`  
-    Always `message_creation`.  
+  * `:type` - **required** - `:message_creation`
+    Always `message_creation`.
     Allowed values: `"message_creation"`
   """
   @type t() :: %{
@@ -17,5 +17,12 @@ defmodule ExOpenAI.Components.RunStepDeltaStepDetailsMessageCreationObject do
           message_creation: %{optional(:message_id) => String.t()} | nil,
           type: :message_creation
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:message_creation) => %{optional(:message_id) => String.t()},
+              required(:type) => :message_creation | String.t()
+            }
   defstruct [:message_creation, :type]
 end

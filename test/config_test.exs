@@ -23,7 +23,7 @@ defmodule ExOpenAI.ConfigTest do
     assert Config.api_url() == "https://example.com/foobar"
   end
 
-  defp reset_env() do
+  defp reset_env do
     Application.get_all_env(@application)
     |> Keyword.keys()
     |> Enum.each(&Application.delete_env(@application, &1))

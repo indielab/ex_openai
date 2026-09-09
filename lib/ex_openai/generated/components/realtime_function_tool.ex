@@ -6,19 +6,19 @@ defmodule ExOpenAI.Components.RealtimeFunctionTool do
 
   ## Fields
 
-  * `:description` - **optional** - `String.t()`  
+  * `:description` - **optional** - `String.t()`
     The description of the function, including guidance on when and how
   to call it, and guidance about what to tell the user when calling
   (if anything).
 
-  * `:name` - **optional** - `String.t()`  
+  * `:name` - **optional** - `String.t()`
     The name of the function.
 
-  * `:parameters` - **optional** - `map()`  
+  * `:parameters` - **optional** - `map()`
     Parameters of the function in JSON Schema.
 
-  * `:type` - **optional** - `:function`  
-    The type of the tool, i.e. `function`.  
+  * `:type` - **optional** - `:function`
+    The type of the tool, i.e. `function`.
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -28,5 +28,14 @@ defmodule ExOpenAI.Components.RealtimeFunctionTool do
           parameters: map() | nil,
           type: :function | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:description) => String.t(),
+              optional(:name) => String.t(),
+              optional(:parameters) => map(),
+              optional(:type) => :function | String.t()
+            }
   defstruct [:description, :name, :parameters, :type]
 end

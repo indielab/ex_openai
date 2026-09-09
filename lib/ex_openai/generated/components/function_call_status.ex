@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.FunctionCallStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema FunctionCallStatus.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.FunctionCallStatus do
   `"in_progress"`, `"completed"`, `"incomplete"`
   """
   @type t() :: (:in_progress | :completed) | :incomplete
+  @type input() :: ((:in_progress | :completed) | :incomplete) | String.t()
 end

@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ApplyPatchCallOutputStatusParam do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Outcome values reported for apply_patch tool call outputs.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ApplyPatchCallOutputStatusParam do
   `"completed"`, `"failed"`
   """
   @type t() :: :completed | :failed
+  @type input() :: (:completed | :failed) | String.t()
 end

@@ -7,14 +7,14 @@ defmodule ExOpenAI.Components.ChatCompletionMessageToolCall do
 
   ## Fields
 
-  * `:function` - **required** - `{:%{}, [], [{{:required, [], [:arguments]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:function` - **required** - `%{required(:arguments) => String.t(), required(:name) => String.t()}`
     The function that the model called.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The ID of the tool call.
 
-  * `:type` - **required** - `:function`  
-    The type of the tool. Currently, only `function` is supported.  
+  * `:type` - **required** - `:function`
+    The type of the tool. Currently, only `function` is supported.
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -23,5 +23,16 @@ defmodule ExOpenAI.Components.ChatCompletionMessageToolCall do
           id: String.t(),
           type: :function
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:function) => %{
+                required(:arguments) => String.t(),
+                required(:name) => String.t()
+              },
+              required(:id) => String.t(),
+              required(:type) => :function | String.t()
+            }
   defstruct [:function, :id, :type]
 end

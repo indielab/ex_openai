@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.DetailEnum do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema DetailEnum.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.DetailEnum do
   `"low"`, `"high"`, `"auto"`, `"original"`
   """
   @type t() :: ((:low | :high) | :auto) | :original
+  @type input() :: (((:low | :high) | :auto) | :original) | String.t()
 end

@@ -12,13 +12,13 @@ defmodule ExOpenAI.Components.EvalLogsDataSourceConfig do
 
   * `:metadata` - **optional** - `ExOpenAI.Components.Metadata.t()`
 
-  * `:schema` - **required** - `map()`  
+  * `:schema` - **required** - `map()`
     The json schema for the run data source items.
   Learn how to build JSON schemas [here](https://json-schema.org/).
 
-  * `:type` - **required** - `:logs`  
-    The type of data source. Always `logs`.  
-    Allowed values: `"logs"`  
+  * `:type` - **required** - `:logs`
+    The type of data source. Always `logs`.
+    Allowed values: `"logs"`
     Default: `"logs"`
   """
   @type t() :: %{
@@ -27,5 +27,13 @@ defmodule ExOpenAI.Components.EvalLogsDataSourceConfig do
           schema: map(),
           type: :logs
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:metadata) => ExOpenAI.Components.Metadata.input(),
+              required(:schema) => map(),
+              required(:type) => :logs | String.t()
+            }
   defstruct [:metadata, :schema, :type]
 end

@@ -6,21 +6,22 @@ defmodule ExOpenAI.Components.CreateTranscriptionResponseVerboseJson do
 
   ## Fields
 
-  * `:duration` - **required** - `number()`  
+  * `:duration` - **required** - `number()`
     The duration of the input audio.
+    Format: `double`
 
-  * `:language` - **required** - `String.t()`  
+  * `:language` - **required** - `String.t()`
     The language of the input audio.
 
-  * `:segments` - **optional** - `[ExOpenAI.Components.TranscriptionSegment.t()]`  
+  * `:segments` - **optional** - `list(ExOpenAI.Components.TranscriptionSegment.t())`
     Segments of the transcribed text and their corresponding details.
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     The transcribed text.
 
   * `:usage` - **optional** - `ExOpenAI.Components.TranscriptTextUsageDuration.t()`
 
-  * `:words` - **optional** - `[ExOpenAI.Components.TranscriptionWord.t()]`  
+  * `:words` - **optional** - `list(ExOpenAI.Components.TranscriptionWord.t())`
     Extracted words and their corresponding timestamps.
   """
   @type t() :: %{
@@ -32,5 +33,16 @@ defmodule ExOpenAI.Components.CreateTranscriptionResponseVerboseJson do
           usage: ExOpenAI.Components.TranscriptTextUsageDuration.t() | nil,
           words: list(ExOpenAI.Components.TranscriptionWord.t()) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:duration) => number(),
+              required(:language) => String.t(),
+              optional(:segments) => list(ExOpenAI.Components.TranscriptionSegment.input()),
+              required(:text) => String.t(),
+              optional(:usage) => ExOpenAI.Components.TranscriptTextUsageDuration.input(),
+              optional(:words) => list(ExOpenAI.Components.TranscriptionWord.input())
+            }
   defstruct [:duration, :language, :segments, :text, :usage, :words]
 end

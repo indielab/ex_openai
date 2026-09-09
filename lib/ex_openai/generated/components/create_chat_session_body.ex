@@ -6,20 +6,20 @@ defmodule ExOpenAI.Components.CreateChatSessionBody do
 
   ## Fields
 
-  * `:chatkit_configuration` - **optional** - `ExOpenAI.Components.ChatkitConfigurationParam.t()`  
+  * `:chatkit_configuration` - **optional** - `ExOpenAI.Components.ChatkitConfigurationParam.t()`
     Optional overrides for ChatKit runtime configuration features
 
-  * `:expires_after` - **optional** - `ExOpenAI.Components.ExpiresAfterParam.t()`  
+  * `:expires_after` - **optional** - `ExOpenAI.Components.ExpiresAfterParam.t()`
     Optional override for session expiration timing in seconds from creation. Defaults to 10 minutes.
 
-  * `:rate_limits` - **optional** - `ExOpenAI.Components.RateLimitsParam.t()`  
+  * `:rate_limits` - **optional** - `ExOpenAI.Components.RateLimitsParam.t()`
     Optional override for per-minute request limits. When omitted, defaults to 10.
 
-  * `:user` - **required** - `String.t()`  
-    A free-form string that identifies your end user; ensures this Session can access other objects that have the same `user` scope.  
+  * `:user` - **required** - `String.t()`
+    A free-form string that identifies your end user; ensures this Session can access other objects that have the same `user` scope.
     Constraints: minLength: 1
 
-  * `:workflow` - **required** - `ExOpenAI.Components.WorkflowParam.t()`  
+  * `:workflow` - **required** - `ExOpenAI.Components.WorkflowParam.t()`
     Workflow that powers the session.
   """
   @type t() :: %{
@@ -30,5 +30,16 @@ defmodule ExOpenAI.Components.CreateChatSessionBody do
           user: String.t(),
           workflow: ExOpenAI.Components.WorkflowParam.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:chatkit_configuration) =>
+                ExOpenAI.Components.ChatkitConfigurationParam.input(),
+              optional(:expires_after) => ExOpenAI.Components.ExpiresAfterParam.input(),
+              optional(:rate_limits) => ExOpenAI.Components.RateLimitsParam.input(),
+              required(:user) => String.t(),
+              required(:workflow) => ExOpenAI.Components.WorkflowParam.input()
+            }
   defstruct [:chatkit_configuration, :expires_after, :rate_limits, :user, :workflow]
 end

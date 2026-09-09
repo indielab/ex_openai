@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ImageDetail do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ImageDetail.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ImageDetail do
   `"low"`, `"high"`, `"auto"`, `"original"`
   """
   @type t() :: ((:low | :high) | :auto) | :original
+  @type input() :: (((:low | :high) | :auto) | :original) | String.t()
 end

@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.VideoStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema VideoStatus.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.VideoStatus do
   `"queued"`, `"in_progress"`, `"completed"`, `"failed"`
   """
   @type t() :: ((:queued | :in_progress) | :completed) | :failed
+  @type input() :: (((:queued | :in_progress) | :completed) | :failed) | String.t()
 end

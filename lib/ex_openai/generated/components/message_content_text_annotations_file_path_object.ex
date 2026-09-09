@@ -6,19 +6,19 @@ defmodule ExOpenAI.Components.MessageContentTextAnnotationsFilePathObject do
 
   ## Fields
 
-  * `:end_index` - **required** - `integer()`  
+  * `:end_index` - **required** - `integer()`
     Constraints: minimum: 0
 
-  * `:file_path` - **required** - `{:%{}, [], [{{:required, [], [:file_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:file_path` - **required** - `%{required(:file_id) => String.t()}`
 
-  * `:start_index` - **required** - `integer()`  
+  * `:start_index` - **required** - `integer()`
     Constraints: minimum: 0
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     The text in the message content that needs to be replaced.
 
-  * `:type` - **required** - `:file_path`  
-    Always `file_path`.  
+  * `:type` - **required** - `:file_path`
+    Always `file_path`.
     Allowed values: `"file_path"`
   """
   @type t() :: %{
@@ -29,5 +29,15 @@ defmodule ExOpenAI.Components.MessageContentTextAnnotationsFilePathObject do
           text: String.t(),
           type: :file_path
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:end_index) => integer(),
+              required(:file_path) => %{required(:file_id) => String.t()},
+              required(:start_index) => integer(),
+              required(:text) => String.t(),
+              required(:type) => :file_path | String.t()
+            }
   defstruct [:end_index, :file_path, :start_index, :text, :type]
 end

@@ -8,18 +8,17 @@ defmodule ExOpenAI.MixProject do
       elixir: "~> 1.16",
       description: description(),
       start_permanent: Mix.env() == :prod,
+      test_ignore_filters: [~r"/testdata/"],
       deps: deps(),
       package: package(),
       name: "ex_openai.ex",
       source_url: "https://github.com/dvcrn/ex_openai",
-      preferred_cli_env: [
-        vcr: :test,
-        "vcr.delete": :test,
-        "vcr.check": :test,
-        "vcr.show": :test
-      ],
       dialyzer: [plt_add_apps: [:mix]]
     ]
+  end
+
+  def cli do
+    [preferred_envs: [vcr: :test, "vcr.delete": :test, "vcr.check": :test, "vcr.show": :test]]
   end
 
   # Run "mix help compile.app" to learn about applications.
@@ -53,8 +52,10 @@ defmodule ExOpenAI.MixProject do
     [
       {:jason, "~> 1.4"},
       {:mock, "~> 0.3.8", only: :test},
+      # Mock and ExVCR pin Meck versions that cannot compile on OTP 29.
+      {:meck, "~> 1.2", only: :test, override: true},
       {:httpoison, "~> 2.2.1"},
-      {:mix_test_watch, "~> 1.2", only: :test},
+      {:mix_test_watch, "~> 1.2", only: :test, runtime: false},
       {:ex_doc, ">= 0.34.1", only: :dev},
       {:exvcr, "~> 0.16.0", only: :test},
       {:exjsx, "~> 4.0", only: :test},

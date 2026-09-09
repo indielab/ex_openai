@@ -7,14 +7,14 @@ defmodule ExOpenAI.Components.ResponseFailedEvent do
 
   ## Fields
 
-  * `:response` - **required** - `ExOpenAI.Components.Response.t()`  
+  * `:response` - **required** - `ExOpenAI.Components.Response.t()`
     The response that failed.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.failed"`  
-    The type of the event. Always `response.failed`.  
+  * `:type` - **required** - `:"response.failed"`
+    The type of the event. Always `response.failed`.
     Allowed values: `"response.failed"`
   """
   @type t() :: %{
@@ -23,5 +23,13 @@ defmodule ExOpenAI.Components.ResponseFailedEvent do
           sequence_number: integer(),
           type: :"response.failed"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:response) => ExOpenAI.Components.Response.input(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.failed" | String.t()
+            }
   defstruct [:response, :sequence_number, :type]
 end

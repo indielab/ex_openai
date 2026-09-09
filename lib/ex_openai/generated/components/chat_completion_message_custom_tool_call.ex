@@ -7,14 +7,14 @@ defmodule ExOpenAI.Components.ChatCompletionMessageCustomToolCall do
 
   ## Fields
 
-  * `:custom` - **required** - `{:%{}, [], [{{:required, [], [:input]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:custom` - **required** - `%{required(:input) => String.t(), required(:name) => String.t()}`
     The custom tool that the model called.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The ID of the tool call.
 
-  * `:type` - **required** - `:custom`  
-    The type of the tool. Always `custom`.  
+  * `:type` - **required** - `:custom`
+    The type of the tool. Always `custom`.
     Allowed values: `"custom"`
   """
   @type t() :: %{
@@ -23,5 +23,16 @@ defmodule ExOpenAI.Components.ChatCompletionMessageCustomToolCall do
           id: String.t(),
           type: :custom
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:custom) => %{
+                required(:input) => String.t(),
+                required(:name) => String.t()
+              },
+              required(:id) => String.t(),
+              required(:type) => :custom | String.t()
+            }
   defstruct [:custom, :id, :type]
 end

@@ -1,12 +1,10 @@
 defmodule ExOpenAI.Components.RunStepCompletionUsage do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema RunStepCompletionUsage.
 
   ## Type
 
-  `{:%{}, [], [{{:required, [], [:completion_tokens]}, {:integer, [], []}}, {{:required, [], [:prompt_tokens]}, {:integer, [], []}}, {{:required, [], [:total_tokens]}, {:integer, [], []}}]} | any()`
+  `%{ required(:completion_tokens) => integer(), required(:prompt_tokens) => integer(), required(:total_tokens) => integer() } | nil`
   """
   @type t() ::
           %{
@@ -14,5 +12,12 @@ defmodule ExOpenAI.Components.RunStepCompletionUsage do
             required(:prompt_tokens) => integer(),
             required(:total_tokens) => integer()
           }
-          | any()
+          | nil
+  @type input() ::
+          %{
+            required(:completion_tokens) => integer(),
+            required(:prompt_tokens) => integer(),
+            required(:total_tokens) => integer()
+          }
+          | nil
 end

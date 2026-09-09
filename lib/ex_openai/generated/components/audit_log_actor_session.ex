@@ -6,7 +6,7 @@ defmodule ExOpenAI.Components.AuditLogActorSession do
 
   ## Fields
 
-  * `:ip_address` - **optional** - `String.t()`  
+  * `:ip_address` - **optional** - `String.t()`
     The IP address from which the action was performed.
 
   * `:user` - **optional** - `ExOpenAI.Components.AuditLogActorUser.t()`
@@ -16,5 +16,12 @@ defmodule ExOpenAI.Components.AuditLogActorSession do
           ip_address: String.t() | nil,
           user: ExOpenAI.Components.AuditLogActorUser.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:ip_address) => String.t(),
+              optional(:user) => ExOpenAI.Components.AuditLogActorUser.input()
+            }
   defstruct [:ip_address, :user]
 end

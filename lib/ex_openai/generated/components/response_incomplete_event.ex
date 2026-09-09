@@ -7,14 +7,14 @@ defmodule ExOpenAI.Components.ResponseIncompleteEvent do
 
   ## Fields
 
-  * `:response` - **required** - `ExOpenAI.Components.Response.t()`  
+  * `:response` - **required** - `ExOpenAI.Components.Response.t()`
     The response that was incomplete.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.incomplete"`  
-    The type of the event. Always `response.incomplete`.  
+  * `:type` - **required** - `:"response.incomplete"`
+    The type of the event. Always `response.incomplete`.
     Allowed values: `"response.incomplete"`
   """
   @type t() :: %{
@@ -23,5 +23,13 @@ defmodule ExOpenAI.Components.ResponseIncompleteEvent do
           sequence_number: integer(),
           type: :"response.incomplete"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:response) => ExOpenAI.Components.Response.input(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.incomplete" | String.t()
+            }
   defstruct [:response, :sequence_number, :type]
 end

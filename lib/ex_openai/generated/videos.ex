@@ -1,23 +1,28 @@
 defmodule ExOpenAI.Videos do
-  @moduledoc false
+  @moduledoc """
+  Functions for the OpenAI videos API.
+  """
   (
     @doc """
     List recently generated videos for the current project.
 
     ## Options
 
-    * `:limit` - **optional** - `integer()`  
-      Number of items to retrieve  
+    * `:limit` - **optional** - `integer()`
+      Number of items to retrieve
       Constraints: minimum: 0, maximum: 100
 
-    * `:order` - **optional** - `any()`  
+    * `:order` - **optional** - `ExOpenAI.Components.OrderEnum.input()`
       Sort order of results by timestamp. Use `asc` for ascending order or `desc` for descending order.
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       Identifier for the last item from the previous pagination request
     """
     (
-      @type list_videos_opt() :: ({:limit, integer()} | {:order, any()}) | {:after, String.t()}
+      @type list_videos_opt() ::
+              (({:limit, integer()} | {:order, ExOpenAI.Components.OrderEnum.input()})
+               | {:after, String.t()})
+              | ExOpenAI.request_option()
       @spec list_videos(opts :: [list_videos_opt()]) ::
               {:ok, ExOpenAI.Components.VideoListResource.t()} | {:error, any()}
     )
@@ -25,17 +30,9 @@ defmodule ExOpenAI.Videos do
     def list_videos(opts \\ []) do
       url = "/videos"
       query_params = Keyword.take(opts, [:limit, :order, :after])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :limit, :order])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
@@ -46,6 +43,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoListResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -62,32 +61,33 @@ defmodule ExOpenAI.Videos do
     @doc """
     Create a new video generation job from a prompt and optional reference assets.
 
-    ## Parameters
-
-    * `prompt` - **required** - `String.t()`  
-      Text prompt that describes the video to generate.  
-      Constraints: minLength: 1, maxLength: 32000
-
     ## Options
 
-    * `input_reference` - **optional** - `any()`  
-      Optional reference object that guides generation. Provide exactly one of `image_url` or `file_id`.
+    * `input_reference` - **optional** - `binary() | {String.t(), binary()} | :"Elixir.ExOpenAI.Components.ImageRefParam-2".input()`
 
-    * `model` - **optional** - `any()`  
+    * `model` - **optional** - `ExOpenAI.Components.VideoModel.input()`
       The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to `sora-2`.
 
-    * `seconds` - **optional** - `any()`  
+    * `prompt` - **optional** - `String.t()`
+      Text prompt that describes the video to generate.
+      Constraints: minLength: 1, maxLength: 32000
+
+    * `seconds` - **optional** - `ExOpenAI.Components.VideoSeconds.input()`
       Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds.
 
-    * `size` - **optional** - `any()`  
+    * `size` - **optional** - `ExOpenAI.Components.VideoSize.input()`
       Output resolution formatted as width x height (allowed values: 720x1280, 1280x720, 1024x1792, 1792x1024). Defaults to 720x1280.
     """
     (
       @type create_video_opt() ::
-              (({:input_reference, :"Elixir.ExOpenAI.Components.ImageRefParam-2".t()}
-                | {:model, ExOpenAI.Components.VideoModel.t()})
-               | {:seconds, ExOpenAI.Components.VideoSeconds.t()})
-              | {:size, ExOpenAI.Components.VideoSize.t()}
+              (((({:input_reference,
+                   (binary() | {String.t(), binary()})
+                   | :"Elixir.ExOpenAI.Components.ImageRefParam-2".input()}
+                  | {:model, ExOpenAI.Components.VideoModel.input()})
+                 | {:prompt, String.t()})
+                | {:seconds, ExOpenAI.Components.VideoSeconds.input()})
+               | {:size, ExOpenAI.Components.VideoSize.input()})
+              | ExOpenAI.request_option()
       @spec create_video(opts :: [create_video_opt()]) ::
               {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
     )
@@ -95,21 +95,16 @@ defmodule ExOpenAI.Videos do
     def create_video(opts \\ []) do
       url = "/videos"
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:input_reference, :model, :seconds, :size])
+
+      optional_body_params =
+        Keyword.take(opts, [:input_reference, :model, :prompt, :seconds, :size])
+
       body_params = body_params ++ optional_body_params
 
       optional_params_to_drop =
-        [:input_reference, :model, :seconds, :size] |> Enum.reject(&(&1 == :stream))
+        [:input_reference, :model, :prompt, :seconds, :size] |> Enum.reject(&(&1 == :stream))
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
@@ -119,6 +114,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoResource"}
         )
       end
+
+      body_params = ExOpenAI.Client.prepare_multipart(body_params, [:input_reference], %{})
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -135,39 +132,32 @@ defmodule ExOpenAI.Videos do
     @doc """
     Create a character from an uploaded video.
 
-    ## Parameters
+    ## Options
 
-    * `name` - **required** - `String.t()`  
-      Display name for this API character.  
+    * `name` - **optional** - `String.t()`
+      Display name for this API character.
       Constraints: minLength: 1, maxLength: 80
 
-    * `video` - **required** - `binary()`  
-      Video file used to create a character.  
+    * `video` - **optional** - `binary() | {String.t(), binary()}`
+      Video file used to create a character.
       Format: `binary`
     """
     (
-      nil
-
-      @spec create_video_character(opts :: keyword()) ::
+      @type create_video_character_opt() ::
+              ({:name, String.t()} | {:video, binary() | {String.t(), binary()}})
+              | ExOpenAI.request_option()
+      @spec create_video_character(opts :: [create_video_character_opt()]) ::
               {:ok, ExOpenAI.Components.VideoCharacterResource.t()} | {:error, any()}
     )
 
     def create_video_character(opts \\ []) do
       url = "/videos/characters"
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [])
+      optional_body_params = Keyword.take(opts, [:name, :video])
       body_params = body_params ++ optional_body_params
-      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+      optional_params_to_drop = [:name, :video] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
@@ -176,6 +166,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoCharacterResource"}
         )
       end
+
+      body_params = ExOpenAI.Client.prepare_multipart(body_params, [:video], %{})
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -194,13 +186,12 @@ defmodule ExOpenAI.Videos do
 
     ## Parameters
 
-    * `:character_id` - **required** - `String.t()`  
+    * `:character_id` - **required** - `String.t()`
       The identifier of the character to retrieve.
     """
     (
-      nil
-
-      @spec get_video_character(character_id :: String.t(), opts :: keyword()) ::
+      @type get_video_character_opt() :: ExOpenAI.request_option()
+      @spec get_video_character(character_id :: String.t(), opts :: [get_video_character_opt()]) ::
               {:ok, ExOpenAI.Components.VideoCharacterResource.t()} | {:error, any()}
     )
 
@@ -208,15 +199,7 @@ defmodule ExOpenAI.Videos do
       url = "/videos/characters/{character_id}"
       url = String.replace(url, "{character_id}", to_string(character_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -229,6 +212,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoCharacterResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -245,38 +230,33 @@ defmodule ExOpenAI.Videos do
     @doc """
     Create a new video generation job by editing a source video or existing generated video.
 
-    ## Parameters
+    ## Options
 
-    * `prompt` - **required** - `String.t()`  
-      Text prompt that describes how to edit the source video.  
+    * `prompt` - **optional** - `String.t()`
+      Text prompt that describes how to edit the source video.
       Constraints: minLength: 1, maxLength: 32000
 
-    * `video` - **required** - `any()`  
-      Reference to the completed video to edit.
+    * `video` - **optional** - `binary() | {String.t(), binary()} | ExOpenAI.Components.VideoReferenceInputParam.input()`
     """
     (
-      nil
-
-      @spec create_video_edit(opts :: keyword()) ::
+      @type create_video_edit_opt() ::
+              ({:prompt, String.t()}
+               | {:video,
+                  (binary() | {String.t(), binary()})
+                  | ExOpenAI.Components.VideoReferenceInputParam.input()})
+              | ExOpenAI.request_option()
+      @spec create_video_edit(opts :: [create_video_edit_opt()]) ::
               {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
     )
 
     def create_video_edit(opts \\ []) do
       url = "/videos/edits"
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [])
+      optional_body_params = Keyword.take(opts, [:prompt, :video])
       body_params = body_params ++ optional_body_params
-      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+      optional_params_to_drop = [:prompt, :video] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
@@ -285,6 +265,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoResource"}
         )
       end
+
+      body_params = ExOpenAI.Client.prepare_multipart(body_params, [:video], %{})
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -301,41 +283,37 @@ defmodule ExOpenAI.Videos do
     @doc """
     Create an extension of a completed video.
 
-    ## Parameters
+    ## Options
 
-    * `prompt` - **required** - `String.t()`  
-      Updated text prompt that directs the extension generation.  
+    * `prompt` - **optional** - `String.t()`
+      Updated text prompt that directs the extension generation.
       Constraints: minLength: 1, maxLength: 32000
 
-    * `seconds` - **required** - `any()`  
+    * `seconds` - **optional** - `ExOpenAI.Components.VideoSeconds.input()`
       Length of the newly generated extension segment in seconds (allowed values: 4, 8, 12, 16, 20).
 
-    * `video` - **required** - `any()`  
-      Reference to the completed video to extend.
+    * `video` - **optional** - `ExOpenAI.Components.VideoReferenceInputParam.input() | binary() | {String.t(), binary()}`
     """
     (
-      nil
-
-      @spec create_video_extend(opts :: keyword()) ::
+      @type create_video_extend_opt() ::
+              (({:prompt, String.t()} | {:seconds, ExOpenAI.Components.VideoSeconds.input()})
+               | {:video,
+                  ExOpenAI.Components.VideoReferenceInputParam.input()
+                  | binary()
+                  | {String.t(), binary()}})
+              | ExOpenAI.request_option()
+      @spec create_video_extend(opts :: [create_video_extend_opt()]) ::
               {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
     )
 
     def create_video_extend(opts \\ []) do
       url = "/videos/extensions"
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [])
+      optional_body_params = Keyword.take(opts, [:prompt, :seconds, :video])
       body_params = body_params ++ optional_body_params
-      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+      optional_params_to_drop = [:prompt, :seconds, :video] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
@@ -344,6 +322,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoResource"}
         )
       end
+
+      body_params = ExOpenAI.Client.prepare_multipart(body_params, [:video], %{})
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -362,13 +342,12 @@ defmodule ExOpenAI.Videos do
 
     ## Parameters
 
-    * `:video_id` - **required** - `String.t()`  
+    * `:video_id` - **required** - `String.t()`
       The identifier of the video to delete.
     """
     (
-      nil
-
-      @spec delete_video(video_id :: String.t(), opts :: keyword()) ::
+      @type delete_video_opt() :: ExOpenAI.request_option()
+      @spec delete_video(video_id :: String.t(), opts :: [delete_video_opt()]) ::
               {:ok, ExOpenAI.Components.DeletedVideoResource.t()} | {:error, any()}
     )
 
@@ -376,15 +355,7 @@ defmodule ExOpenAI.Videos do
       url = "/videos/{video_id}"
       url = String.replace(url, "{video_id}", to_string(video_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -397,6 +368,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/DeletedVideoResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -415,13 +388,12 @@ defmodule ExOpenAI.Videos do
 
     ## Parameters
 
-    * `:video_id` - **required** - `String.t()`  
+    * `:video_id` - **required** - `String.t()`
       The identifier of the video to retrieve.
     """
     (
-      nil
-
-      @spec get_video(video_id :: String.t(), opts :: keyword()) ::
+      @type get_video_opt() :: ExOpenAI.request_option()
+      @spec get_video(video_id :: String.t(), opts :: [get_video_opt()]) ::
               {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
     )
 
@@ -429,15 +401,7 @@ defmodule ExOpenAI.Videos do
       url = "/videos/{video_id}"
       url = String.replace(url, "{video_id}", to_string(video_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -450,6 +414,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -470,42 +436,47 @@ defmodule ExOpenAI.Videos do
 
     ## Parameters
 
-    * `:video_id` - **required** - `String.t()`  
+    * `:video_id` - **required** - `String.t()`
       The identifier of the video whose media to download.
 
     ## Options
 
-    * `:variant` - **optional** - `any()`  
+    * `:variant` - **optional** - `ExOpenAI.Components.VideoContentVariant.input()`
       Which downloadable asset to return. Defaults to the MP4 video.
     """
     (
-      @type retrieve_video_content_opt() :: {:variant, any()}
+      @type retrieve_video_content_opt() ::
+              {:variant, ExOpenAI.Components.VideoContentVariant.input()}
+              | ExOpenAI.request_option()
       @spec retrieve_video_content(video_id :: String.t(), opts :: [retrieve_video_content_opt()]) ::
-              {:ok, map()} | {:error, any()}
+              {:ok, String.t() | binary()} | {:error, any()}
     )
 
     def retrieve_video_content(video_id, opts \\ []) do
       url = "/videos/{video_id}/content"
       url = String.replace(url, "{video_id}", to_string(video_id))
       query_params = Keyword.take(opts, [:variant])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:variant])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :response_mode, :raw)
       optional_params_to_drop = [:variant] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            one_of: [
+              %ExOpenAI.Codegen.DocsParser.Schema{type: "string"},
+              %ExOpenAI.Codegen.DocsParser.Schema{type: "string", format: "binary"}
+            ]
+          }
+        )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -524,17 +495,18 @@ defmodule ExOpenAI.Videos do
 
     ## Parameters
 
-    * `:video_id` - **required** - `String.t()`  
+    * `:video_id` - **required** - `String.t()`
       The identifier of the completed video to remix.
 
-    * `prompt` - **required** - `String.t()`  
-      Updated text prompt that directs the remix generation.  
+    ## Options
+
+    * `prompt` - **optional** - `String.t()`
+      Updated text prompt that directs the remix generation.
       Constraints: minLength: 1, maxLength: 32000
     """
     (
-      nil
-
-      @spec create_video_remix(video_id :: String.t(), opts :: keyword()) ::
+      @type create_video_remix_opt() :: {:prompt, String.t()} | ExOpenAI.request_option()
+      @spec create_video_remix(video_id :: String.t(), opts :: [create_video_remix_opt()]) ::
               {:ok, ExOpenAI.Components.VideoResource.t()} | {:error, any()}
     )
 
@@ -542,19 +514,11 @@ defmodule ExOpenAI.Videos do
       url = "/videos/{video_id}/remix"
       url = String.replace(url, "{video_id}", to_string(video_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [])
+      optional_body_params = Keyword.take(opts, [:prompt])
       body_params = body_params ++ optional_body_params
-      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+      optional_params_to_drop = [:prompt] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
@@ -563,6 +527,8 @@ defmodule ExOpenAI.Videos do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/VideoResource"}
         )
       end
+
+      body_params = ExOpenAI.Client.prepare_multipart(body_params, [], %{})
 
       ExOpenAI.Config.http_client().api_call(
         :post,

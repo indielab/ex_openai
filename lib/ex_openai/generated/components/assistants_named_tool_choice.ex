@@ -6,10 +6,10 @@ defmodule ExOpenAI.Components.AssistantsNamedToolChoice do
 
   ## Fields
 
-  * `:function` - **optional** - `{:%{}, [], [{{:required, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:function` - **optional** - `%{required(:name) => String.t()}`
 
-  * `:type` - **required** - `:function | :code_interpreter | :file_search`  
-    The type of the tool. If type is `function`, the function name must be set  
+  * `:type` - **required** - `:function | :code_interpreter | :file_search`
+    The type of the tool. If type is `function`, the function name must be set
     Allowed values: `"function"`, `"code_interpreter"`, `"file_search"`
   """
   @type t() :: %{
@@ -17,5 +17,12 @@ defmodule ExOpenAI.Components.AssistantsNamedToolChoice do
           function: %{required(:name) => String.t()} | nil,
           type: (:function | :code_interpreter) | :file_search
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:function) => %{required(:name) => String.t()},
+              required(:type) => ((:function | :code_interpreter) | :file_search) | String.t()
+            }
   defstruct [:function, :type]
 end

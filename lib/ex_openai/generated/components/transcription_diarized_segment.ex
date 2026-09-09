@@ -6,25 +6,25 @@ defmodule ExOpenAI.Components.TranscriptionDiarizedSegment do
 
   ## Fields
 
-  * `:end` - **required** - `number()`  
-    End timestamp of the segment in seconds.  
-    Format: `float`
+  * `:end` - **required** - `number()`
+    End timestamp of the segment in seconds.
+    Format: `double`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Unique identifier for the segment.
 
-  * `:speaker` - **required** - `String.t()`  
+  * `:speaker` - **required** - `String.t()`
     Speaker label for this segment. When known speakers are provided, the label matches `known_speaker_names[]`. Otherwise speakers are labeled sequentially using capital letters (`A`, `B`, ...).
 
-  * `:start` - **required** - `number()`  
-    Start timestamp of the segment in seconds.  
-    Format: `float`
+  * `:start` - **required** - `number()`
+    Start timestamp of the segment in seconds.
+    Format: `double`
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     Transcript text for this segment.
 
-  * `:type` - **required** - `:"transcript.text.segment"`  
-    The type of the segment. Always `transcript.text.segment`.  
+  * `:type` - **required** - `:"transcript.text.segment"`
+    The type of the segment. Always `transcript.text.segment`.
     Allowed values: `"transcript.text.segment"`
   """
   @type t() :: %{
@@ -36,5 +36,16 @@ defmodule ExOpenAI.Components.TranscriptionDiarizedSegment do
           text: String.t(),
           type: :"transcript.text.segment"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:end) => number(),
+              required(:id) => String.t(),
+              required(:speaker) => String.t(),
+              required(:start) => number(),
+              required(:text) => String.t(),
+              required(:type) => :"transcript.text.segment" | String.t()
+            }
   defstruct [:end, :id, :speaker, :start, :text, :type]
 end

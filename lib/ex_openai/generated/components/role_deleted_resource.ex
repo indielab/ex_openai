@@ -6,14 +6,14 @@ defmodule ExOpenAI.Components.RoleDeletedResource do
 
   ## Fields
 
-  * `:deleted` - **required** - `boolean()`  
+  * `:deleted` - **required** - `boolean()`
     Whether the role was deleted.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier of the deleted role.
 
-  * `:object` - **required** - `:"role.deleted"`  
-    Always `role.deleted`.  
+  * `:object` - **required** - `:"role.deleted"`
+    Always `role.deleted`.
     Allowed values: `"role.deleted"`
   """
   @type t() :: %{
@@ -22,5 +22,13 @@ defmodule ExOpenAI.Components.RoleDeletedResource do
           id: String.t(),
           object: :"role.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"role.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

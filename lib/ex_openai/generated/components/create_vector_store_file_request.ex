@@ -10,8 +10,8 @@ defmodule ExOpenAI.Components.CreateVectorStoreFileRequest do
 
   * `:chunking_strategy` - **optional** - `ExOpenAI.Components.ChunkingStrategyRequestParam.t()`
 
-  * `:file_id` - **required** - `String.t()`  
-    A [File](/docs/api-reference/files) ID that the vector store should use. Useful for tools like `file_search` that can access files. For multi-file ingestion, we recommend [`file_batches`](/docs/api-reference/vector-stores-file-batches/createBatch) to minimize per-vector-store write requests.
+  * `:file_id` - **required** - `String.t()`
+    A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store should use. Useful for tools like `file_search` that can access files. For multi-file ingestion, we recommend [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch) to minimize per-vector-store write requests.
   """
   @type t() :: %{
           __struct__: __MODULE__,
@@ -19,5 +19,14 @@ defmodule ExOpenAI.Components.CreateVectorStoreFileRequest do
           chunking_strategy: ExOpenAI.Components.ChunkingStrategyRequestParam.t() | nil,
           file_id: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:attributes) => ExOpenAI.Components.VectorStoreFileAttributes.input(),
+              optional(:chunking_strategy) =>
+                ExOpenAI.Components.ChunkingStrategyRequestParam.input(),
+              required(:file_id) => String.t()
+            }
   defstruct [:attributes, :chunking_strategy, :file_id]
 end

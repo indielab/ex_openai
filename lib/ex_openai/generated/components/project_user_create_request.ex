@@ -6,13 +6,28 @@ defmodule ExOpenAI.Components.ProjectUserCreateRequest do
 
   ## Fields
 
-  * `:role` - **required** - `:owner | :member`  
-    `owner` or `member`  
-    Allowed values: `"owner"`, `"member"`
+  * `:email` - **optional** - `String.t() | nil`
+    Email of the user to add.
 
-  * `:user_id` - **required** - `String.t()`  
+  * `:role` - **required** - `String.t()`
+    `owner` or `member`
+
+  * `:user_id` - **optional** - `String.t() | nil`
     The ID of the user.
   """
-  @type t() :: %{__struct__: __MODULE__, role: :owner | :member, user_id: String.t()}
-  defstruct [:role, :user_id]
+  @type t() :: %{
+          __struct__: __MODULE__,
+          email: (String.t() | nil) | nil,
+          role: String.t(),
+          user_id: (String.t() | nil) | nil
+        }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:email) => String.t() | nil,
+              required(:role) => String.t(),
+              optional(:user_id) => String.t() | nil
+            }
+  defstruct [:email, :role, :user_id]
 end

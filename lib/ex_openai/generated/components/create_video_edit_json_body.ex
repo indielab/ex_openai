@@ -6,11 +6,11 @@ defmodule ExOpenAI.Components.CreateVideoEditJsonBody do
 
   ## Fields
 
-  * `:prompt` - **required** - `String.t()`  
-    Text prompt that describes how to edit the source video.  
+  * `:prompt` - **required** - `String.t()`
+    Text prompt that describes how to edit the source video.
     Constraints: minLength: 1, maxLength: 32000
 
-  * `:video` - **required** - `ExOpenAI.Components.VideoReferenceInputParam.t()`  
+  * `:video` - **required** - `ExOpenAI.Components.VideoReferenceInputParam.t()`
     Reference to the completed video to edit.
   """
   @type t() :: %{
@@ -18,5 +18,12 @@ defmodule ExOpenAI.Components.CreateVideoEditJsonBody do
           prompt: String.t(),
           video: ExOpenAI.Components.VideoReferenceInputParam.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:prompt) => String.t(),
+              required(:video) => ExOpenAI.Components.VideoReferenceInputParam.input()
+            }
   defstruct [:prompt, :video]
 end

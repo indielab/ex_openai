@@ -6,13 +6,16 @@ defmodule ExOpenAI.Components.ClosedStatus do
 
   ## Fields
 
-  * `:reason` - **required** - `String.t() | any()`
+  * `:reason` - **required** - `String.t() | nil`
 
-  * `:type` - **required** - `:closed`  
-    Status discriminator that is always `closed`.  
-    Allowed values: `"closed"`  
+  * `:type` - **required** - `:closed`
+    Status discriminator that is always `closed`.
+    Allowed values: `"closed"`
     Default: `"closed"`
   """
-  @type t() :: %{__struct__: __MODULE__, reason: String.t() | any(), type: :closed}
+  @type t() :: %{__struct__: __MODULE__, reason: String.t() | nil, type: :closed}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t() | %{required(:reason) => String.t() | nil, required(:type) => :closed | String.t()}
   defstruct [:reason, :type]
 end

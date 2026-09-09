@@ -1,7 +1,6 @@
 defmodule ExOpenAI.Config do
   @moduledoc """
-  Reads configuration on application start, parses all environment variables (if any)
-  and caches the final config in memory to avoid parsing on each read afterwards.
+  Reads application configuration and resolves configured environment references per request.
   """
 
   use GenServer

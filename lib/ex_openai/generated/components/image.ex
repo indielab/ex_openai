@@ -6,14 +6,15 @@ defmodule ExOpenAI.Components.Image do
 
   ## Fields
 
-  * `:b64_json` - **optional** - `String.t()`  
+  * `:b64_json` - **optional** - `String.t()`
     The base64-encoded JSON of the generated image. Returned by default for the GPT image models, and only present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`.
 
-  * `:revised_prompt` - **optional** - `String.t()`  
+  * `:revised_prompt` - **optional** - `String.t()`
     For `dall-e-3` only, the revised prompt that was used to generate the image.
 
-  * `:url` - **optional** - `String.t()`  
+  * `:url` - **optional** - `String.t()`
     When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format` is set to `url` (default value). Unsupported for the GPT image models.
+    Format: `uri`
   """
   @type t() :: %{
           __struct__: __MODULE__,
@@ -21,5 +22,13 @@ defmodule ExOpenAI.Components.Image do
           revised_prompt: String.t() | nil,
           url: String.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:b64_json) => String.t(),
+              optional(:revised_prompt) => String.t(),
+              optional(:url) => String.t()
+            }
   defstruct [:b64_json, :revised_prompt, :url]
 end

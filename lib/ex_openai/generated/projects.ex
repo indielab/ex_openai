@@ -1,33 +1,37 @@
 defmodule ExOpenAI.Projects do
-  @moduledoc false
+  @moduledoc """
+  Functions for the OpenAI projects API.
+  """
   (
     @doc """
     Lists the project roles assigned to a group within a project.
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to inspect.
 
-    * `:group_id` - **required** - `String.t()`  
+    * `:group_id` - **required** - `String.t()`
       The ID of the group to inspect.
 
     ## Options
 
-    * `:limit` - **optional** - `integer()`  
-      A limit on the number of project role assignments to return.  
+    * `:limit` - **optional** - `integer()`
+      A limit on the number of project role assignments to return.
       Constraints: minimum: 0, maximum: 1000
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       Cursor for pagination. Provide the value from the previous response's `next` field to continue listing project roles.
 
-    * `:order` - **optional** - `String.t()`  
-      Sort order for the returned project roles.  
+    * `:order` - **optional** - `:asc | :desc | String.t()`
+      Sort order for the returned project roles.
       Allowed values: `"asc"`, `"desc"`
     """
     (
       @type list_project_group_role_assignments_opt() ::
-              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+              (({:limit, integer()} | {:after, String.t()})
+               | {:order, (:asc | :desc) | String.t()})
+              | ExOpenAI.request_option()
       @spec list_project_group_role_assignments(
               group_id :: String.t(),
               project_id :: String.t(),
@@ -40,17 +44,9 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{project_id}", to_string(project_id))
       url = String.replace(url, "{group_id}", to_string(group_id))
       query_params = Keyword.take(opts, [:limit, :after, :order])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :limit, :order])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
@@ -61,6 +57,8 @@ defmodule ExOpenAI.Projects do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RoleListResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -79,23 +77,22 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to update.
 
-    * `:group_id` - **required** - `String.t()`  
+    * `:group_id` - **required** - `String.t()`
       The ID of the group that should receive the project role.
 
-    * `role_id` - **required** - `String.t()`  
+    * `role_id` - **required** - `String.t()`
       Identifier of the role to assign.
     """
     (
-      nil
-
+      @type assign_project_group_role_opt() :: ExOpenAI.request_option()
       @spec assign_project_group_role(
               group_id :: String.t(),
               project_id :: String.t(),
               role_id :: String.t(),
-              opts :: keyword()
+              opts :: [assign_project_group_role_opt()]
             ) :: {:ok, ExOpenAI.Components.GroupRoleAssignment.t()} | {:error, any()}
     )
 
@@ -104,15 +101,7 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{project_id}", to_string(project_id))
       url = String.replace(url, "{group_id}", to_string(group_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = [role_id: role_id]
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -125,6 +114,8 @@ defmodule ExOpenAI.Projects do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/GroupRoleAssignment"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -143,23 +134,22 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to modify.
 
-    * `:group_id` - **required** - `String.t()`  
+    * `:group_id` - **required** - `String.t()`
       The ID of the group whose project role assignment should be removed.
 
-    * `:role_id` - **required** - `String.t()`  
+    * `:role_id` - **required** - `String.t()`
       The ID of the project role to remove from the group.
     """
     (
-      nil
-
+      @type unassign_project_group_role_opt() :: ExOpenAI.request_option()
       @spec unassign_project_group_role(
               group_id :: String.t(),
               project_id :: String.t(),
               role_id :: String.t(),
-              opts :: keyword()
+              opts :: [unassign_project_group_role_opt()]
             ) :: {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
     )
 
@@ -169,15 +159,7 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{group_id}", to_string(group_id))
       url = String.replace(url, "{role_id}", to_string(role_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -193,8 +175,68 @@ defmodule ExOpenAI.Projects do
         )
       end
 
+      nil
+
       ExOpenAI.Config.http_client().api_call(
         :delete,
+        url,
+        body_params,
+        :"application/json",
+        opts,
+        convert_response
+      )
+    end
+  )
+
+  (
+    @doc """
+    Retrieves a project role assigned to a group.
+
+    ## Parameters
+
+    * `:project_id` - **required** - `String.t()`
+      The ID of the project to inspect.
+
+    * `:group_id` - **required** - `String.t()`
+      The ID of the group to inspect.
+
+    * `:role_id` - **required** - `String.t()`
+      The ID of the project role to retrieve for the group.
+    """
+    (
+      @type retrieve_project_group_role_opt() :: ExOpenAI.request_option()
+      @spec retrieve_project_group_role(
+              group_id :: String.t(),
+              project_id :: String.t(),
+              role_id :: String.t(),
+              opts :: [retrieve_project_group_role_opt()]
+            ) :: {:ok, ExOpenAI.Components.AssignedRoleDetails.t()} | {:error, any()}
+    )
+
+    def retrieve_project_group_role(group_id, project_id, role_id, opts \\ []) do
+      url = "/projects/{project_id}/groups/{group_id}/roles/{role_id}"
+      url = String.replace(url, "{project_id}", to_string(project_id))
+      url = String.replace(url, "{group_id}", to_string(group_id))
+      url = String.replace(url, "{role_id}", to_string(role_id))
+      query_params = Keyword.take(opts, [])
+      url = ExOpenAI.Query.append(url, query_params)
+      body_params = []
+      optional_body_params = Keyword.take(opts, [])
+      body_params = body_params ++ optional_body_params
+      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+      opts = Keyword.drop(opts, optional_params_to_drop)
+
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/AssignedRoleDetails"}
+        )
+      end
+
+      nil
+
+      ExOpenAI.Config.http_client().api_call(
+        :get,
         url,
         body_params,
         :"application/json",
@@ -210,27 +252,29 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to inspect.
 
     ## Options
 
-    * `:limit` - **optional** - `integer()`  
-      A limit on the number of roles to return. Defaults to 1000.  
-      Default: `1000`  
+    * `:limit` - **optional** - `integer()`
+      A limit on the number of roles to return. Defaults to 1000.
+      Default: `1000`
       Constraints: minimum: 0, maximum: 1000
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       Cursor for pagination. Provide the value from the previous response's `next` field to continue listing roles.
 
-    * `:order` - **optional** - `String.t()`  
-      Sort order for the returned roles.  
-      Allowed values: `"asc"`, `"desc"`  
+    * `:order` - **optional** - `:asc | :desc | String.t()`
+      Sort order for the returned roles.
+      Allowed values: `"asc"`, `"desc"`
       Default: `"asc"`
     """
     (
       @type list_project_roles_opt() ::
-              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+              (({:limit, integer()} | {:after, String.t()})
+               | {:order, (:asc | :desc) | String.t()})
+              | ExOpenAI.request_option()
       @spec list_project_roles(project_id :: String.t(), opts :: [list_project_roles_opt()]) ::
               {:ok, ExOpenAI.Components.PublicRoleListResource.t()} | {:error, any()}
     )
@@ -239,17 +283,9 @@ defmodule ExOpenAI.Projects do
       url = "/projects/{project_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
       query_params = Keyword.take(opts, [:limit, :after, :order])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :limit, :order])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
@@ -260,6 +296,8 @@ defmodule ExOpenAI.Projects do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/PublicRoleListResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -278,22 +316,23 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to update.
 
-    * `permissions` - **required** - `[String.t()]`  
+    * `permissions` - **required** - `list(String.t())`
       Permissions to grant to the role.
 
-    * `role_name` - **required** - `String.t()`  
+    * `role_name` - **required** - `String.t()`
       Unique name for the role.
 
     ## Options
 
-    * `description` - **optional** - `String.t() | any()`  
+    * `description` - **optional** - `String.t() | nil`
       Optional description of the role.
     """
     (
-      @type create_project_role_opt() :: {:description, String.t() | any()}
+      @type create_project_role_opt() ::
+              {:description, String.t() | nil} | ExOpenAI.request_option()
       @spec create_project_role(
               permissions :: list(String.t()),
               project_id :: String.t(),
@@ -306,15 +345,7 @@ defmodule ExOpenAI.Projects do
       url = "/projects/{project_id}/roles"
       url = String.replace(url, "{project_id}", to_string(project_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = [permissions: permissions, role_name: role_name]
       optional_body_params = Keyword.take(opts, [:description])
       body_params = body_params ++ optional_body_params
@@ -327,6 +358,8 @@ defmodule ExOpenAI.Projects do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Role"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -345,19 +378,18 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to update.
 
-    * `:role_id` - **required** - `String.t()`  
+    * `:role_id` - **required** - `String.t()`
       The ID of the role to delete.
     """
     (
-      nil
-
+      @type delete_project_role_opt() :: ExOpenAI.request_option()
       @spec delete_project_role(
               project_id :: String.t(),
               role_id :: String.t(),
-              opts :: keyword()
+              opts :: [delete_project_role_opt()]
             ) :: {:ok, ExOpenAI.Components.RoleDeletedResource.t()} | {:error, any()}
     )
 
@@ -366,15 +398,7 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{project_id}", to_string(project_id))
       url = String.replace(url, "{role_id}", to_string(role_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -388,8 +412,63 @@ defmodule ExOpenAI.Projects do
         )
       end
 
+      nil
+
       ExOpenAI.Config.http_client().api_call(
         :delete,
+        url,
+        body_params,
+        :"application/json",
+        opts,
+        convert_response
+      )
+    end
+  )
+
+  (
+    @doc """
+    Retrieves a project role.
+
+    ## Parameters
+
+    * `:project_id` - **required** - `String.t()`
+      The ID of the project.
+
+    * `:role_id` - **required** - `String.t()`
+      The ID of the role to retrieve.
+    """
+    (
+      @type retrieve_project_role_opt() :: ExOpenAI.request_option()
+      @spec retrieve_project_role(
+              project_id :: String.t(),
+              role_id :: String.t(),
+              opts :: [retrieve_project_role_opt()]
+            ) :: {:ok, ExOpenAI.Components.Role.t()} | {:error, any()}
+    )
+
+    def retrieve_project_role(project_id, role_id, opts \\ []) do
+      url = "/projects/{project_id}/roles/{role_id}"
+      url = String.replace(url, "{project_id}", to_string(project_id))
+      url = String.replace(url, "{role_id}", to_string(role_id))
+      query_params = Keyword.take(opts, [])
+      url = ExOpenAI.Query.append(url, query_params)
+      body_params = []
+      optional_body_params = Keyword.take(opts, [])
+      body_params = body_params ++ optional_body_params
+      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+      opts = Keyword.drop(opts, optional_params_to_drop)
+
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Role"}
+        )
+      end
+
+      nil
+
+      ExOpenAI.Config.http_client().api_call(
+        :get,
         url,
         body_params,
         :"application/json",
@@ -405,27 +484,28 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to update.
 
-    * `:role_id` - **required** - `String.t()`  
+    * `:role_id` - **required** - `String.t()`
       The ID of the role to update.
 
     ## Options
 
-    * `description` - **optional** - `String.t() | any()`  
+    * `description` - **optional** - `String.t() | nil`
       New description for the role.
 
-    * `permissions` - **optional** - `[String.t()] | any()`  
+    * `permissions` - **optional** - `list(String.t()) | nil`
       Updated set of permissions for the role.
 
-    * `role_name` - **optional** - `String.t() | any()`  
+    * `role_name` - **optional** - `String.t() | nil`
       New name for the role.
     """
     (
       @type update_project_role_opt() ::
-              ({:description, String.t() | any()} | {:permissions, list(String.t()) | any()})
-              | {:role_name, String.t() | any()}
+              (({:description, String.t() | nil} | {:permissions, list(String.t()) | nil})
+               | {:role_name, String.t() | nil})
+              | ExOpenAI.request_option()
       @spec update_project_role(
               project_id :: String.t(),
               role_id :: String.t(),
@@ -438,15 +518,7 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{project_id}", to_string(project_id))
       url = String.replace(url, "{role_id}", to_string(role_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [:description, :permissions, :role_name])
       body_params = body_params ++ optional_body_params
@@ -462,6 +534,8 @@ defmodule ExOpenAI.Projects do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/Role"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -480,28 +554,30 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to inspect.
 
-    * `:user_id` - **required** - `String.t()`  
+    * `:user_id` - **required** - `String.t()`
       The ID of the user to inspect.
 
     ## Options
 
-    * `:limit` - **optional** - `integer()`  
-      A limit on the number of project role assignments to return.  
+    * `:limit` - **optional** - `integer()`
+      A limit on the number of project role assignments to return.
       Constraints: minimum: 0, maximum: 1000
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       Cursor for pagination. Provide the value from the previous response's `next` field to continue listing project roles.
 
-    * `:order` - **optional** - `String.t()`  
-      Sort order for the returned project roles.  
+    * `:order` - **optional** - `:asc | :desc | String.t()`
+      Sort order for the returned project roles.
       Allowed values: `"asc"`, `"desc"`
     """
     (
       @type list_project_user_role_assignments_opt() ::
-              ({:limit, integer()} | {:after, String.t()}) | {:order, String.t()}
+              (({:limit, integer()} | {:after, String.t()})
+               | {:order, (:asc | :desc) | String.t()})
+              | ExOpenAI.request_option()
       @spec list_project_user_role_assignments(
               project_id :: String.t(),
               user_id :: String.t(),
@@ -514,17 +590,9 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{project_id}", to_string(project_id))
       url = String.replace(url, "{user_id}", to_string(user_id))
       query_params = Keyword.take(opts, [:limit, :after, :order])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :limit, :order])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
       optional_params_to_drop = [:after, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
@@ -535,6 +603,8 @@ defmodule ExOpenAI.Projects do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RoleListResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -553,23 +623,22 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to update.
 
-    * `:user_id` - **required** - `String.t()`  
+    * `:user_id` - **required** - `String.t()`
       The ID of the user that should receive the project role.
 
-    * `role_id` - **required** - `String.t()`  
+    * `role_id` - **required** - `String.t()`
       Identifier of the role to assign.
     """
     (
-      nil
-
+      @type assign_project_user_role_opt() :: ExOpenAI.request_option()
       @spec assign_project_user_role(
               project_id :: String.t(),
               role_id :: String.t(),
               user_id :: String.t(),
-              opts :: keyword()
+              opts :: [assign_project_user_role_opt()]
             ) :: {:ok, ExOpenAI.Components.UserRoleAssignment.t()} | {:error, any()}
     )
 
@@ -578,15 +647,7 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{project_id}", to_string(project_id))
       url = String.replace(url, "{user_id}", to_string(user_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = [role_id: role_id]
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -599,6 +660,8 @@ defmodule ExOpenAI.Projects do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/UserRoleAssignment"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -617,23 +680,22 @@ defmodule ExOpenAI.Projects do
 
     ## Parameters
 
-    * `:project_id` - **required** - `String.t()`  
+    * `:project_id` - **required** - `String.t()`
       The ID of the project to modify.
 
-    * `:user_id` - **required** - `String.t()`  
+    * `:user_id` - **required** - `String.t()`
       The ID of the user whose project role assignment should be removed.
 
-    * `:role_id` - **required** - `String.t()`  
+    * `:role_id` - **required** - `String.t()`
       The ID of the project role to remove from the user.
     """
     (
-      nil
-
+      @type unassign_project_user_role_opt() :: ExOpenAI.request_option()
       @spec unassign_project_user_role(
               project_id :: String.t(),
               role_id :: String.t(),
               user_id :: String.t(),
-              opts :: keyword()
+              opts :: [unassign_project_user_role_opt()]
             ) :: {:ok, ExOpenAI.Components.DeletedRoleAssignmentResource.t()} | {:error, any()}
     )
 
@@ -643,15 +705,7 @@ defmodule ExOpenAI.Projects do
       url = String.replace(url, "{user_id}", to_string(user_id))
       url = String.replace(url, "{role_id}", to_string(role_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -667,8 +721,68 @@ defmodule ExOpenAI.Projects do
         )
       end
 
+      nil
+
       ExOpenAI.Config.http_client().api_call(
         :delete,
+        url,
+        body_params,
+        :"application/json",
+        opts,
+        convert_response
+      )
+    end
+  )
+
+  (
+    @doc """
+    Retrieves a project role assigned to a user.
+
+    ## Parameters
+
+    * `:project_id` - **required** - `String.t()`
+      The ID of the project to inspect.
+
+    * `:user_id` - **required** - `String.t()`
+      The ID of the user to inspect.
+
+    * `:role_id` - **required** - `String.t()`
+      The ID of the project role to retrieve for the user.
+    """
+    (
+      @type retrieve_project_user_role_opt() :: ExOpenAI.request_option()
+      @spec retrieve_project_user_role(
+              project_id :: String.t(),
+              role_id :: String.t(),
+              user_id :: String.t(),
+              opts :: [retrieve_project_user_role_opt()]
+            ) :: {:ok, ExOpenAI.Components.AssignedRoleDetails.t()} | {:error, any()}
+    )
+
+    def retrieve_project_user_role(project_id, role_id, user_id, opts \\ []) do
+      url = "/projects/{project_id}/users/{user_id}/roles/{role_id}"
+      url = String.replace(url, "{project_id}", to_string(project_id))
+      url = String.replace(url, "{user_id}", to_string(user_id))
+      url = String.replace(url, "{role_id}", to_string(role_id))
+      query_params = Keyword.take(opts, [])
+      url = ExOpenAI.Query.append(url, query_params)
+      body_params = []
+      optional_body_params = Keyword.take(opts, [])
+      body_params = body_params ++ optional_body_params
+      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+      opts = Keyword.drop(opts, optional_params_to_drop)
+
+      convert_response = fn response ->
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/AssignedRoleDetails"}
+        )
+      end
+
+      nil
+
+      ExOpenAI.Config.http_client().api_call(
+        :get,
         url,
         body_params,
         :"application/json",

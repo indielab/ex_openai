@@ -6,12 +6,12 @@ defmodule ExOpenAI.Components.UrlAnnotation do
 
   ## Fields
 
-  * `:source` - **required** - `ExOpenAI.Components.UrlAnnotationSource.t()`  
+  * `:source` - **required** - `ExOpenAI.Components.UrlAnnotationSource.t()`
     URL referenced by the annotation.
 
-  * `:type` - **required** - `:url`  
-    Type discriminator that is always `url` for this annotation.  
-    Allowed values: `"url"`  
+  * `:type` - **required** - `:url`
+    Type discriminator that is always `url` for this annotation.
+    Allowed values: `"url"`
     Default: `"url"`
   """
   @type t() :: %{
@@ -19,5 +19,12 @@ defmodule ExOpenAI.Components.UrlAnnotation do
           source: ExOpenAI.Components.UrlAnnotationSource.t(),
           type: :url
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:source) => ExOpenAI.Components.UrlAnnotationSource.input(),
+              required(:type) => :url | String.t()
+            }
   defstruct [:source, :type]
 end

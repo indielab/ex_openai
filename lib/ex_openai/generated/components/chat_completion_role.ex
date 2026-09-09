@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ChatCompletionRole do
-  use ExOpenAI.Jason
-
   @moduledoc """
   The role of the author of a message
 
@@ -13,4 +11,6 @@ defmodule ExOpenAI.Components.ChatCompletionRole do
   `"developer"`, `"system"`, `"user"`, `"assistant"`, `"tool"`, `"function"`
   """
   @type t() :: ((((:developer | :system) | :user) | :assistant) | :tool) | :function
+  @type input() ::
+          (((((:developer | :system) | :user) | :assistant) | :tool) | :function) | String.t()
 end

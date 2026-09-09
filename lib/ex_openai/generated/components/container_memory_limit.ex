@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ContainerMemoryLimit do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ContainerMemoryLimit.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ContainerMemoryLimit do
   `"1g"`, `"4g"`, `"16g"`, `"64g"`
   """
   @type t() :: ((:"1g" | :"4g") | :"16g") | :"64g"
+  @type input() :: (((:"1g" | :"4g") | :"16g") | :"64g") | String.t()
 end

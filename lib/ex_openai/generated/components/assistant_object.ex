@@ -6,59 +6,60 @@ defmodule ExOpenAI.Components.AssistantObject do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) for when the assistant was created.
+    Format: `unixtime`
 
-  * `:description` - **required** - `String.t() | any()`
+  * `:description` - **required** - `String.t() | nil`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The identifier, which can be referenced in API endpoints.
 
-  * `:instructions` - **required** - `String.t() | any()`
+  * `:instructions` - **required** - `String.t() | nil`
 
   * `:metadata` - **required** - `ExOpenAI.Components.Metadata.t()`
 
-  * `:model` - **required** - `String.t()`  
-    ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.
+  * `:model` - **required** - `String.t()`
+    ID of the model to use. You can use the [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
 
-  * `:name` - **required** - `String.t() | any()`
+  * `:name` - **required** - `String.t() | nil`
 
-  * `:object` - **required** - `:assistant`  
-    The object type, which is always `assistant`.  
+  * `:object` - **required** - `:assistant`
+    The object type, which is always `assistant`.
     Allowed values: `"assistant"`
 
-  * `:response_format` - **optional** - `ExOpenAI.Components.AssistantsApiResponseFormatOption.t() | any()`
+  * `:response_format` - **optional** - `ExOpenAI.Components.AssistantsApiResponseFormatOption.t() | nil`
 
-  * `:temperature` - **optional** - `number() | any()`
+  * `:temperature` - **optional** - `number() | nil`
 
-  * `:tool_resources` - **optional** - `{:%{}, [], [{{:optional, [], [:code_interpreter]}, {:%{}, [], [{{:optional, [], [:file_ids]}, {:list, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}]}}]}}, {{:optional, [], [:file_search]}, {:%{}, [], [{{:optional, [], [:vector_store_ids]}, {:list, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}]}}]}}]} | any()`
+  * `:tool_resources` - **optional** - `%{ optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())}, optional(:file_search) => %{optional(:vector_store_ids) => list(String.t())} } | nil`
 
-  * `:tools` - **required** - `[ExOpenAI.Components.AssistantToolsCode.t() | ExOpenAI.Components.AssistantToolsFileSearch.t() | ExOpenAI.Components.AssistantToolsFunction.t()]`  
-    A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.  
-    Default: `[]`  
+  * `:tools` - **required** - `list( ExOpenAI.Components.AssistantToolsCode.t() | ExOpenAI.Components.AssistantToolsFileSearch.t() | ExOpenAI.Components.AssistantToolsFunction.t() )`
+    A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+    Default: `[]`
     Constraints: maxItems: 128
 
-  * `:top_p` - **optional** - `number() | any()`
+  * `:top_p` - **optional** - `number() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           created_at: integer(),
-          description: String.t() | any(),
+          description: String.t() | nil,
           id: String.t(),
-          instructions: String.t() | any(),
+          instructions: String.t() | nil,
           metadata: ExOpenAI.Components.Metadata.t(),
           model: String.t(),
-          name: String.t() | any(),
+          name: String.t() | nil,
           object: :assistant,
           response_format:
-            (ExOpenAI.Components.AssistantsApiResponseFormatOption.t() | any()) | nil,
-          temperature: (number() | any()) | nil,
+            (ExOpenAI.Components.AssistantsApiResponseFormatOption.t() | nil) | nil,
+          temperature: (number() | nil) | nil,
           tool_resources:
             (%{
                optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())},
                optional(:file_search) => %{optional(:vector_store_ids) => list(String.t())}
              }
-             | any())
+             | nil)
             | nil,
           tools:
             list(
@@ -66,8 +67,37 @@ defmodule ExOpenAI.Components.AssistantObject do
                | ExOpenAI.Components.AssistantToolsFileSearch.t())
               | ExOpenAI.Components.AssistantToolsFunction.t()
             ),
-          top_p: (number() | any()) | nil
+          top_p: (number() | nil) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:description) => String.t() | nil,
+              required(:id) => String.t(),
+              required(:instructions) => String.t() | nil,
+              required(:metadata) => ExOpenAI.Components.Metadata.input(),
+              required(:model) => String.t(),
+              required(:name) => String.t() | nil,
+              required(:object) => :assistant | String.t(),
+              optional(:response_format) =>
+                ExOpenAI.Components.AssistantsApiResponseFormatOption.input() | nil,
+              optional(:temperature) => number() | nil,
+              optional(:tool_resources) =>
+                %{
+                  optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())},
+                  optional(:file_search) => %{optional(:vector_store_ids) => list(String.t())}
+                }
+                | nil,
+              required(:tools) =>
+                list(
+                  (ExOpenAI.Components.AssistantToolsCode.input()
+                   | ExOpenAI.Components.AssistantToolsFileSearch.input())
+                  | ExOpenAI.Components.AssistantToolsFunction.input()
+                ),
+              optional(:top_p) => number() | nil
+            }
   defstruct [
     :created_at,
     :description,

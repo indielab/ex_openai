@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.AssistantStreamEvent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Represents an event emitted when streaming a Run.
 
@@ -19,7 +17,7 @@ defmodule ExOpenAI.Components.AssistantStreamEvent do
   `thread.message.completed` event.
 
   We may add additional events over time, so we recommend handling unknown events gracefully
-  in your code. See the [Assistants API quickstart](/docs/assistants/overview) to learn how to
+  in your code. See the [Assistants API quickstart](https://platform.openai.com/docs/assistants/overview) to learn how to
   integrate the Assistants API with streaming.
 
 
@@ -33,4 +31,11 @@ defmodule ExOpenAI.Components.AssistantStreamEvent do
             | ExOpenAI.Components.MessageStreamEvent.t())
            | ExOpenAI.Components.ErrorEvent.t())
           | ExOpenAI.Components.DoneEvent.t()
+  @type input() ::
+          ((((ExOpenAI.Components.ThreadStreamEvent.input()
+              | ExOpenAI.Components.RunStreamEvent.input())
+             | ExOpenAI.Components.RunStepStreamEvent.input())
+            | ExOpenAI.Components.MessageStreamEvent.input())
+           | ExOpenAI.Components.ErrorEvent.input())
+          | ExOpenAI.Components.DoneEvent.input()
 end

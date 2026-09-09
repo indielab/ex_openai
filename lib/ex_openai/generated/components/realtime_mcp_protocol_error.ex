@@ -10,7 +10,7 @@ defmodule ExOpenAI.Components.RealtimeMCPProtocolError do
 
   * `:message` - **required** - `String.t()`
 
-  * `:type` - **required** - `:protocol_error`  
+  * `:type` - **required** - `:protocol_error`
     Allowed values: `"protocol_error"`
   """
   @type t() :: %{
@@ -19,5 +19,13 @@ defmodule ExOpenAI.Components.RealtimeMCPProtocolError do
           message: String.t(),
           type: :protocol_error
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:code) => integer(),
+              required(:message) => String.t(),
+              required(:type) => :protocol_error | String.t()
+            }
   defstruct [:code, :message, :type]
 end

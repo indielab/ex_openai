@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.TranscriptionInclude do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema TranscriptionInclude.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.TranscriptionInclude do
   `"logprobs"`
   """
   @type t() :: :logprobs
+  @type input() :: :logprobs | String.t()
 end

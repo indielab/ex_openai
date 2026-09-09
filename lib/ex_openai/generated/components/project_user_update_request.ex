@@ -6,10 +6,11 @@ defmodule ExOpenAI.Components.ProjectUserUpdateRequest do
 
   ## Fields
 
-  * `:role` - **required** - `:owner | :member`  
-    `owner` or `member`  
-    Allowed values: `"owner"`, `"member"`
+  * `:role` - **optional** - `String.t() | nil`
+    `owner` or `member`
   """
-  @type t() :: %{__struct__: __MODULE__, role: :owner | :member}
+  @type t() :: %{__struct__: __MODULE__, role: (String.t() | nil) | nil}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{optional(:role) => String.t() | nil}
   defstruct [:role]
 end

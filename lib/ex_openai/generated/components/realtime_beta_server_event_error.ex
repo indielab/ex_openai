@@ -9,27 +9,41 @@ defmodule ExOpenAI.Components.RealtimeBetaServerEventError do
 
   ## Fields
 
-  * `:error` - **required** - `{:%{}, [], [{{:optional, [], [:code]}, {:|, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}, {:any, [], []}]}}, {{:optional, [], [:event_id]}, {:|, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}, {:any, [], []}]}}, {{:required, [], [:message]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:param]}, {:|, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}, {:any, [], []}]}}, {{:required, [], [:type]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:error` - **required** - `%{ optional(:code) => String.t() | nil, optional(:event_id) => String.t() | nil, required(:message) => String.t(), optional(:param) => String.t() | nil, required(:type) => String.t() }`
     Details of the error.
 
-  * `:event_id` - **required** - `String.t()`  
+  * `:event_id` - **required** - `String.t()`
     The unique ID of the server event.
 
-  * `:type` - **required** - `:error`  
-    The event type, must be `error`.  
+  * `:type` - **required** - `:error`
+    The event type, must be `error`.
     Allowed values: `"error"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           error: %{
-            optional(:code) => String.t() | any(),
-            optional(:event_id) => String.t() | any(),
+            optional(:code) => String.t() | nil,
+            optional(:event_id) => String.t() | nil,
             required(:message) => String.t(),
-            optional(:param) => String.t() | any(),
+            optional(:param) => String.t() | nil,
             required(:type) => String.t()
           },
           event_id: String.t(),
           type: :error
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:error) => %{
+                optional(:code) => String.t() | nil,
+                optional(:event_id) => String.t() | nil,
+                required(:message) => String.t(),
+                optional(:param) => String.t() | nil,
+                required(:type) => String.t()
+              },
+              required(:event_id) => String.t(),
+              required(:type) => :error | String.t()
+            }
   defstruct [:error, :event_id, :type]
 end

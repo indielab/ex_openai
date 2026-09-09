@@ -6,22 +6,42 @@ defmodule ExOpenAI.Components.CostsResult do
 
   ## Fields
 
-  * `:amount` - **optional** - `{:%{}, [], [{{:optional, [], [:currency]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:value]}, {:number, [], []}}]}`  
+  * `:amount` - **optional** - `%{optional(:currency) => String.t(), optional(:value) => number()}`
     The monetary value in its associated currency.
 
-  * `:line_item` - **optional** - `String.t() | any()`
+  * `:api_key_id` - **optional** - `String.t() | nil`
 
-  * `:object` - **required** - `:"organization.costs.result"`  
+  * `:line_item` - **optional** - `String.t() | nil`
+
+  * `:object` - **required** - `:"organization.costs.result"`
     Allowed values: `"organization.costs.result"`
 
-  * `:project_id` - **optional** - `String.t() | any()`
+  * `:project_id` - **optional** - `String.t() | nil`
+
+  * `:quantity` - **optional** - `number() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           amount: %{optional(:currency) => String.t(), optional(:value) => number()} | nil,
-          line_item: (String.t() | any()) | nil,
+          api_key_id: (String.t() | nil) | nil,
+          line_item: (String.t() | nil) | nil,
           object: :"organization.costs.result",
-          project_id: (String.t() | any()) | nil
+          project_id: (String.t() | nil) | nil,
+          quantity: (number() | nil) | nil
         }
-  defstruct [:amount, :line_item, :object, :project_id]
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:amount) => %{
+                optional(:currency) => String.t(),
+                optional(:value) => number()
+              },
+              optional(:api_key_id) => String.t() | nil,
+              optional(:line_item) => String.t() | nil,
+              required(:object) => :"organization.costs.result" | String.t(),
+              optional(:project_id) => String.t() | nil,
+              optional(:quantity) => number() | nil
+            }
+  defstruct [:amount, :api_key_id, :line_item, :object, :project_id, :quantity]
 end

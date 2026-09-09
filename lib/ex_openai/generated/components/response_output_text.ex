@@ -6,15 +6,15 @@ defmodule ExOpenAI.Components.ResponseOutputText do
 
   ## Fields
 
-  * `:annotations` - **required** - `[ExOpenAI.Components.FileAnnotation.t() | ExOpenAI.Components.UrlAnnotation.t()]`  
+  * `:annotations` - **required** - `list(ExOpenAI.Components.FileAnnotation.t() | ExOpenAI.Components.UrlAnnotation.t())`
     Ordered list of annotations attached to the response text.
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     Assistant generated text.
 
-  * `:type` - **required** - `:output_text`  
-    Type discriminator that is always `output_text`.  
-    Allowed values: `"output_text"`  
+  * `:type` - **required** - `:output_text`
+    Type discriminator that is always `output_text`.
+    Allowed values: `"output_text"`
     Default: `"output_text"`
   """
   @type t() :: %{
@@ -24,5 +24,17 @@ defmodule ExOpenAI.Components.ResponseOutputText do
           text: String.t(),
           type: :output_text
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:annotations) =>
+                list(
+                  ExOpenAI.Components.FileAnnotation.input()
+                  | ExOpenAI.Components.UrlAnnotation.input()
+                ),
+              required(:text) => String.t(),
+              required(:type) => :output_text | String.t()
+            }
   defstruct [:annotations, :text, :type]
 end

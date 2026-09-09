@@ -7,17 +7,17 @@ defmodule ExOpenAI.Components.RealtimeMCPListTools do
 
   ## Fields
 
-  * `:id` - **optional** - `String.t()`  
+  * `:id` - **optional** - `String.t()`
     The unique ID of the list.
 
-  * `:server_label` - **required** - `String.t()`  
+  * `:server_label` - **required** - `String.t()`
     The label of the MCP server.
 
-  * `:tools` - **required** - `[ExOpenAI.Components.MCPListToolsTool.t()]`  
+  * `:tools` - **required** - `list(ExOpenAI.Components.MCPListToolsTool.t())`
     The tools available on the server.
 
-  * `:type` - **required** - `:mcp_list_tools`  
-    The type of the item. Always `mcp_list_tools`.  
+  * `:type` - **required** - `:mcp_list_tools`
+    The type of the item. Always `mcp_list_tools`.
     Allowed values: `"mcp_list_tools"`
   """
   @type t() :: %{
@@ -27,5 +27,14 @@ defmodule ExOpenAI.Components.RealtimeMCPListTools do
           tools: list(ExOpenAI.Components.MCPListToolsTool.t()),
           type: :mcp_list_tools
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:id) => String.t(),
+              required(:server_label) => String.t(),
+              required(:tools) => list(ExOpenAI.Components.MCPListToolsTool.input()),
+              required(:type) => :mcp_list_tools | String.t()
+            }
   defstruct [:id, :server_label, :tools, :type]
 end

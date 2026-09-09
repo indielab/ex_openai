@@ -7,9 +7,11 @@ defmodule ExOpenAI.Components.ChatCompletionFunctionCallOption do
 
   ## Fields
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the function to call.
   """
   @type t() :: %{__struct__: __MODULE__, name: String.t()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:name) => String.t()}
   defstruct [:name]
 end

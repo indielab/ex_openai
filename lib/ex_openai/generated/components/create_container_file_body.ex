@@ -6,13 +6,20 @@ defmodule ExOpenAI.Components.CreateContainerFileBody do
 
   ## Fields
 
-  * `:file` - **optional** - `binary()`  
-    The File object (not file name) to be uploaded.  
+  * `:file` - **optional** - `binary()`
+    The File object (not file name) to be uploaded.
     Format: `binary`
 
-  * `:file_id` - **optional** - `String.t()`  
+  * `:file_id` - **optional** - `String.t()`
     Name of the file to create.
   """
   @type t() :: %{__struct__: __MODULE__, file: binary() | nil, file_id: String.t() | nil}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:file) => binary() | {String.t(), binary()},
+              optional(:file_id) => String.t()
+            }
   defstruct [:file, :file_id]
 end

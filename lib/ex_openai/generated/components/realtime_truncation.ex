@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.RealtimeTruncation do
-  use ExOpenAI.Jason
-
   @moduledoc """
   When the number of tokens in a conversation exceeds the model's input token limit, the conversation be truncated, meaning messages (starting from the oldest) will not be included in the model's context. A 32k context model with 4,096 max output tokens can only include 28,224 tokens in the context before truncation occurs.
 
@@ -13,7 +11,7 @@ defmodule ExOpenAI.Components.RealtimeTruncation do
 
   ## Type
 
-  `:auto | :disabled | {:%{}, [], [{{:required, [], [:retention_ratio]}, {:number, [], []}}, {{:optional, [], [:token_limits]}, {:%{}, [], [{{:optional, [], [:post_instructions]}, {:integer, [], []}}]}}, {{:required, [], [:type]}, :retention_ratio}]}`
+  `:auto | :disabled | %{ required(:retention_ratio) => number(), optional(:token_limits) => %{optional(:post_instructions) => integer()}, required(:type) => :retention_ratio }`
   """
   @type t() ::
           (:auto | :disabled)
@@ -21,5 +19,12 @@ defmodule ExOpenAI.Components.RealtimeTruncation do
               required(:retention_ratio) => number(),
               optional(:token_limits) => %{optional(:post_instructions) => integer()},
               required(:type) => :retention_ratio
+            }
+  @type input() ::
+          ((:auto | :disabled) | String.t())
+          | %{
+              required(:retention_ratio) => number(),
+              optional(:token_limits) => %{optional(:post_instructions) => integer()},
+              required(:type) => :retention_ratio | String.t()
             }
 end

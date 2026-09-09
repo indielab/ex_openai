@@ -7,20 +7,21 @@ defmodule ExOpenAI.Components.RealtimeSessionCreateResponse do
 
   ## Fields
 
-  * `:audio` - **optional** - `{:%{}, [], [{{:optional, [], [:input]}, {:%{}, [], [{{:optional, [], [:format]}, {{:., [], [ExOpenAI.Components.RealtimeAudioFormats, :t]}, [], []}}, {{:optional, [], [:noise_reduction]}, {:%{}, [], [{{:optional, [], [:type]}, {{:., [], [ExOpenAI.Components.NoiseReductionType, :t]}, [], []}}]}}, {{:optional, [], [:transcription]}, {{:., [], [ExOpenAI.Components.AudioTranscription, :t]}, [], []}}, {{:optional, [], [:turn_detection]}, {:%{}, [], [{{:optional, [], [:prefix_padding_ms]}, {:integer, [], []}}, {{:optional, [], [:silence_duration_ms]}, {:integer, [], []}}, {{:optional, [], [:threshold]}, {:number, [], []}}, {{:optional, [], [:type]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}}]}}, {{:optional, [], [:output]}, {:%{}, [], [{{:optional, [], [:format]}, {{:., [], [ExOpenAI.Components.RealtimeAudioFormats, :t]}, [], []}}, {{:optional, [], [:speed]}, {:number, [], []}}, {{:optional, [], [:voice]}, {{:., [], [ExOpenAI.Components.VoiceIdsShared, :t]}, [], []}}]}}]}`  
+  * `:audio` - **optional** - `%{ optional(:input) => %{ optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.t(), optional(:noise_reduction) => %{optional(:type) => ExOpenAI.Components.NoiseReductionType.t()}, optional(:transcription) => ExOpenAI.Components.AudioTranscriptionResponse.t(), optional(:turn_detection) => %{ optional(:prefix_padding_ms) => integer(), optional(:silence_duration_ms) => integer(), optional(:threshold) => number(), optional(:type) => String.t() } }, optional(:output) => %{ optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.t(), optional(:speed) => number(), optional(:voice) => ExOpenAI.Components.VoiceIdsShared.t() } }`
     Configuration for input and output audio for the session.
 
-  * `:expires_at` - **optional** - `integer()`  
+  * `:expires_at` - **optional** - `integer()`
     Expiration timestamp for the session, in seconds since epoch.
+    Format: `unixtime`
 
-  * `:id` - **optional** - `String.t()`  
+  * `:id` - **optional** - `String.t()`
     Unique identifier for the session that looks like `sess_1234567890abcdef`.
 
-  * `:include` - **optional** - `[:"item.input_audio_transcription.logprobs"]`  
+  * `:include` - **optional** - `list(:"item.input_audio_transcription.logprobs")`
     Additional fields to include in server outputs.
   - `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
 
-  * `:instructions` - **optional** - `String.t()`  
+  * `:instructions` - **optional** - `String.t()`
     The default system instructions (i.e. system message) prepended to model
   calls. This field allows the client to guide the model on desired
   responses. The model can be instructed on response content and format,
@@ -34,37 +35,37 @@ defmodule ExOpenAI.Components.RealtimeSessionCreateResponse do
   field is not set and are visible in the `session.created` event at the
   start of the session.
 
-  * `:max_output_tokens` - **optional** - `integer() | :inf`  
+  * `:max_output_tokens` - **optional** - `integer() | :inf`
     Maximum number of output tokens for a single assistant response,
   inclusive of tool calls. Provide an integer between 1 and 4096 to
   limit output tokens, or `inf` for the maximum available tokens for a
   given model. Defaults to `inf`.
 
-  * `:model` - **optional** - `String.t()`  
+  * `:model` - **optional** - `String.t()`
     The Realtime model used for this session.
 
-  * `:object` - **optional** - `String.t()`  
+  * `:object` - **optional** - `String.t()`
     The object type. Always `realtime.session`.
 
-  * `:output_modalities` - **optional** - `any()`  
+  * `:output_modalities` - **optional** - `any()`
     The set of modalities the model can respond with. To disable audio,
   set this to ["text"].
 
-  * `:tool_choice` - **optional** - `String.t()`  
+  * `:tool_choice` - **optional** - `String.t()`
     How the model chooses tools. Options are `auto`, `none`, `required`, or
   specify a function.
 
-  * `:tools` - **optional** - `[ExOpenAI.Components.RealtimeFunctionTool.t()]`  
+  * `:tools` - **optional** - `list(ExOpenAI.Components.RealtimeFunctionTool.t())`
     Tools (functions) available to the model.
 
-  * `:tracing` - **optional** - `:auto | {:%{}, [], [{{:optional, [], [:group_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:metadata]}, {:map, [], []}}, {{:optional, [], [:workflow_name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:tracing` - **optional** - `:auto | %{ optional(:group_id) => String.t(), optional(:metadata) => map(), optional(:workflow_name) => String.t() }`
     Configuration options for tracing. Set to null to disable tracing. Once
   tracing is enabled for a session, the configuration cannot be modified.
 
   `auto` will create a trace for the session with default values for the
   workflow name, group id, and metadata.
 
-  * `:turn_detection` - **optional** - `{:%{}, [], [{{:optional, [], [:prefix_padding_ms]}, {:integer, [], []}}, {{:optional, [], [:silence_duration_ms]}, {:integer, [], []}}, {{:optional, [], [:threshold]}, {:number, [], []}}, {{:optional, [], [:type]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:turn_detection` - **optional** - `%{ optional(:prefix_padding_ms) => integer(), optional(:silence_duration_ms) => integer(), optional(:threshold) => number(), optional(:type) => String.t() }`
     Configuration for turn detection. Can be set to `null` to turn off. Server
   VAD means that the model will detect the start and end of speech based on
   audio volume and respond at the end of user speech.
@@ -78,7 +79,7 @@ defmodule ExOpenAI.Components.RealtimeSessionCreateResponse do
                 optional(:noise_reduction) => %{
                   optional(:type) => ExOpenAI.Components.NoiseReductionType.t()
                 },
-                optional(:transcription) => ExOpenAI.Components.AudioTranscription.t(),
+                optional(:transcription) => ExOpenAI.Components.AudioTranscriptionResponse.t(),
                 optional(:turn_detection) => %{
                   optional(:prefix_padding_ms) => integer(),
                   optional(:silence_duration_ms) => integer(),
@@ -120,6 +121,55 @@ defmodule ExOpenAI.Components.RealtimeSessionCreateResponse do
             }
             | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:audio) => %{
+                optional(:input) => %{
+                  optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.input(),
+                  optional(:noise_reduction) => %{
+                    optional(:type) => ExOpenAI.Components.NoiseReductionType.input()
+                  },
+                  optional(:transcription) =>
+                    ExOpenAI.Components.AudioTranscriptionResponse.input(),
+                  optional(:turn_detection) => %{
+                    optional(:prefix_padding_ms) => integer(),
+                    optional(:silence_duration_ms) => integer(),
+                    optional(:threshold) => number(),
+                    optional(:type) => String.t()
+                  }
+                },
+                optional(:output) => %{
+                  optional(:format) => ExOpenAI.Components.RealtimeAudioFormats.input(),
+                  optional(:speed) => number(),
+                  optional(:voice) => ExOpenAI.Components.VoiceIdsShared.input()
+                }
+              },
+              optional(:expires_at) => integer(),
+              optional(:id) => String.t(),
+              optional(:include) => list(:"item.input_audio_transcription.logprobs" | String.t()),
+              optional(:instructions) => String.t(),
+              optional(:max_output_tokens) => integer() | :inf | String.t(),
+              optional(:model) => String.t(),
+              optional(:object) => String.t(),
+              optional(:output_modalities) => any(),
+              optional(:tool_choice) => String.t(),
+              optional(:tools) => list(ExOpenAI.Components.RealtimeFunctionTool.input()),
+              optional(:tracing) =>
+                (:auto | String.t())
+                | %{
+                    optional(:group_id) => String.t(),
+                    optional(:metadata) => map(),
+                    optional(:workflow_name) => String.t()
+                  },
+              optional(:turn_detection) => %{
+                optional(:prefix_padding_ms) => integer(),
+                optional(:silence_duration_ms) => integer(),
+                optional(:threshold) => number(),
+                optional(:type) => String.t()
+              }
+            }
   defstruct [
     :audio,
     :expires_at,

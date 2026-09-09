@@ -6,14 +6,14 @@ defmodule ExOpenAI.Components.ResponseCompletedEvent do
 
   ## Fields
 
-  * `:response` - **required** - `ExOpenAI.Components.Response.t()`  
+  * `:response` - **required** - `ExOpenAI.Components.Response.t()`
     Properties of the completed response.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number for this event.
 
-  * `:type` - **required** - `:"response.completed"`  
-    The type of the event. Always `response.completed`.  
+  * `:type` - **required** - `:"response.completed"`
+    The type of the event. Always `response.completed`.
     Allowed values: `"response.completed"`
   """
   @type t() :: %{
@@ -22,5 +22,13 @@ defmodule ExOpenAI.Components.ResponseCompletedEvent do
           sequence_number: integer(),
           type: :"response.completed"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:response) => ExOpenAI.Components.Response.input(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.completed" | String.t()
+            }
   defstruct [:response, :sequence_number, :type]
 end

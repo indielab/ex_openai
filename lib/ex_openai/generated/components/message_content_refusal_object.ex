@@ -8,10 +8,13 @@ defmodule ExOpenAI.Components.MessageContentRefusalObject do
 
   * `:refusal` - **required** - `String.t()`
 
-  * `:type` - **required** - `:refusal`  
-    Always `refusal`.  
+  * `:type` - **required** - `:refusal`
+    Always `refusal`.
     Allowed values: `"refusal"`
   """
   @type t() :: %{__struct__: __MODULE__, refusal: String.t(), type: :refusal}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t() | %{required(:refusal) => String.t(), required(:type) => :refusal | String.t()}
   defstruct [:refusal, :type]
 end

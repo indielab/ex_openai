@@ -10,8 +10,8 @@ defmodule ExOpenAI.Components.DeletedSkillResource do
 
   * `:id` - **required** - `String.t()`
 
-  * `:object` - **required** - `:"skill.deleted"`  
-    Allowed values: `"skill.deleted"`  
+  * `:object` - **required** - `:"skill.deleted"`
+    Allowed values: `"skill.deleted"`
     Default: `"skill.deleted"`
   """
   @type t() :: %{
@@ -20,5 +20,13 @@ defmodule ExOpenAI.Components.DeletedSkillResource do
           id: String.t(),
           object: :"skill.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"skill.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

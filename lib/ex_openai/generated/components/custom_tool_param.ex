@@ -2,29 +2,32 @@ defmodule ExOpenAI.Components.CustomToolParam do
   use ExOpenAI.Jason
 
   @moduledoc """
-  A custom tool that processes input using a specified format. Learn more about   [custom tools](/docs/guides/function-calling#custom-tools)
+  A custom tool that processes input using a specified format. Learn more about   [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
 
   ## Fields
 
-  * `:defer_loading` - **optional** - `boolean()`  
+  * `:allowed_callers` - **optional** - `list(ExOpenAI.Components.CallableToolAllowedCaller.t()) | nil`
+
+  * `:defer_loading` - **optional** - `boolean()`
     Whether this tool should be deferred and discovered via tool search.
 
-  * `:description` - **optional** - `String.t()`  
+  * `:description` - **optional** - `String.t()`
     Optional description of the custom tool, used to provide more context.
 
-  * `:format` - **optional** - `ExOpenAI.Components.CustomTextFormatParam.t() | ExOpenAI.Components.CustomGrammarFormatParam.t()`  
+  * `:format` - **optional** - `ExOpenAI.Components.CustomTextFormatParam.t() | ExOpenAI.Components.CustomGrammarFormatParam.t()`
     The input format for the custom tool. Default is unconstrained text.
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the custom tool, used to identify it in tool calls.
 
-  * `:type` - **required** - `:custom`  
-    The type of the custom tool. Always `custom`.  
-    Allowed values: `"custom"`  
+  * `:type` - **required** - `:custom`
+    The type of the custom tool. Always `custom`.
+    Allowed values: `"custom"`
     Default: `"custom"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
+          allowed_callers: (list(ExOpenAI.Components.CallableToolAllowedCaller.t()) | nil) | nil,
           defer_loading: boolean() | nil,
           description: String.t() | nil,
           format:
@@ -34,5 +37,19 @@ defmodule ExOpenAI.Components.CustomToolParam do
           name: String.t(),
           type: :custom
         }
-  defstruct [:defer_loading, :description, :format, :name, :type]
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:allowed_callers) =>
+                list(ExOpenAI.Components.CallableToolAllowedCaller.input()) | nil,
+              optional(:defer_loading) => boolean(),
+              optional(:description) => String.t(),
+              optional(:format) =>
+                ExOpenAI.Components.CustomTextFormatParam.input()
+                | ExOpenAI.Components.CustomGrammarFormatParam.input(),
+              required(:name) => String.t(),
+              required(:type) => :custom | String.t()
+            }
+  defstruct [:allowed_callers, :defer_loading, :description, :format, :name, :type]
 end

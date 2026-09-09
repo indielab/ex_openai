@@ -7,20 +7,20 @@ defmodule ExOpenAI.Components.ResponseMCPCallArgumentsDeltaEvent do
 
   ## Fields
 
-  * `:delta` - **required** - `String.t()`  
+  * `:delta` - **required** - `String.t()`
     A JSON string containing the partial update to the arguments for the MCP tool call.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The unique identifier of the MCP tool call item being processed.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item in the response's output array.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.mcp_call_arguments.delta"`  
-    The type of the event. Always 'response.mcp_call_arguments.delta'.  
+  * `:type` - **required** - `:"response.mcp_call_arguments.delta"`
+    The type of the event. Always 'response.mcp_call_arguments.delta'.
     Allowed values: `"response.mcp_call_arguments.delta"`
   """
   @type t() :: %{
@@ -31,5 +31,15 @@ defmodule ExOpenAI.Components.ResponseMCPCallArgumentsDeltaEvent do
           sequence_number: integer(),
           type: :"response.mcp_call_arguments.delta"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:delta) => String.t(),
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.mcp_call_arguments.delta" | String.t()
+            }
   defstruct [:delta, :item_id, :output_index, :sequence_number, :type]
 end

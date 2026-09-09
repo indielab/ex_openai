@@ -6,26 +6,26 @@ defmodule ExOpenAI.Components.ResponseTextDoneEvent do
 
   ## Fields
 
-  * `:content_index` - **required** - `integer()`  
+  * `:content_index` - **required** - `integer()`
     The index of the content part that the text content is finalized.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The ID of the output item that the text content is finalized.
 
-  * `:logprobs` - **required** - `[ExOpenAI.Components.ResponseLogProb.t()]`  
+  * `:logprobs` - **required** - `list(ExOpenAI.Components.ResponseLogProb.t())`
     The log probabilities of the tokens in the delta.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item that the text content is finalized.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number for this event.
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     The text content that is finalized.
 
-  * `:type` - **required** - `:"response.output_text.done"`  
-    The type of the event. Always `response.output_text.done`.  
+  * `:type` - **required** - `:"response.output_text.done"`
+    The type of the event. Always `response.output_text.done`.
     Allowed values: `"response.output_text.done"`
   """
   @type t() :: %{
@@ -38,5 +38,17 @@ defmodule ExOpenAI.Components.ResponseTextDoneEvent do
           text: String.t(),
           type: :"response.output_text.done"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content_index) => integer(),
+              required(:item_id) => String.t(),
+              required(:logprobs) => list(ExOpenAI.Components.ResponseLogProb.input()),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:text) => String.t(),
+              required(:type) => :"response.output_text.done" | String.t()
+            }
   defstruct [:content_index, :item_id, :logprobs, :output_index, :sequence_number, :text, :type]
 end

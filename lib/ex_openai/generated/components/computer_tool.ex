@@ -6,11 +6,13 @@ defmodule ExOpenAI.Components.ComputerTool do
 
   ## Fields
 
-  * `:type` - **required** - `:computer`  
-    The type of the computer tool. Always `computer`.  
-    Allowed values: `"computer"`  
+  * `:type` - **required** - `:computer`
+    The type of the computer tool. Always `computer`.
+    Allowed values: `"computer"`
     Default: `"computer"`
   """
   @type t() :: %{__struct__: __MODULE__, type: :computer}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:type) => :computer | String.t()}
   defstruct [:type]
 end

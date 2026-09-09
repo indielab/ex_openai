@@ -6,23 +6,23 @@ defmodule ExOpenAI.Components.ResponseReasoningSummaryTextDeltaEvent do
 
   ## Fields
 
-  * `:delta` - **required** - `String.t()`  
+  * `:delta` - **required** - `String.t()`
     The text delta that was added to the summary.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The ID of the item this summary text delta is associated with.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item this summary text delta is associated with.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:summary_index` - **required** - `integer()`  
+  * `:summary_index` - **required** - `integer()`
     The index of the summary part within the reasoning summary.
 
-  * `:type` - **required** - `:"response.reasoning_summary_text.delta"`  
-    The type of the event. Always `response.reasoning_summary_text.delta`.  
+  * `:type` - **required** - `:"response.reasoning_summary_text.delta"`
+    The type of the event. Always `response.reasoning_summary_text.delta`.
     Allowed values: `"response.reasoning_summary_text.delta"`
   """
   @type t() :: %{
@@ -34,5 +34,16 @@ defmodule ExOpenAI.Components.ResponseReasoningSummaryTextDeltaEvent do
           summary_index: integer(),
           type: :"response.reasoning_summary_text.delta"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:delta) => String.t(),
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:summary_index) => integer(),
+              required(:type) => :"response.reasoning_summary_text.delta" | String.t()
+            }
   defstruct [:delta, :item_id, :output_index, :sequence_number, :summary_index, :type]
 end

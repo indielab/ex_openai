@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.VideoSeconds do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema VideoSeconds.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.VideoSeconds do
   `"4"`, `"8"`, `"12"`
   """
   @type t() :: (:"4" | :"8") | :"12"
+  @type input() :: ((:"4" | :"8") | :"12") | String.t()
 end

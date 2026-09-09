@@ -6,15 +6,15 @@ defmodule ExOpenAI.Components.FunctionShellCallOutputContentParam do
 
   ## Fields
 
-  * `:outcome` - **required** - `ExOpenAI.Components.FunctionShellCallOutputOutcomeParam.t()`  
+  * `:outcome` - **required** - `ExOpenAI.Components.FunctionShellCallOutputOutcomeParam.t()`
     The exit or timeout outcome associated with this shell call.
 
-  * `:stderr` - **required** - `String.t()`  
-    Captured stderr output for the shell call.  
+  * `:stderr` - **required** - `String.t()`
+    Captured stderr output for the shell call.
     Constraints: maxLength: 10485760
 
-  * `:stdout` - **required** - `String.t()`  
-    Captured stdout output for the shell call.  
+  * `:stdout` - **required** - `String.t()`
+    Captured stdout output for the shell call.
     Constraints: maxLength: 10485760
   """
   @type t() :: %{
@@ -23,5 +23,14 @@ defmodule ExOpenAI.Components.FunctionShellCallOutputContentParam do
           stderr: String.t(),
           stdout: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:outcome) =>
+                ExOpenAI.Components.FunctionShellCallOutputOutcomeParam.input(),
+              required(:stderr) => String.t(),
+              required(:stdout) => String.t()
+            }
   defstruct [:outcome, :stderr, :stdout]
 end

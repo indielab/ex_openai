@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ComputerCallOutputStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ComputerCallOutputStatus.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ComputerCallOutputStatus do
   `"completed"`, `"incomplete"`, `"failed"`
   """
   @type t() :: (:completed | :incomplete) | :failed
+  @type input() :: ((:completed | :incomplete) | :failed) | String.t()
 end

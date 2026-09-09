@@ -1,12 +1,10 @@
 defmodule ExOpenAI.Components.TextResponseFormatConfiguration do
-  use ExOpenAI.Jason
-
   @moduledoc """
   An object specifying the format that the model must output.
 
-  Configuring `{ "type": "json_schema" }` enables Structured Outputs, 
-  which ensures the model will match your supplied JSON schema. Learn more in the 
-  [Structured Outputs guide](/docs/guides/structured-outputs).
+  Configuring `{ "type": "json_schema" }` enables Structured Outputs,
+  which ensures the model will match your supplied JSON schema. Learn more in the
+  [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
 
   The default format is `{ "type": "text" }` with no additional options.
 
@@ -25,4 +23,8 @@ defmodule ExOpenAI.Components.TextResponseFormatConfiguration do
           (ExOpenAI.Components.ResponseFormatText.t()
            | ExOpenAI.Components.TextResponseFormatJsonSchema.t())
           | ExOpenAI.Components.ResponseFormatJsonObject.t()
+  @type input() ::
+          (ExOpenAI.Components.ResponseFormatText.input()
+           | ExOpenAI.Components.TextResponseFormatJsonSchema.input())
+          | ExOpenAI.Components.ResponseFormatJsonObject.input()
 end

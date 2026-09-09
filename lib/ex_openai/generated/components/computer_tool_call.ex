@@ -3,7 +3,7 @@ defmodule ExOpenAI.Components.ComputerToolCall do
 
   @moduledoc """
   A tool call to a computer use tool. See the
-  [computer use guide](/docs/guides/tools-computer-use) for more information.
+  [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more information.
 
 
   ## Fields
@@ -12,23 +12,23 @@ defmodule ExOpenAI.Components.ComputerToolCall do
 
   * `:actions` - **optional** - `ExOpenAI.Components.ComputerActionList.t()`
 
-  * `:call_id` - **required** - `String.t()`  
+  * `:call_id` - **required** - `String.t()`
     An identifier used when responding to the tool call with output.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The unique ID of the computer call.
 
-  * `:pending_safety_checks` - **required** - `[ExOpenAI.Components.ComputerCallSafetyCheckParam.t()]`  
+  * `:pending_safety_checks` - **required** - `list(ExOpenAI.Components.ComputerCallSafetyCheckParam.t())`
     The pending safety checks for the computer call.
 
-  * `:status` - **required** - `:in_progress | :completed | :incomplete`  
+  * `:status` - **required** - `:in_progress | :completed | :incomplete`
     The status of the item. One of `in_progress`, `completed`, or
-  `incomplete`. Populated when items are returned via API.  
+  `incomplete`. Populated when items are returned via API.
     Allowed values: `"in_progress"`, `"completed"`, `"incomplete"`
 
-  * `:type` - **required** - `:computer_call`  
-    The type of the computer call. Always `computer_call`.  
-    Allowed values: `"computer_call"`  
+  * `:type` - **required** - `:computer_call`
+    The type of the computer call. Always `computer_call`.
+    Allowed values: `"computer_call"`
     Default: `"computer_call"`
   """
   @type t() :: %{
@@ -41,5 +41,18 @@ defmodule ExOpenAI.Components.ComputerToolCall do
           status: (:in_progress | :completed) | :incomplete,
           type: :computer_call
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:action) => ExOpenAI.Components.ComputerAction.input(),
+              optional(:actions) => ExOpenAI.Components.ComputerActionList.input(),
+              required(:call_id) => String.t(),
+              required(:id) => String.t(),
+              required(:pending_safety_checks) =>
+                list(ExOpenAI.Components.ComputerCallSafetyCheckParam.input()),
+              required(:status) => ((:in_progress | :completed) | :incomplete) | String.t(),
+              required(:type) => :computer_call | String.t()
+            }
   defstruct [:action, :actions, :call_id, :id, :pending_safety_checks, :status, :type]
 end

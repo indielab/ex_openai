@@ -6,17 +6,17 @@ defmodule ExOpenAI.Components.CreateVoiceRequest do
 
   ## Fields
 
-  * `:audio_sample` - **required** - `binary()`  
+  * `:audio_sample` - **required** - `binary()`
     The sample audio recording file. Maximum size is 10 MiB.
 
   Supported MIME types:
-  `audio/mpeg`, `audio/wav`, `audio/x-wav`, `audio/ogg`, `audio/aac`, `audio/flac`, `audio/webm`, `audio/mp4`.  
+  `audio/mpeg`, `audio/wav`, `audio/x-wav`, `audio/ogg`, `audio/aac`, `audio/flac`, `audio/webm`, `audio/mp4`.
     Format: `binary`
 
-  * `:consent` - **required** - `String.t()`  
+  * `:consent` - **required** - `String.t()`
     The consent recording ID (for example, `cons_1234`).
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the new voice.
   """
   @type t() :: %{
@@ -25,5 +25,13 @@ defmodule ExOpenAI.Components.CreateVoiceRequest do
           consent: String.t(),
           name: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:audio_sample) => binary() | {String.t(), binary()},
+              required(:consent) => String.t(),
+              required(:name) => String.t()
+            }
   defstruct [:audio_sample, :consent, :name]
 end

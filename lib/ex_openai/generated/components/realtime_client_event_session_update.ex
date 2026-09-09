@@ -15,16 +15,16 @@ defmodule ExOpenAI.Components.RealtimeClientEventSessionUpdate do
 
   ## Fields
 
-  * `:event_id` - **optional** - `String.t()`  
-    Optional client-generated ID used to identify this event. This is an arbitrary string that a client may assign. It will be passed back if there is an error with the event, but the corresponding `session.updated` event will not include it.  
+  * `:event_id` - **optional** - `String.t()`
+    Optional client-generated ID used to identify this event. This is an arbitrary string that a client may assign. It will be passed back if there is an error with the event, but the corresponding `session.updated` event will not include it.
     Constraints: maxLength: 512
 
-  * `:session` - **required** - `map()`  
+  * `:session` - **required** - `map()`
     Update the Realtime session. Choose either a realtime
   session or a transcription session.
 
-  * `:type` - **required** - `:"session.update"`  
-    The event type, must be `session.update`.  
+  * `:type` - **required** - `:"session.update"`
+    The event type, must be `session.update`.
     Allowed values: `"session.update"`
   """
   @type t() :: %{
@@ -33,5 +33,15 @@ defmodule ExOpenAI.Components.RealtimeClientEventSessionUpdate do
           session: map(),
           type: :"session.update"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:event_id) => String.t(),
+              required(:session) =>
+                ExOpenAI.Components.RealtimeSessionCreateRequestGA.input()
+                | ExOpenAI.Components.RealtimeTranscriptionSessionCreateRequestGA.input(),
+              required(:type) => :"session.update" | String.t()
+            }
   defstruct [:event_id, :session, :type]
 end

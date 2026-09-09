@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ChatSessionStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ChatSessionStatus.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ChatSessionStatus do
   `"active"`, `"expired"`, `"cancelled"`
   """
   @type t() :: (:active | :expired) | :cancelled
+  @type input() :: ((:active | :expired) | :cancelled) | String.t()
 end

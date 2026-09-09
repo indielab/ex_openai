@@ -1,266 +1,145 @@
-# Streaming Guide
+# Streaming
 
-ExOpenAI supports streaming responses from OpenAI's API, which is particularly useful for chat and completion endpoints. This guide explains how to use streaming effectively in your applications.
+Pass `stream: true` and `stream_to: callback_or_pid` to a supported endpoint.
+The call returns `{:ok, stream_ref}`, where `stream_ref` is a reference.
+Errors that occur before streaming begins return `{:error, reason}`.
 
-## Streaming Options
+The receiver gets `{:data, chunk}` for data, `{:error, reason}` for errors, and
+`:finish` when the stream completes successfully. A terminal error can end the
+stream without `:finish`.
 
-ExOpenAI provides two methods for handling streaming responses:
+## Assistants and speech events
 
-1. **Callback Function** - Pass a function that processes each chunk as it arrives
-2. **Streaming Client** - Create a dedicated process to handle the stream
+`Threads.create_thread_and_run/2`, `Threads.create_run/3`, and
+`Threads.submit_tool_ouputs_to_run/4` preserve the SSE event name in the callback:
 
-## Streaming with a Callback Function
+```elixir
+{:data, %{event: :"thread.message.delta", data: %ExOpenAI.Components.MessageDeltaObject{}}}
+```
 
-The simplest way to handle streaming is to pass a callback function to the `stream_to` parameter:
+The `data` field uses the component type for that event. Handle other events too,
+including run status changes and message completion. Unknown events retain their
+original payload, so receivers should include a catch-all clause.
+
+For `Audio.create_speech/4`, pass `stream: true`, `stream_format: :sse`, and
+`stream_to: callback_or_pid`. The format must be supplied explicitly because
+`stream: true` controls delivery to the receiver and does not change request
+format options. Callbacks receive `SpeechAudioDeltaEvent` and
+`SpeechAudioDoneEvent` structs. Without `stream: true`, speech returns buffered
+bytes, including the SSE text if `stream_format: :sse` was requested.
+
+## Chat callback
 
 ```elixir
 callback = fn
-  :finish -> IO.puts "Stream finished"
-  {:data, data} -> IO.puts "Received data: #{inspect(data)}"
-  {:error, err} -> IO.puts "Error: #{inspect(err)}"
+  {:data, %ExOpenAI.Components.CreateChatCompletionStreamResponse{} = chunk} ->
+    (chunk.choices || [])
+    |> Enum.map_join("", fn choice -> Map.get(choice.delta || %{}, :content) || "" end)
+    |> IO.write()
+
+  {:error, reason} ->
+    IO.inspect(reason, label: "Stream error")
+
+  :finish ->
+    IO.puts("\nDone")
 end
 
-ExOpenAI.Completions.create_completion(
-  "gpt-3.5-turbo-instruct", 
-  "Tell me a story about a robot", 
-  stream: true, 
+{:ok, stream_ref} = ExOpenAI.Chat.create_chat_completion(
+  [%{role: :user, content: "Write a short poem"}],
+  "gpt-4o-mini",
+  stream: true,
+  stream_to: callback
+)
+IO.inspect(stream_ref)
+```
+
+Chat chunks have atom keys. Some deltas contain only a role, tool-call fragment,
+or completion information, so `content` may be absent or `nil`.
+Legacy `ExOpenAI.Completions` streams use
+`ExOpenAI.Components.CreateCompletionResponse` chunks instead.
+
+## Responses events
+
+Responses streams preserve the event type and sequence number. The final
+`ResponseCompletedEvent` contains the completed response in its `response` field.
+
+```elixir
+callback = fn
+  {:data, %ExOpenAI.Components.ResponseTextDeltaEvent{delta: text}} ->
+    IO.write(text)
+
+  {:data, %ExOpenAI.Components.ResponseCompletedEvent{response: response}} ->
+    IO.inspect(response.id, label: "Response ID")
+
+  {:data, _event} ->
+    :ok
+
+  {:error, reason} ->
+    IO.inspect(reason, label: "Stream error")
+
+  :finish ->
+    IO.puts("\nDone")
+end
+
+{:ok, _ref} = ExOpenAI.Responses.create_response(
+  input: "Tell me a short story",
+  model: "gpt-4o-mini",
+  stream: true,
   stream_to: callback
 )
 ```
 
-The API call itself returns an async stream reference:
+## Collecting a reply in a process
+
+Callbacks execute in the HTTP stream helper process. Capture the caller's PID
+before creating a callback if it needs to send results back. Rebinding a variable
+inside a callback does not retain its value across invocations.
+
+A receiver process can accumulate text and notify its owner:
 
 ```elixir
-{:ok, stream_ref} =
-  ExOpenAI.Completions.create_completion(
-    "gpt-3.5-turbo-instruct",
-    "Tell me a story about a robot",
-    stream: true,
-    stream_to: callback
-  )
-```
-
-The callback function will be called with:
-- `{:data, data}` for each chunk of data received
-- `{:error, error}` if an error occurs
-- `:finish` when the stream completes
-
-## Streaming with a Dedicated Process
-
-For more complex applications, you can create a dedicated process to handle the stream:
-
-1. First, create a module that implements the `ExOpenAI.StreamingClient` behaviour:
-
-```elixir
-defmodule MyStreamingClient do
+defmodule ChatCollector do
   use ExOpenAI.StreamingClient
 
   @impl true
-  def handle_data(data, state) do
-    IO.puts("Received data: #{inspect(data)}")
-    # Process the data chunk
-    {:noreply, state}
+  def handle_data(%ExOpenAI.Components.CreateChatCompletionStreamResponse{} = chunk, state) do
+    text = Enum.map_join(chunk.choices || [], "", fn choice ->
+      Map.get(choice.delta || %{}, :content) || ""
+    end)
+    {:noreply, %{state | text: state.text <> text}}
   end
 
   @impl true
-  def handle_error(error, state) do
-    IO.puts("Error: #{inspect(error)}")
-    # Handle the error
+  def handle_error(reason, state) do
+    send(state.owner, {:chat_error, reason})
     {:noreply, state}
   end
 
   @impl true
   def handle_finish(state) do
-    IO.puts("Stream finished")
-    # Clean up or finalize processing
+    send(state.owner, {:chat_finished, state.text})
     {:noreply, state}
   end
 end
-```
 
-2. Then, start the client and pass its PID to the API call:
-
-```elixir
-{:ok, pid} = MyStreamingClient.start_link(initial_state)
-
-{:ok, stream_ref} =
-  ExOpenAI.Chat.create_chat_completion(
-    messages,
-    "gpt-4",
-    stream: true,
-    stream_to: pid
-  )
-```
-
-## Example: Building a Chat Interface
-
-Here's a more complete example of using streaming to build a simple chat interface:
-
-```elixir
-defmodule ChatInterface do
-  use ExOpenAI.StreamingClient
-
-  def start_chat(initial_prompt) do
-    {:ok, pid} = __MODULE__.start_link(%{buffer: "", complete_message: ""})
-    
-    messages = [
-      %ExOpenAI.Components.ChatCompletionRequestUserMessage{
-        role: :user, 
-        content: initial_prompt
-      }
-    ]
-    
-    ExOpenAI.Chat.create_chat_completion(
-      messages,
-      "gpt-4",
-      stream: true,
-      stream_to: pid
-    )
-    
-    pid
-  end
-  
-  @impl true
-  def handle_data(data, state) do
-    # Extract the content from the delta if it exists
-    content = case data do
-      %{choices: [%{"delta" => %{"content" => content}}]} when is_binary(content) -> 
-        content
-      _ -> 
-        ""
-    end
-    
-    # Update the buffer and print the new content
-    if content != "" do
-      IO.write(content)
-      {:noreply, %{state | buffer: state.buffer <> content, complete_message: state.complete_message <> content}}
-    else
-      {:noreply, state}
-    end
-  end
-  
-  @impl true
-  def handle_error(error, state) do
-    IO.puts("\nError: #{inspect(error)}")
-    {:noreply, state}
-  end
-  
-  @impl true
-  def handle_finish(state) do
-    IO.puts("\n\nChat response complete.")
-    # The complete message is now available in state.complete_message
-    {:noreply, state}
-  end
-  
-  # Function to get the complete message after streaming is done
-  def get_complete_message(pid) do
-    :sys.get_state(pid).complete_message
-  end
-end
-```
-
-Usage:
-
-```elixir
-# Start a chat
-pid = ChatInterface.start_chat("Tell me about quantum computing")
-
-# After the stream completes, get the full message
-complete_response = ChatInterface.get_complete_message(pid)
-```
-
-## Streaming with Different Endpoints
-
-Most OpenAI endpoints that support streaming work in a similar way, but the structure of the streamed data may differ:
-
-### Chat Completions
-
-```elixir
-ExOpenAI.Chat.create_chat_completion(
-  messages,
-  "gpt-4",
+{:ok, receiver} = ChatCollector.start_link(%{owner: self(), text: ""})
+{:ok, _ref} = ExOpenAI.Chat.create_chat_completion(
+  [%{role: :user, content: "Say hello"}],
+  "gpt-4o-mini",
   stream: true,
-  stream_to: callback_or_pid
+  stream_to: receiver
 )
-```
 
-The streamed data will contain delta updates to the assistant's message.
-
-### Text Completions
-
-```elixir
-ExOpenAI.Completions.create_completion(
-  "gpt-3.5-turbo-instruct",
-  prompt,
-  stream: true,
-  stream_to: callback_or_pid
-)
-```
-
-The streamed data will contain text fragments.
-
-## Caveats and Limitations
-
-- Type information for streamed data is not always accurate in the current version
-- Streaming API calls return an async reference, while streamed callback/process payloads are atomized maps rather than typed structs
-- Streaming increases the total number of tokens used slightly compared to non-streaming requests
-- Error handling in streaming contexts requires special attention
-- Streaming chunks are returned with atomized keys but without full struct typing; deltas are not accumulated into a final typed struct yet.
-
-## IEx example (chat chunks)
-
-```elixir
-callback = fn
-  :finish -> IO.puts("Stream finished")
-  {:data, data} -> IO.inspect(data, label: "chunk")
-  {:error, err} -> IO.inspect(err, label: "error")
+receive do
+  {:chat_finished, text} -> IO.puts(text)
+  {:chat_error, reason} -> IO.inspect(reason)
+after
+  60_000 -> IO.puts("Timed out waiting for the reply")
 end
 
-msgs = [
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{role: :user, content: "Hello!"},
-  %ExOpenAI.Components.ChatCompletionRequestAssistantMessage{role: :assistant, content: "What's up?"},
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{role: :user, content: "What is the color of the sky?"}
-]
-
-{:ok, _ref} =
-  ExOpenAI.Chat.create_chat_completion(
-    msgs,
-    "gpt-3.5-turbo",
-    logit_bias: %{"8043" => -100},
-    stream: true,
-    stream_to: callback
-  )
+GenServer.stop(receiver)
 ```
 
-Sample output (truncated):
-
-```
-chunk: %{
-  id: "chatcmpl-…",
-  model: "gpt-3.5-turbo-0125",
-  created: 1764240033,
-  object: "chat.completion.chunk",
-  choices: [
-    %{index: 0, logprobs: nil, delta: %{role: "assistant", content: ""}, finish_reason: nil}
-  ],
-  service_tier: "default",
-  system_fingerprint: nil
-}
-chunk: %{
-  id: "chatcmpl-…",
-  model: "gpt-3.5-turbo-0125",
-  choices: [
-    %{index: 0, delta: %{content: "The color"}, finish_reason: nil}
-  ],
-  …
-}
-… (more chunks) …
-```
-
-## Best Practices
-
-1. **Buffer Management**: Always maintain a buffer to reconstruct the complete response
-2. **Error Handling**: Implement robust error handling in your streaming clients
-3. **Timeouts**: Consider implementing timeouts for long-running streams
-4. **Testing**: Test your streaming code with both short and very long responses
-5. **State Management**: Design your streaming client's state to handle all the information you need
+The HTTP helper stops when the request ends. A receiver created with
+`use ExOpenAI.StreamingClient` remains under the application's control, so it can
+retain results or handle subsequent requests. Stop it when it is no longer needed.

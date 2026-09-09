@@ -1,570 +1,214 @@
-# ExOpenAI Usage Examples
+# Usage examples
 
-This document provides practical examples of using ExOpenAI for various common tasks.
+These examples use the configured API key. Handle `{:error, reason}` in application
+code; the matches below keep each example focused on the successful response.
 
-## Table of Contents
-
-- [Chat Completions](#chat-completions)
-- [Assistants API](#assistants-api)
-- [Image Generation](#image-generation)
-- [Audio Processing](#audio-processing)
-- [Embeddings](#embeddings)
-- [File Management](#file-management)
-- [Responses API](#responses-api)
-- [Streaming Examples](#streaming-examples)
-
-## Chat Completions
-
-### Basic Chat Completion
+## Chat completions
 
 ```elixir
 messages = [
+  %ExOpenAI.Components.ChatCompletionRequestSystemMessage{
+    role: :system,
+    content: "You are a concise assistant."
+  },
   %ExOpenAI.Components.ChatCompletionRequestUserMessage{
     role: :user,
     content: "What is the capital of France?"
   }
 ]
 
-{:ok, response} = ExOpenAI.Chat.create_chat_completion(messages, "gpt-4")
-
-# Extract the assistant's response
-assistant_message = response.choices |> List.first() |> Map.get("message") |> Map.get("content")
-IO.puts("Assistant: #{assistant_message}")
+{:ok, response} = ExOpenAI.Chat.create_chat_completion(messages, "gpt-4o-mini")
+IO.puts(List.first(response.choices).message.content)
 ```
 
-### Multi-turn Conversation
+Atom-keyed maps are also accepted:
 
 ```elixir
-messages = [
-  %ExOpenAI.Components.ChatCompletionRequestSystemMessage{
-    role: :system,
-    content: "You are a helpful assistant that speaks like a pirate."
-  },
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{
-    role: :user,
-    content: "Tell me about the weather today."
-  },
-  %ExOpenAI.Components.ChatCompletionRequestAssistantMessage{
-    role: :assistant,
-    content: "Arr matey! The skies be clear and the winds be favorable today!"
-  },
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{
-    role: :user,
-    content: "What should I wear?"
-  }
-]
-
-{:ok, response} = ExOpenAI.Chat.create_chat_completion(messages, "gpt-4")
+{:ok, response} = ExOpenAI.Chat.create_chat_completion(
+  [%{role: "user", content: "Hello"}],
+  "gpt-4o-mini"
+)
+IO.inspect(response.choices)
 ```
 
-### Using Function Calling
+### Function tools
 
 ```elixir
-messages = [
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{
-    role: :user,
-    content: "What's the weather like in San Francisco?"
-  }
-]
-
+messages = [%{role: "user", content: "What's the weather in Tokyo?"}]
 tools = [
   %{
     type: "function",
     function: %{
       name: "get_weather",
-      description: "Get the current weather in a given location",
+      description: "Get the weather in a city",
       parameters: %{
         type: "object",
-        properties: %{
-          location: %{
-            type: "string",
-            description: "The city and state, e.g. San Francisco, CA"
-          },
-          unit: %{
-            type: "string",
-            enum: ["celsius", "fahrenheit"],
-            description: "The temperature unit to use"
-          }
-        },
-        required: ["location"]
+        properties: %{city: %{type: "string"}},
+        required: ["city"]
       }
     }
   }
 ]
 
-{:ok, response} =
-  ExOpenAI.Chat.create_chat_completion(
-    messages,
-    "gpt-4",
-    tools: tools,
-    tool_choice: "auto"
-  )
+{:ok, response} = ExOpenAI.Chat.create_chat_completion(messages, "gpt-4o-mini", tools: tools)
+message = List.first(response.choices).message
 
-# Handle the function call
-case response.choices |> List.first() |> Map.get(:message) do
-  %{:tool_calls => tool_calls} ->
-    # Process tool calls
-    Enum.each(tool_calls, fn tool_call ->
-      IO.puts("Tool call: #{inspect(tool_call)}")
-
-      function_name = tool_call.function.name
-      arguments = Jason.decode!(tool_call.function.arguments)
-
-      IO.puts("function arguments: #{inspect(arguments)}")
-
-      # Call your actual function
-      weather_data = %{"weather" => "its very very very hot"}
-
-      # Add the function response to messages
-      updated_messages =
-        messages ++
-          [
-            %ExOpenAI.Components.ChatCompletionRequestAssistantMessage{
-              role: :assistant,
-              tool_calls: tool_calls
-            },
-            %ExOpenAI.Components.ChatCompletionRequestToolMessage{
-              role: :tool,
-              tool_call_id: tool_call.id,
-              content: Jason.encode!(weather_data)
-            }
-          ]
-
-      # Get the final response
-      {:ok, final_response} =
-        ExOpenAI.Chat.create_chat_completion(
-          updated_messages,
-          "gpt-4"
-        )
-
-      IO.puts(
-        "Final response: #{final_response.choices |> List.first() |> Map.get(:message) |> Map.get(:content)}"
-      )
+case Map.get(message, :tool_calls) do
+  calls when is_list(calls) and calls != [] ->
+    Enum.each(calls, fn call ->
+      IO.inspect({call.function.name, Jason.decode!(call.function.arguments)})
     end)
 
-  e ->
-    # Regular message response
-    IO.inspect(e)
-
-    IO.puts(
-      "Response: #{response.choices |> List.first() |> Map.get(:message) |> Map.get(:content)}"
-    )
+  _ ->
+    IO.puts(message.content || "")
 end
 ```
 
-## Assistants API
+Execute only functions your application supports. Return each result as a message
+with `role: "tool"`, its `tool_call_id`, and a string `content`, then send the
+updated conversation to `create_chat_completion/3`.
 
-### Creating and Using an Assistant
+## Responses
 
 ```elixir
-# Create an assistant
-IO.puts("Creating assistant")
+{:ok, response} = ExOpenAI.Responses.create_response(
+  input: "Tell me a joke about programming",
+  model: "gpt-4o-mini"
+)
 
-{:ok, assistant} =
-  ExOpenAI.Assistants.create_assistant(
-    :"gpt-4o",
-    name: "Research Assistant",
-    instructions: "You help users with research questions. Be thorough and cite sources.",
-    tools: [%{type: "file_search"}]
-  )
+{:ok, follow_up} = ExOpenAI.Responses.create_response(
+  input: "Explain why that joke is funny",
+  model: "gpt-4o-mini",
+  previous_response_id: response.id
+)
 
-# Create a thread
-IO.puts("Creating thread")
+for %{type: :message, content: parts} <- follow_up.output,
+    %{type: :output_text, text: text} <- parts do
+  IO.puts(text)
+end
+```
+
+### Built-in tools
+
+```elixir
+{:ok, response} = ExOpenAI.Responses.create_response(
+  input: "Find recent news about Elixir",
+  model: "gpt-4o-mini",
+  tools: [%{type: "web_search_preview"}]
+)
+IO.inspect(response.output)
+```
+
+### Conversations
+
+```elixir
+{:ok, conversation} = ExOpenAI.Conversations.create_conversation()
+
+{:ok, items} = ExOpenAI.Conversations.create_conversation_items(
+  conversation.id,
+  [%{type: "message", role: "user", content: "Hello"}]
+)
+IO.inspect(items)
+```
+
+## Assistants and threads
+
+```elixir
+{:ok, assistant} = ExOpenAI.Assistants.create_assistant(
+  "gpt-4o-mini",
+  name: "Research assistant",
+  tools: [%{type: "file_search"}]
+)
 {:ok, thread} = ExOpenAI.Threads.create_thread()
+{:ok, _message} = ExOpenAI.Threads.create_message("Explain quantum computing", :user, thread.id)
+{:ok, run} = ExOpenAI.Threads.create_run(assistant.id, thread.id)
+{:ok, current} = ExOpenAI.Threads.get_run(run.id, thread.id)
 
-# Add a message to the thread
-IO.puts("Creating message")
+case current.status do
+  :completed ->
+    {:ok, messages} = ExOpenAI.Threads.list_messages(thread.id)
+    IO.inspect(messages.data)
 
-{:ok, message} =
-  ExOpenAI.Threads.create_message(
-    thread.id,
-    "Can you explain the basics of quantum computing?",
-    "user"
-  )
-
-# Run the assistant on the thread
-IO.puts("Running assistant #{inspect(assistant.id)} with thread #{inspect(thread.id)}")
-
-{:ok, run} =
-  ExOpenAI.Threads.create_run(
-    thread.id,
-    assistant.id
-  )
-
-# Poll for completion
-check_run_status = fn run_id, thread_id ->
-  {:ok, run_status} = ExOpenAI.Threads.get_run(thread_id, run_id)
-  run_status.status
+  status ->
+    IO.inspect(status, label: "Run status")
 end
-
-# Wait for completion (in a real app, use a better polling mechanism)
-run_id = run.id
-thread_id = thread.id
-
-# simple loop to wait until status is no longer in_progress
-wait_for_completion = fn wait_func, run_id, thread_id ->
-  case check_run_status.(run_id, thread_id) do
-    "completed" ->
-      # Get the messages
-      {:ok, messages} = ExOpenAI.Threads.list_messages(thread_id)
-      latest_message = messages.data |> List.first()
-
-      IO.puts(
-        "Assistant response: #{latest_message.content |> List.first() |> Map.get("text")}"
-      )
-
-      IO.inspect(latest_message)
-
-    "failed" ->
-      IO.puts("Run failed")
-
-    "queued" ->
-      IO.puts("Run is queued... ")
-      Process.sleep(2000)
-      wait_func.(wait_func, run_id, thread_id)
-
-    "in_progress" ->
-      IO.puts("Run is still in progress, waiting 2s")
-      Process.sleep(2000)
-      wait_func.(wait_func, run_id, thread_id)
-
-    "requires_action" ->
-      # Handle tool calls if needed
-      {:ok, run_details} = ExOpenAI.Threads.get_run(thread_id, run_id)
-
-      # tool_outputs =
-      #   process_tool_calls(run_details.required_action.submit_tool_outputs.tool_calls)
-
-      {:ok, _updated_run} =
-        ExOpenAI.Threads.submit_tool_ouputs_to_run(
-          thread_id,
-          run_id,
-          %{}
-          # tool_outputs
-        )
-
-    status ->
-      IO.puts("Run is still in progress: #{status}")
-  end
-end
-
-wait_for_completion.(wait_for_completion, run_id, thread_id)
 ```
 
-## Image Generation
+Poll `get_run/3` while the status is `:queued` or `:in_progress`. Handle
+`:requires_action`, failure, and cancellation in the application before assuming
+a result is available.
 
-### Generate an Image
+## Images
 
 ```elixir
-{:ok, response} = ExOpenAI.Images.create_image(
-  "A serene lake surrounded by mountains at sunset",
-  n: 1,
-  size: "1024x1024"
-)
-
-# Get the image URL
-image_url = response.data |> List.first() |> IO.inspect
+{:ok, response} = ExOpenAI.Images.create_image("A mountain lake at sunset", n: 1)
+IO.inspect(response.data)
 ```
 
-### Edit an Image
+Image edits use multipart uploads. Pass a binary, a filename/content tuple, or a
+list of uploads for the image argument. The mask is a keyword option.
 
 ```elixir
-# Read the image and mask files
-image_data = File.read!("path/to/image.png")
-mask_data = File.read!("path/to/mask.png")
-
-{:ok, response} = ExOpenAI.Images.create_image_edit(
-  image_data,
-  mask_data,
-  "Replace the masked area with a cat",
-  n: 1,
-  size: "1024x1024"
-)
-
-# Get the edited image URL
-edited_image_url = response.data |> List.first() |> IO.inspect
+image = {"image.png", File.read!("path/to/image.png")}
+mask = {"mask.png", File.read!("path/to/mask.png")}
+{:ok, edited} = ExOpenAI.Images.create_image_edit(image, "Add a cat", mask: mask, n: 1)
+IO.inspect(edited.data)
 ```
 
-### Create Image Variations
-
 ```elixir
-image_data = File.read!("path/to/image.png")
-
-{:ok, response} = ExOpenAI.Images.create_image_variation(
-  image_data,
-  n: 3,
-  size: "1024x1024"
+{:ok, variations} = ExOpenAI.Images.create_image_variation(
+  {"image.png", File.read!("path/to/image.png")},
+  n: 2
 )
-
-# Get all variation URLs
-IO.inspect(response)
+IO.inspect(variations.data)
 ```
 
-## Audio Processing
-
-### Transcribe Audio
+## Audio
 
 ```elixir
-audio_data = File.read!("path/to/audio.mp3")
-
-{:ok, transcription} = ExOpenAI.Audio.create_transcription(
-  {"audio.mp3", audio_data},
-  "whisper-1"
-)
-
-IO.inspect(transcription)
+audio = {"audio.mp3", File.read!("path/to/audio.mp3")}
+{:ok, transcription} = ExOpenAI.Audio.create_transcription(audio, "whisper-1")
+{:ok, translation} = ExOpenAI.Audio.create_translation(audio, "whisper-1")
+IO.inspect({transcription, translation})
 ```
 
-### Translate Audio
+With `response_format: :text`, `:srt`, or `:vtt`, transcription and translation
+return the response text as a binary. JSON formats return generated structs.
 
 ```elixir
-audio_data = File.read!("path/to/french_audio.mp3")
-
-{:ok, translation} = ExOpenAI.Audio.create_translation(
-  {"french_audio.mp3", audio_data},
-  "whisper-1"
-)
-
-IO.inspect(translation)
-```
-
-### Generate Speech
-
-```elixir
-{:ok, speech_data} = ExOpenAI.Audio.create_speech(
-  "Hello world! This is a test of the text-to-speech API.",
-  "tts-1",
-  :alloy,
-  response_format: "mp3"
-)
-
-IO.inspect(speech_data)
-
-# Save the audio file
-File.write!("output.mp3", speech_data)
+{:ok, audio} = ExOpenAI.Audio.create_speech("Hello world", "tts-1", :alloy, response_format: "mp3")
+File.write!("output.mp3", audio)
 ```
 
 ## Embeddings
 
-### Create Embeddings for Text
-
 ```elixir
 {:ok, response} = ExOpenAI.Embeddings.create_embedding(
-  "The food was delicious and the service was excellent.",
-  "text-embedding-ada-002"
+  ["The food was delicious", "The service was excellent"],
+  "text-embedding-3-small"
 )
-
-# Get the embedding vector
-embedding_vector = response.data |> List.first() |> IO.inspect
+IO.inspect(Enum.map(response.data, & &1.embedding))
 ```
 
-### Create Embeddings for Multiple Texts
+## Files
 
 ```elixir
-texts = [
-  "The food was delicious and the service was excellent.",
-  "The restaurant was too noisy and the food was mediocre.",
-  "I would definitely recommend this place to my friends."
-]
-
-{:ok, response} = ExOpenAI.Embeddings.create_embedding(
-  texts,
-  "text-embedding-ada-002"
-)
-
-# Get all embedding vectors
-IO.inspect(response)
-```
-
-## File Management
-
-### Upload a File
-
-```elixir
-file_content = File.read!("path/to/data.jsonl")
-
 {:ok, file} = ExOpenAI.Files.create_file(
-  file_content,
-  "fine-tune"
+  {"data.jsonl", File.read!("path/to/data.jsonl")},
+  :batch,
+  expires_after: %{anchor: :created_at, seconds: 3600}
 )
-
-IO.puts("File ID: #{file.id}")
+{:ok, files} = ExOpenAI.Files.list_files(limit: 10)
+Enum.each(files.data, fn item -> IO.puts("#{item.id}: #{item.filename}") end)
+{:ok, content} = ExOpenAI.Files.download_file(file.id)
+IO.inspect(content)
+{:ok, deleted} = ExOpenAI.Files.delete_file(file.id)
+IO.inspect(deleted.deleted)
 ```
 
-### List Files
+File downloads preserve the exact response bytes, including JSON files.
 
-```elixir
-{:ok, files} = ExOpenAI.Files.list_files()
+## Streaming
 
-Enum.each(files.data, fn file ->
-  IO.puts("File ID: #{file["id"]}, Filename: #{file["filename"]}, Purpose: #{file["purpose"]}")
-end)
-```
-
-### Retrieve File Content
-
-```elixir
-{:ok, content} = ExOpenAI.Files.download_file(file_id)
-```
-
-### Delete a File
-
-```elixir
-{:ok, result} = ExOpenAI.Files.delete_file(file_id)
-IO.puts("File deleted: #{result.deleted}")
-```
-
-## Responses API
-
-### Create a Response
-
-```elixir
-{:ok, response} = ExOpenAI.Responses.create_response(
-  "Tell me a joke about programming",
-  "gpt-4o-mini"
-)
-
-# Get the assistant's message
-output = List.first(response.output)
-content = output.content |> List.first() |> Map.get(:text)
-IO.puts("Assistant's response: #{content}")
-```
-
-### Continue a Conversation
-
-```elixir
-# Initial response
-{:ok, response} = ExOpenAI.Responses.create_response(
-  "Tell me a joke about programming",
-  "gpt-4o-mini"
-)
-
-# Continue the conversation
-{:ok, follow_up} = ExOpenAI.Responses.create_response(
-  "Explain why that joke is funny",
-  "gpt-4o-mini",
-  previous_response_id: response.id
-)
-
-# Get the follow-up response
-follow_up_content = follow_up.output
-  |> List.first()
-  |> Map.get(:content)
-  |> List.first()
-  |> Map.get(:text)
-
-IO.puts("Follow-up response: #{follow_up_content}")
-```
-
-## Streaming Examples
-
-### Streaming Chat Completion
-
-```elixir
-defmodule ChatStreamer do
-  use ExOpenAI.StreamingClient
-
-  def start(messages, model) do
-    {:ok, pid} = __MODULE__.start_link(%{text: ""})
-
-    ExOpenAI.Chat.create_chat_completion(
-      messages,
-      model,
-      stream: true,
-      stream_to: pid
-    )
-
-    pid
-  end
-
-  @impl true
-  def handle_data(data, state) do
-    content = case data do
-      %{choices: [%{"delta" => %{"content" => content}}]} when is_binary(content) ->
-        content
-      _ ->
-        ""
-    end
-
-    if content != "" do
-      IO.write(content)
-      {:noreply, %{state | text: state.text <> content}}
-    else
-      {:noreply, state}
-    end
-  end
-
-  @impl true
-  def handle_error(error, state) do
-    IO.puts("\nError: #{inspect(error)}")
-    {:noreply, state}
-  end
-
-  @impl true
-  def handle_finish(state) do
-    IO.puts("\n\nDone!")
-    {:noreply, state}
-  end
-
-  def get_full_text(pid) do
-    :sys.get_state(pid).text
-  end
-end
-
-# Usage
-messages = [
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{
-    role: :user,
-    content: "Write a short poem about coding"
-  }
-]
-
-pid = ChatStreamer.start(messages, "gpt-4")
-
-# After streaming completes
-full_text = ChatStreamer.get_full_text(pid)
-```
-
-### Streaming with a Callback Function
-
-```elixir
-buffer = ""
-ref = make_ref()
-
-callback = fn
-  :finish ->
-    send(self(), {:stream_finished, ref, buffer})
-
-  {:data, data} ->
-    content = case data do
-      %{choices: [%{"delta" => %{"content" => content}}]} when is_binary(content) ->
-        content
-      _ ->
-        ""
-    end
-
-    if content != "" do
-      IO.write(content)
-      buffer = buffer <> content
-    end
-
-  {:error, err} ->
-    IO.puts("\nError: #{inspect(err)}")
-end
-
-messages = [
-  %ExOpenAI.Components.ChatCompletionRequestUserMessage{
-    role: :user,
-    content: "Explain quantum computing briefly"
-  }
-]
-
-ExOpenAI.Chat.create_chat_completion(
-  messages,
-  "gpt-4",
-  stream: true,
-  stream_to: callback
-)
-
-# In a real application, you would wait for the {:stream_finished, ref, buffer} message
-```
+See the [streaming guide](streaming.md) for typed chat callbacks, Responses events,
+and a process that collects a complete reply.

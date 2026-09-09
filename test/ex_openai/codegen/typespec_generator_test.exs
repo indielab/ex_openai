@@ -1,8 +1,8 @@
 defmodule ExOpenAI.Codegen.TypespecGeneratorTest do
   use ExUnit.Case
 
-  alias ExOpenAI.Codegen.TypespecGenerator
   alias ExOpenAI.Codegen.DocsParser.Schema
+  alias ExOpenAI.Codegen.TypespecGenerator
 
   # Helper to compare AST
   defp assert_ast_equal(actual_ast, expected_ast) do

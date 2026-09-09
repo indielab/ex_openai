@@ -96,7 +96,7 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
         |> Enum.filter(fn {_k, v} -> not is_nil(v) end)
 
       query_string =
-        if length(query_params) > 0 do
+        if query_params != [] do
           URI.encode_www_form(query_params)
         else
           ""
@@ -144,14 +144,9 @@ defmodule ExOpenAI.Codegen.FunctionBodyGenerator do
   end
 
   # Determine content type from request body
-  def determine_content_type(%Operation{request_body: nil}) do
-    :"application/json"
-  end
-
   def determine_content_type(%Operation{request_body: request_body}) do
-    case request_body.content do
-      %{"multipart/form-data" => _} -> :"multipart/form-data"
-      _ -> :"application/json"
-    end
+    request_body
+    |> ExOpenAI.Codegen.SchemaResolver.request_content_type()
+    |> String.to_atom()
   end
 end

@@ -6,14 +6,14 @@ defmodule ExOpenAI.Components.RunToolCallObject do
 
   ## Fields
 
-  * `:function` - **required** - `{:%{}, [], [{{:required, [], [:arguments]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:function` - **required** - `%{required(:arguments) => String.t(), required(:name) => String.t()}`
     The function definition.
 
-  * `:id` - **required** - `String.t()`  
-    The ID of the tool call. This ID must be referenced when you submit the tool outputs in using the [Submit tool outputs to run](/docs/api-reference/runs/submitToolOutputs) endpoint.
+  * `:id` - **required** - `String.t()`
+    The ID of the tool call. This ID must be referenced when you submit the tool outputs in using the [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) endpoint.
 
-  * `:type` - **required** - `:function`  
-    The type of tool call the output is required for. For now, this is always `function`.  
+  * `:type` - **required** - `:function`
+    The type of tool call the output is required for. For now, this is always `function`.
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -22,5 +22,16 @@ defmodule ExOpenAI.Components.RunToolCallObject do
           id: String.t(),
           type: :function
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:function) => %{
+                required(:arguments) => String.t(),
+                required(:name) => String.t()
+              },
+              required(:id) => String.t(),
+              required(:type) => :function | String.t()
+            }
   defstruct [:function, :id, :type]
 end

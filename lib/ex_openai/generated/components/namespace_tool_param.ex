@@ -6,21 +6,21 @@ defmodule ExOpenAI.Components.NamespaceToolParam do
 
   ## Fields
 
-  * `:description` - **required** - `String.t()`  
-    A description of the namespace shown to the model.  
+  * `:description` - **required** - `String.t()`
+    A description of the namespace shown to the model.
     Constraints: minLength: 1
 
-  * `:name` - **required** - `String.t()`  
-    The namespace name used in tool calls (for example, `crm`).  
+  * `:name` - **required** - `String.t()`
+    The namespace name used in tool calls (for example, `crm`).
     Constraints: minLength: 1
 
-  * `:tools` - **required** - `[ExOpenAI.Components.FunctionToolParam.t() | ExOpenAI.Components.CustomToolParam.t()]`  
-    The function/custom tools available inside this namespace.  
+  * `:tools` - **required** - `list(ExOpenAI.Components.FunctionToolParam.t() | ExOpenAI.Components.CustomToolParam.t())`
+    The function/custom tools available inside this namespace.
     Constraints: minItems: 1
 
-  * `:type` - **required** - `:namespace`  
-    The type of the tool. Always `namespace`.  
-    Allowed values: `"namespace"`  
+  * `:type` - **required** - `:namespace`
+    The type of the tool. Always `namespace`.
+    Allowed values: `"namespace"`
     Default: `"namespace"`
   """
   @type t() :: %{
@@ -34,5 +34,18 @@ defmodule ExOpenAI.Components.NamespaceToolParam do
             ),
           type: :namespace
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:description) => String.t(),
+              required(:name) => String.t(),
+              required(:tools) =>
+                list(
+                  ExOpenAI.Components.FunctionToolParam.input()
+                  | ExOpenAI.Components.CustomToolParam.input()
+                ),
+              required(:type) => :namespace | String.t()
+            }
   defstruct [:description, :name, :tools, :type]
 end

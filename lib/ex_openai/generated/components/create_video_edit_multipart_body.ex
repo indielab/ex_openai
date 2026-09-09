@@ -6,8 +6,8 @@ defmodule ExOpenAI.Components.CreateVideoEditMultipartBody do
 
   ## Fields
 
-  * `:prompt` - **required** - `String.t()`  
-    Text prompt that describes how to edit the source video.  
+  * `:prompt` - **required** - `String.t()`
+    Text prompt that describes how to edit the source video.
     Constraints: minLength: 1, maxLength: 32000
 
   * `:video` - **required** - `binary() | ExOpenAI.Components.VideoReferenceInputParam.t()`
@@ -17,5 +17,14 @@ defmodule ExOpenAI.Components.CreateVideoEditMultipartBody do
           prompt: String.t(),
           video: binary() | ExOpenAI.Components.VideoReferenceInputParam.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:prompt) => String.t(),
+              required(:video) =>
+                (binary() | {String.t(), binary()})
+                | ExOpenAI.Components.VideoReferenceInputParam.input()
+            }
   defstruct [:prompt, :video]
 end

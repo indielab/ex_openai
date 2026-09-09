@@ -7,21 +7,21 @@ defmodule ExOpenAI.Components.EvalList do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.Eval.t()]`  
+  * `:data` - **required** - `list(ExOpenAI.Components.Eval.t())`
     An array of eval objects.
 
-  * `:first_id` - **required** - `String.t()`  
+  * `:first_id` - **required** - `String.t()`
     The identifier of the first eval in the data array.
 
-  * `:has_more` - **required** - `boolean()`  
+  * `:has_more` - **required** - `boolean()`
     Indicates whether there are more evals available.
 
-  * `:last_id` - **required** - `String.t()`  
+  * `:last_id` - **required** - `String.t()`
     The identifier of the last eval in the data array.
 
-  * `:object` - **required** - `:list`  
-    The type of this object. It is always set to "list".  
-    Allowed values: `"list"`  
+  * `:object` - **required** - `:list`
+    The type of this object. It is always set to "list".
+    Allowed values: `"list"`
     Default: `"list"`
   """
   @type t() :: %{
@@ -32,5 +32,15 @@ defmodule ExOpenAI.Components.EvalList do
           last_id: String.t(),
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.Eval.input()),
+              required(:first_id) => String.t(),
+              required(:has_more) => boolean(),
+              required(:last_id) => String.t(),
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.FunctionAndCustomToolCallOutput do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema FunctionAndCustomToolCallOutput.
 
@@ -11,4 +9,8 @@ defmodule ExOpenAI.Components.FunctionAndCustomToolCallOutput do
   @type t() ::
           (ExOpenAI.Components.InputTextContent.t() | ExOpenAI.Components.InputImageContent.t())
           | ExOpenAI.Components.InputFileContent.t()
+  @type input() ::
+          (ExOpenAI.Components.InputTextContent.input()
+           | ExOpenAI.Components.InputImageContent.input())
+          | ExOpenAI.Components.InputFileContent.input()
 end

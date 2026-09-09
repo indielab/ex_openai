@@ -1,0 +1,57 @@
+defmodule ExOpenAI.Components.BetaResponseReasoningSummaryPartAddedEvent do
+  use ExOpenAI.Jason
+
+  @moduledoc """
+  Emitted when a new reasoning summary part is added.
+
+  ## Fields
+
+  * `:agent` - **optional** - `ExOpenAI.Components.BetaAgentTag.t() | nil`
+    The agent that owns this multi-agent streaming event.
+
+  * `:item_id` - **required** - `String.t()`
+    The ID of the item this summary part is associated with.
+
+  * `:output_index` - **required** - `integer()`
+    The index of the output item this summary part is associated with.
+
+  * `:part` - **required** - `%{required(:text) => String.t(), required(:type) => :summary_text}`
+    The summary part that was added.
+
+  * `:sequence_number` - **required** - `integer()`
+    The sequence number of this event.
+
+  * `:summary_index` - **required** - `integer()`
+    The index of the summary part within the reasoning summary.
+
+  * `:type` - **required** - `:"response.reasoning_summary_part.added"`
+    The type of the event. Always `response.reasoning_summary_part.added`.
+    Allowed values: `"response.reasoning_summary_part.added"`
+  """
+  @type t() :: %{
+          __struct__: __MODULE__,
+          agent: (ExOpenAI.Components.BetaAgentTag.t() | nil) | nil,
+          item_id: String.t(),
+          output_index: integer(),
+          part: %{required(:text) => String.t(), required(:type) => :summary_text},
+          sequence_number: integer(),
+          summary_index: integer(),
+          type: :"response.reasoning_summary_part.added"
+        }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:agent) => ExOpenAI.Components.BetaAgentTag.input() | nil,
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:part) => %{
+                required(:text) => String.t(),
+                required(:type) => :summary_text | String.t()
+              },
+              required(:sequence_number) => integer(),
+              required(:summary_index) => integer(),
+              required(:type) => :"response.reasoning_summary_part.added" | String.t()
+            }
+  defstruct [:agent, :item_id, :output_index, :part, :sequence_number, :summary_index, :type]
+end

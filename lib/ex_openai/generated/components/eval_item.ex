@@ -13,13 +13,13 @@ defmodule ExOpenAI.Components.EvalItem do
 
   * `:content` - **required** - `ExOpenAI.Components.EvalItemContent.t()`
 
-  * `:role` - **required** - `:user | :assistant | :system | :developer`  
+  * `:role` - **required** - `:user | :assistant | :system | :developer`
     The role of the message input. One of `user`, `assistant`, `system`, or
-  `developer`.  
+  `developer`.
     Allowed values: `"user"`, `"assistant"`, `"system"`, `"developer"`
 
-  * `:type` - **optional** - `:message`  
-    The type of the message input. Always `message`.  
+  * `:type` - **optional** - `:message`
+    The type of the message input. Always `message`.
     Allowed values: `"message"`
   """
   @type t() :: %{
@@ -28,5 +28,13 @@ defmodule ExOpenAI.Components.EvalItem do
           role: ((:user | :assistant) | :system) | :developer,
           type: :message | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content) => ExOpenAI.Components.EvalItemContent.input(),
+              required(:role) => (((:user | :assistant) | :system) | :developer) | String.t(),
+              optional(:type) => :message | String.t()
+            }
   defstruct [:content, :role, :type]
 end

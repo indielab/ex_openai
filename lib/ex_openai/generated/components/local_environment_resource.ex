@@ -6,11 +6,13 @@ defmodule ExOpenAI.Components.LocalEnvironmentResource do
 
   ## Fields
 
-  * `:type` - **required** - `:local`  
-    The environment type. Always `local`.  
-    Allowed values: `"local"`  
+  * `:type` - **required** - `:local`
+    The environment type. Always `local`.
+    Allowed values: `"local"`
     Default: `"local"`
   """
   @type t() :: %{__struct__: __MODULE__, type: :local}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:type) => :local | String.t()}
   defstruct [:type]
 end

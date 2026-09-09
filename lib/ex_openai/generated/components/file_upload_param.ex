@@ -6,15 +6,15 @@ defmodule ExOpenAI.Components.FileUploadParam do
 
   ## Fields
 
-  * `:enabled` - **optional** - `boolean()`  
+  * `:enabled` - **optional** - `boolean()`
     Enable uploads for this session. Defaults to false.
 
-  * `:max_file_size` - **optional** - `integer()`  
-    Maximum size in megabytes for each uploaded file. Defaults to 512 MB, which is the maximum allowable size.  
+  * `:max_file_size` - **optional** - `integer()`
+    Maximum size in megabytes for each uploaded file. Defaults to 512 MB, which is the maximum allowable size.
     Constraints: minimum: 1, maximum: 512
 
-  * `:max_files` - **optional** - `integer()`  
-    Maximum number of files that can be uploaded to the session. Defaults to 10.  
+  * `:max_files` - **optional** - `integer()`
+    Maximum number of files that can be uploaded to the session. Defaults to 10.
     Constraints: minimum: 1
   """
   @type t() :: %{
@@ -23,5 +23,13 @@ defmodule ExOpenAI.Components.FileUploadParam do
           max_file_size: integer() | nil,
           max_files: integer() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:enabled) => boolean(),
+              optional(:max_file_size) => integer(),
+              optional(:max_files) => integer()
+            }
   defstruct [:enabled, :max_file_size, :max_files]
 end

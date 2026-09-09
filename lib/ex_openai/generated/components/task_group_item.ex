@@ -6,26 +6,27 @@ defmodule ExOpenAI.Components.TaskGroupItem do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     Unix timestamp (in seconds) for when the item was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier of the thread item.
 
-  * `:object` - **required** - `:"chatkit.thread_item"`  
-    Type discriminator that is always `chatkit.thread_item`.  
-    Allowed values: `"chatkit.thread_item"`  
+  * `:object` - **required** - `:"chatkit.thread_item"`
+    Type discriminator that is always `chatkit.thread_item`.
+    Allowed values: `"chatkit.thread_item"`
     Default: `"chatkit.thread_item"`
 
-  * `:tasks` - **required** - `[ExOpenAI.Components.TaskGroupTask.t()]`  
+  * `:tasks` - **required** - `list(ExOpenAI.Components.TaskGroupTask.t())`
     Tasks included in the group.
 
-  * `:thread_id` - **required** - `String.t()`  
+  * `:thread_id` - **required** - `String.t()`
     Identifier of the parent thread.
 
-  * `:type` - **required** - `:"chatkit.task_group"`  
-    Type discriminator that is always `chatkit.task_group`.  
-    Allowed values: `"chatkit.task_group"`  
+  * `:type` - **required** - `:"chatkit.task_group"`
+    Type discriminator that is always `chatkit.task_group`.
+    Allowed values: `"chatkit.task_group"`
     Default: `"chatkit.task_group"`
   """
   @type t() :: %{
@@ -37,5 +38,16 @@ defmodule ExOpenAI.Components.TaskGroupItem do
           thread_id: String.t(),
           type: :"chatkit.task_group"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:object) => :"chatkit.thread_item" | String.t(),
+              required(:tasks) => list(ExOpenAI.Components.TaskGroupTask.input()),
+              required(:thread_id) => String.t(),
+              required(:type) => :"chatkit.task_group" | String.t()
+            }
   defstruct [:created_at, :id, :object, :tasks, :thread_id, :type]
 end

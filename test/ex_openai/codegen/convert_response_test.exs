@@ -5,7 +5,7 @@ defmodule ExOpenAI.Components.TestComponent do
           id: String.t(),
           name: String.t(),
           value: %{required(:nested) => any()} | nil,
-          array: [ %{optional(:item) => any()} ] | nil
+          array: [%{optional(:item) => any()}] | nil
         }
 end
 
@@ -22,16 +22,16 @@ end
 defmodule ExOpenAI.Codegen.ConvertResponseTest do
   use ExUnit.Case, async: false
 
-  alias ExOpenAI.Codegen.ResponseConverter
   alias ExOpenAI.Codegen.DocsParser.Schema
+  alias ExOpenAI.Codegen.ResponseConverter
 
   defp component_schema(name), do: %Schema{ref: "#/components/schemas/#{name}"}
 
   describe "convert_response/2" do
-    test "handles response with 'response' and 'type' keys" do
+    test "preserves event envelopes without a schema" do
       response = {:ok, %{"response" => %{"id" => "123", "name" => "test"}, "type" => "some_type"}}
       result = ResponseConverter.convert_response(response, nil)
-      assert result == {:ok, %{"id" => "123", "name" => "test"}}
+      assert result == response
     end
 
     test "passes through reference values unchanged" do
@@ -109,7 +109,7 @@ defmodule ExOpenAI.Codegen.ConvertResponseTest do
       assert result == {:error, "Something went wrong"}
     end
 
-    test "handles nested data structures with atomized keys" do
+    test "preserves dynamic nested data without compiled type metadata" do
       response =
         {:ok,
          %{
@@ -125,9 +125,9 @@ defmodule ExOpenAI.Codegen.ConvertResponseTest do
       {:ok, struct} = result
       assert struct.id == "123"
       assert struct.name == "test"
-      # Nested maps and lists should have atom keys
-      assert struct.value[:nested] == "data"
-      assert Enum.map(struct.array, & &1[:item]) == [1, 2]
+      # In-memory test modules have no BEAM typespec metadata.
+      assert struct.value["nested"] == "data"
+      assert Enum.map(struct.array, & &1["item"]) == [1, 2]
     end
 
     test "handles string keys by converting them to atoms" do
@@ -143,7 +143,10 @@ defmodule ExOpenAI.Codegen.ConvertResponseTest do
 
     test "handles unknown response types by returning original response" do
       response = {:ok, %{"id" => "123", "name" => "test"}}
-      result = ResponseConverter.convert_response(response, %Schema{ref: "#/components/schemas/Unknown"})
+
+      result =
+        ResponseConverter.convert_response(response, %Schema{ref: "#/components/schemas/Unknown"})
+
       assert result == {:ok, %{"id" => "123", "name" => "test"}}
     end
   end

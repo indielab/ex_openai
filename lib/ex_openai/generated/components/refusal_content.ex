@@ -6,14 +6,17 @@ defmodule ExOpenAI.Components.RefusalContent do
 
   ## Fields
 
-  * `:refusal` - **required** - `String.t()`  
+  * `:refusal` - **required** - `String.t()`
     The refusal explanation from the model.
 
-  * `:type` - **required** - `:refusal`  
-    The type of the refusal. Always `refusal`.  
-    Allowed values: `"refusal"`  
+  * `:type` - **required** - `:refusal`
+    The type of the refusal. Always `refusal`.
+    Allowed values: `"refusal"`
     Default: `"refusal"`
   """
   @type t() :: %{__struct__: __MODULE__, refusal: String.t(), type: :refusal}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t() | %{required(:refusal) => String.t(), required(:type) => :refusal | String.t()}
   defstruct [:refusal, :type]
 end

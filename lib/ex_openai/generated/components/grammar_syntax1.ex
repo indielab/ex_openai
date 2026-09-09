@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.GrammarSyntax1 do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema GrammarSyntax1.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.GrammarSyntax1 do
   `"lark"`, `"regex"`
   """
   @type t() :: :lark | :regex
+  @type input() :: (:lark | :regex) | String.t()
 end

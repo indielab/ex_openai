@@ -2,20 +2,20 @@ defmodule ExOpenAI.Components.RealtimeClientEventResponseCreate do
   use ExOpenAI.Jason
 
   @moduledoc """
-  This event instructs the server to create a Response, which means triggering 
-  model inference. When in Server VAD mode, the server will create Responses 
+  This event instructs the server to create a Response, which means triggering
+  model inference. When in Server VAD mode, the server will create Responses
   automatically.
 
-  A Response will include at least one Item, and may have two, in which case 
-  the second will be a function call. These Items will be appended to the 
+  A Response will include at least one Item, and may have two, in which case
+  the second will be a function call. These Items will be appended to the
   conversation history by default.
 
-  The server will respond with a `response.created` event, events for Items 
-  and content created, and finally a `response.done` event to indicate the 
+  The server will respond with a `response.created` event, events for Items
+  and content created, and finally a `response.done` event to indicate the
   Response is complete.
 
-  The `response.create` event includes inference configuration like 
-  `instructions` and `tools`. If these are set, they will override the Session's 
+  The `response.create` event includes inference configuration like
+  `instructions` and `tools`. If these are set, they will override the Session's
   configuration for this Response only.
 
   Responses can be created out-of-band of the default Conversation, meaning that they can
@@ -31,14 +31,14 @@ defmodule ExOpenAI.Components.RealtimeClientEventResponseCreate do
 
   ## Fields
 
-  * `:event_id` - **optional** - `String.t()`  
-    Optional client-generated ID used to identify this event.  
+  * `:event_id` - **optional** - `String.t()`
+    Optional client-generated ID used to identify this event.
     Constraints: maxLength: 512
 
   * `:response` - **optional** - `ExOpenAI.Components.RealtimeResponseCreateParams.t()`
 
-  * `:type` - **required** - `:"response.create"`  
-    The event type, must be `response.create`.  
+  * `:type` - **required** - `:"response.create"`
+    The event type, must be `response.create`.
     Allowed values: `"response.create"`
   """
   @type t() :: %{
@@ -47,5 +47,13 @@ defmodule ExOpenAI.Components.RealtimeClientEventResponseCreate do
           response: ExOpenAI.Components.RealtimeResponseCreateParams.t() | nil,
           type: :"response.create"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:event_id) => String.t(),
+              optional(:response) => ExOpenAI.Components.RealtimeResponseCreateParams.input(),
+              required(:type) => :"response.create" | String.t()
+            }
   defstruct [:event_id, :response, :type]
 end

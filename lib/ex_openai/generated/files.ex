@@ -1,30 +1,34 @@
 defmodule ExOpenAI.Files do
-  @moduledoc false
+  @moduledoc """
+  Functions for the OpenAI files API.
+  """
   (
     @doc """
     Returns a list of files.
 
     ## Options
 
-    * `:purpose` - **optional** - `String.t()`  
+    * `:purpose` - **optional** - `String.t()`
       Only return files with the given purpose.
 
-    * `:limit` - **optional** - `integer()`  
-      A limit on the number of objects to be returned. Limit can range between 1 and 10,000, and the default is 10,000.  
+    * `:limit` - **optional** - `integer()`
+      A limit on the number of objects to be returned. Limit can range between 1 and 10,000, and the default is 10,000.
       Default: `10000`
 
-    * `:order` - **optional** - `String.t()`  
-      Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.  
-      Allowed values: `"asc"`, `"desc"`  
+    * `:order` - **optional** - `:asc | :desc | String.t()`
+      Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.
+      Allowed values: `"asc"`, `"desc"`
       Default: `"desc"`
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
     """
     (
       @type list_files_opt() ::
-              (({:purpose, String.t()} | {:limit, integer()}) | {:order, String.t()})
-              | {:after, String.t()}
+              ((({:purpose, String.t()} | {:limit, integer()})
+                | {:order, (:asc | :desc) | String.t()})
+               | {:after, String.t()})
+              | ExOpenAI.request_option()
       @spec list_files(opts :: [list_files_opt()]) ::
               {:ok, ExOpenAI.Components.ListFilesResponse.t()} | {:error, any()}
     )
@@ -32,17 +36,9 @@ defmodule ExOpenAI.Files do
     def list_files(opts \\ []) do
       url = "/files"
       query_params = Keyword.take(opts, [:purpose, :limit, :order, :after])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :limit, :order, :purpose])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
 
       optional_params_to_drop =
@@ -56,6 +52,8 @@ defmodule ExOpenAI.Files do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ListFilesResponse"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -72,18 +70,26 @@ defmodule ExOpenAI.Files do
     @doc """
     Upload a file that can be used across various endpoints. Individual files
     can be up to 512 MB, and each project can store up to 2.5 TB of files in
-    total. There is no organization-wide storage limit.
+    total. There is no organization-wide storage limit. Uploads to this
+    endpoint are rate-limited to 1,000 requests per minute per authenticated
+    user.
 
     - The Assistants API supports files up to 2 million tokens and of specific
-      file types. See the [Assistants Tools guide](/docs/assistants/tools) for
+      file types. See the [Assistants Tools guide](https://platform.openai.com/docs/assistants/tools) for
       details.
     - The Fine-tuning API only supports `.jsonl` files. The input also has
       certain required formats for fine-tuning
-      [chat](/docs/api-reference/fine-tuning/chat-input) or
-      [completions](/docs/api-reference/fine-tuning/completions-input) models.
+      [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input) or
+      [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input) models.
     - The Batch API only supports `.jsonl` files up to 200 MB in size. The input
       also has a specific required
-      [format](/docs/api-reference/batch/request-input).
+      [format](https://platform.openai.com/docs/api-reference/batch/request-input).
+    - For Retrieval or `file_search` ingestion, upload files here first. If
+      you need to attach multiple uploaded files to the same vector store, use
+      [`/vector_stores/{vector_store_id}/file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+      instead of attaching them one by one. Vector store attachment has separate
+      limits from file upload, including 2,000 attached files per minute per
+      organization.
 
     Please [contact us](https://help.openai.com/) if you need to increase these
     storage limits.
@@ -91,30 +97,33 @@ defmodule ExOpenAI.Files do
 
     ## Parameters
 
-    * `file` - **required** - `binary()`  
-      The File object (not file name) to be uploaded.  
+    * `file` - **required** - `binary() | {String.t(), binary()}`
+      The File object (not file name) to be uploaded.
       Format: `binary`
 
-    * `purpose` - **required** - `:assistants | :batch | :"fine-tune" | :vision | :user_data | :evals`  
+    * `purpose` - **required** - `:assistants | :batch | :"fine-tune" | :vision | :user_data | :evals | String.t()`
       The intended purpose of the uploaded file. One of:
     - `assistants`: Used in the Assistants API
     - `batch`: Used in the Batch API
     - `fine-tune`: Used for fine-tuning
     - `vision`: Images used for vision fine-tuning
     - `user_data`: Flexible file type for any purpose
-    - `evals`: Used for eval data sets  
+    - `evals`: Used for eval data sets
       Allowed values: `"assistants"`, `"batch"`, `"fine-tune"`, `"vision"`, `"user_data"`, `"evals"`
 
     ## Options
 
-    * `expires_after` - **optional** - `any()`
+    * `expires_after` - **optional** - `ExOpenAI.Components.FileExpirationAfter.input()`
     """
     (
-      @type create_file_opt() :: {:expires_after, ExOpenAI.Components.FileExpirationAfter.t()}
+      @type create_file_opt() ::
+              {:expires_after, ExOpenAI.Components.FileExpirationAfter.input()}
+              | ExOpenAI.request_option()
       @spec create_file(
-              file :: binary(),
+              file :: binary() | {String.t(), binary()},
               purpose ::
-                ((((:assistants | :batch) | :"fine-tune") | :vision) | :user_data) | :evals,
+                (((((:assistants | :batch) | :"fine-tune") | :vision) | :user_data) | :evals)
+                | String.t(),
               opts :: [create_file_opt()]
             ) :: {:ok, ExOpenAI.Components.OpenAIFile.t()} | {:error, any()}
     )
@@ -122,15 +131,7 @@ defmodule ExOpenAI.Files do
     def create_file(file, purpose, opts \\ []) do
       url = "/files"
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = [file: file, purpose: purpose]
       optional_body_params = Keyword.take(opts, [:expires_after])
       body_params = body_params ++ optional_body_params
@@ -143,6 +144,8 @@ defmodule ExOpenAI.Files do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/OpenAIFile"}
         )
       end
+
+      body_params = ExOpenAI.Client.prepare_multipart(body_params, [:file], %{})
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -161,13 +164,12 @@ defmodule ExOpenAI.Files do
 
     ## Parameters
 
-    * `:file_id` - **required** - `String.t()`  
+    * `:file_id` - **required** - `String.t()`
       The ID of the file to use for this request.
     """
     (
-      nil
-
-      @spec delete_file(file_id :: String.t(), opts :: keyword()) ::
+      @type delete_file_opt() :: ExOpenAI.request_option()
+      @spec delete_file(file_id :: String.t(), opts :: [delete_file_opt()]) ::
               {:ok, ExOpenAI.Components.DeleteFileResponse.t()} | {:error, any()}
     )
 
@@ -175,15 +177,7 @@ defmodule ExOpenAI.Files do
       url = "/files/{file_id}"
       url = String.replace(url, "{file_id}", to_string(file_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -196,6 +190,8 @@ defmodule ExOpenAI.Files do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/DeleteFileResponse"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -214,13 +210,12 @@ defmodule ExOpenAI.Files do
 
     ## Parameters
 
-    * `:file_id` - **required** - `String.t()`  
+    * `:file_id` - **required** - `String.t()`
       The ID of the file to use for this request.
     """
     (
-      nil
-
-      @spec retrieve_file(file_id :: String.t(), opts :: keyword()) ::
+      @type retrieve_file_opt() :: ExOpenAI.request_option()
+      @spec retrieve_file(file_id :: String.t(), opts :: [retrieve_file_opt()]) ::
               {:ok, ExOpenAI.Components.OpenAIFile.t()} | {:error, any()}
     )
 
@@ -228,15 +223,7 @@ defmodule ExOpenAI.Files do
       url = "/files/{file_id}"
       url = String.replace(url, "{file_id}", to_string(file_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -249,6 +236,8 @@ defmodule ExOpenAI.Files do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/OpenAIFile"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -267,38 +256,35 @@ defmodule ExOpenAI.Files do
 
     ## Parameters
 
-    * `:file_id` - **required** - `String.t()`  
+    * `:file_id` - **required** - `String.t()`
       The ID of the file to use for this request.
     """
     (
-      nil
-
-      @spec download_file(file_id :: String.t(), opts :: keyword()) ::
-              {:ok, map()} | {:error, any()}
+      @type download_file_opt() :: ExOpenAI.request_option()
+      @spec download_file(file_id :: String.t(), opts :: [download_file_opt()]) ::
+              {:ok, String.t()} | {:error, any()}
     )
 
     def download_file(file_id, opts \\ []) do
       url = "/files/{file_id}/content"
       url = String.replace(url, "{file_id}", to_string(file_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :response_mode, :raw)
       optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(response, nil)
+        ExOpenAI.Codegen.ResponseConverter.convert_response(
+          response,
+          %ExOpenAI.Codegen.DocsParser.Schema{type: "string"}
+        )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,

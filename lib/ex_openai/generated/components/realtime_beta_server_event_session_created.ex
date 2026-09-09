@@ -9,13 +9,13 @@ defmodule ExOpenAI.Components.RealtimeBetaServerEventSessionCreated do
 
   ## Fields
 
-  * `:event_id` - **required** - `String.t()`  
+  * `:event_id` - **required** - `String.t()`
     The unique ID of the server event.
 
   * `:session` - **required** - `ExOpenAI.Components.RealtimeSession.t()`
 
-  * `:type` - **required** - `:"session.created"`  
-    The event type, must be `session.created`.  
+  * `:type` - **required** - `:"session.created"`
+    The event type, must be `session.created`.
     Allowed values: `"session.created"`
   """
   @type t() :: %{
@@ -24,5 +24,13 @@ defmodule ExOpenAI.Components.RealtimeBetaServerEventSessionCreated do
           session: ExOpenAI.Components.RealtimeSession.t(),
           type: :"session.created"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:event_id) => String.t(),
+              required(:session) => ExOpenAI.Components.RealtimeSession.input(),
+              required(:type) => :"session.created" | String.t()
+            }
   defstruct [:event_id, :session, :type]
 end

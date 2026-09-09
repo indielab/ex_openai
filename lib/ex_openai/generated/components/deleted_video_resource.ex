@@ -6,15 +6,15 @@ defmodule ExOpenAI.Components.DeletedVideoResource do
 
   ## Fields
 
-  * `:deleted` - **required** - `boolean()`  
+  * `:deleted` - **required** - `boolean()`
     Indicates that the video resource was deleted.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier of the deleted video.
 
-  * `:object` - **required** - `:"video.deleted"`  
-    The object type that signals the deletion response.  
-    Allowed values: `"video.deleted"`  
+  * `:object` - **required** - `:"video.deleted"`
+    The object type that signals the deletion response.
+    Allowed values: `"video.deleted"`
     Default: `"video.deleted"`
   """
   @type t() :: %{
@@ -23,5 +23,13 @@ defmodule ExOpenAI.Components.DeletedVideoResource do
           id: String.t(),
           object: :"video.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"video.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

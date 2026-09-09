@@ -10,11 +10,11 @@ defmodule ExOpenAI.Components.DeletedSkillVersionResource do
 
   * `:id` - **required** - `String.t()`
 
-  * `:object` - **required** - `:"skill.version.deleted"`  
-    Allowed values: `"skill.version.deleted"`  
+  * `:object` - **required** - `:"skill.version.deleted"`
+    Allowed values: `"skill.version.deleted"`
     Default: `"skill.version.deleted"`
 
-  * `:version` - **required** - `String.t()`  
+  * `:version` - **required** - `String.t()`
     The deleted skill version.
   """
   @type t() :: %{
@@ -24,5 +24,14 @@ defmodule ExOpenAI.Components.DeletedSkillVersionResource do
           object: :"skill.version.deleted",
           version: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"skill.version.deleted" | String.t(),
+              required(:version) => String.t()
+            }
   defstruct [:deleted, :id, :object, :version]
 end

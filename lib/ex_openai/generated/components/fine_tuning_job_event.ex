@@ -6,28 +6,29 @@ defmodule ExOpenAI.Components.FineTuningJobEvent do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) for when the fine-tuning job was created.
+    Format: `unixtime`
 
-  * `:data` - **optional** - `map()`  
+  * `:data` - **optional** - `map()`
     The data associated with the event.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The object identifier.
 
-  * `:level` - **required** - `:info | :warn | :error`  
-    The log level of the event.  
+  * `:level` - **required** - `:info | :warn | :error`
+    The log level of the event.
     Allowed values: `"info"`, `"warn"`, `"error"`
 
-  * `:message` - **required** - `String.t()`  
+  * `:message` - **required** - `String.t()`
     The message of the event.
 
-  * `:object` - **required** - `:"fine_tuning.job.event"`  
-    The object type, which is always "fine_tuning.job.event".  
+  * `:object` - **required** - `:"fine_tuning.job.event"`
+    The object type, which is always "fine_tuning.job.event".
     Allowed values: `"fine_tuning.job.event"`
 
-  * `:type` - **optional** - `:message | :metrics`  
-    The type of event.  
+  * `:type` - **optional** - `:message | :metrics`
+    The type of event.
     Allowed values: `"message"`, `"metrics"`
   """
   @type t() :: %{
@@ -40,5 +41,17 @@ defmodule ExOpenAI.Components.FineTuningJobEvent do
           object: :"fine_tuning.job.event",
           type: (:message | :metrics) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              optional(:data) => map(),
+              required(:id) => String.t(),
+              required(:level) => ((:info | :warn) | :error) | String.t(),
+              required(:message) => String.t(),
+              required(:object) => :"fine_tuning.job.event" | String.t(),
+              optional(:type) => (:message | :metrics) | String.t()
+            }
   defstruct [:created_at, :data, :id, :level, :message, :object, :type]
 end

@@ -7,25 +7,35 @@ defmodule ExOpenAI.Components.WebSearchActionSearch do
 
   ## Fields
 
-  * `:queries` - **optional** - `[String.t()]`  
+  * `:queries` - **optional** - `list(String.t())`
     The search queries.
 
-  * `:query` - **required** - `String.t()`  
-    [DEPRECATED] The search query.
+  * `:query` - **optional** - `String.t()`
+    The search query.
 
-  * `:sources` - **optional** - `[{:%{}, [], [{{:required, [], [:type]}, :url}, {{:required, [], [:url]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}]`  
+  * `:sources` - **optional** - `list(%{required(:type) => :url, required(:url) => String.t()})`
     The sources used in the search.
 
-  * `:type` - **required** - `:search`  
-    The action type.  
+  * `:type` - **required** - `:search`
+    The action type.
     Allowed values: `"search"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           queries: list(String.t()) | nil,
-          query: String.t(),
+          query: String.t() | nil,
           sources: list(%{required(:type) => :url, required(:url) => String.t()}) | nil,
           type: :search
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:queries) => list(String.t()),
+              optional(:query) => String.t(),
+              optional(:sources) =>
+                list(%{required(:type) => :url | String.t(), required(:url) => String.t()}),
+              required(:type) => :search | String.t()
+            }
   defstruct [:queries, :query, :sources, :type]
 end

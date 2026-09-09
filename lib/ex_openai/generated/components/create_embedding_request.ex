@@ -6,23 +6,23 @@ defmodule ExOpenAI.Components.CreateEmbeddingRequest do
 
   ## Fields
 
-  * `:dimensions` - **optional** - `integer()`  
-    The number of dimensions the resulting output embeddings should have. Only supported in `text-embedding-3` and later models.  
+  * `:dimensions` - **optional** - `integer()`
+    The number of dimensions the resulting output embeddings should have. Only supported in `text-embedding-3` and later models.
     Constraints: minimum: 1
 
-  * `:encoding_format` - **optional** - `:float | :base64`  
-    The format to return the embeddings in. Can be either `float` or [`base64`](https://pypi.org/project/pybase64/).  
-    Allowed values: `"float"`, `"base64"`  
+  * `:encoding_format` - **optional** - `:float | :base64`
+    The format to return the embeddings in. Can be either `float` or [`base64`](https://pypi.org/project/pybase64/).
+    Allowed values: `"float"`, `"base64"`
     Default: `"float"`
 
-  * `:input` - **required** - `String.t() | [String.t()] | [integer()] | [[integer()]]`  
+  * `:input` - **required** - `String.t() | list(String.t()) | list(integer()) | list(list(integer()))`
     Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a single request, pass an array of strings or array of token arrays. The input must not exceed the max input tokens for the model (8192 tokens for all embedding models), cannot be an empty string, and any array must be 2048 dimensions or less. [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken) for counting tokens. In addition to the per-input token limit, all embedding  models enforce a maximum of 300,000 tokens summed across all inputs in a  single request.
 
-  * `:model` - **required** - `String.t() | :"text-embedding-ada-002" | :"text-embedding-3-small" | :"text-embedding-3-large"`  
-    ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.
+  * `:model` - **required** - `String.t() | :"text-embedding-ada-002" | :"text-embedding-3-small" | :"text-embedding-3-large"`
+    ID of the model to use. You can use the [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
 
-  * `:user` - **optional** - `String.t()`  
-    A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).
+  * `:user` - **optional** - `String.t()`
+    A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
   """
   @type t() :: %{
           __struct__: __MODULE__,
@@ -35,5 +35,20 @@ defmodule ExOpenAI.Components.CreateEmbeddingRequest do
             | :"text-embedding-3-large",
           user: String.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:dimensions) => integer(),
+              optional(:encoding_format) => (:float | :base64) | String.t(),
+              required(:input) =>
+                ((String.t() | list(String.t())) | list(integer())) | list(list(integer())),
+              required(:model) =>
+                String.t()
+                | ((:"text-embedding-ada-002" | :"text-embedding-3-small")
+                   | :"text-embedding-3-large")
+                | String.t(),
+              optional(:user) => String.t()
+            }
   defstruct [:dimensions, :encoding_format, :input, :model, :user]
 end

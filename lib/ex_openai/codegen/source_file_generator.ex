@@ -3,34 +3,31 @@ defmodule ExOpenAI.Codegen.SourceFileGenerator do
   Writes generated SDK modules to source files under `lib/ex_openai/generated`.
   """
 
-  alias ExOpenAI.Codegen.DocsParser
   alias ExOpenAI.Codegen.ComponentModuleGenerator
+  alias ExOpenAI.Codegen.DocsParser
   alias ExOpenAI.Codegen.PathModuleGenerator
 
   @generated_root Path.expand("../generated", __DIR__)
   @docs_path Path.expand("../docs/docs.yaml", __DIR__)
+  @overlay_path Path.expand("../docs/overlay.yaml", __DIR__)
 
   @spec generated_root() :: String.t()
   def generated_root, do: @generated_root
 
   @spec load_documentation() :: DocsParser.t()
   def load_documentation do
+    overlay = YamlElixir.read_from_file!(@overlay_path)
+
     @docs_path
     |> File.read!()
-    |> DocsParser.get_documentation()
+    |> DocsParser.get_documentation(overlay)
   end
 
   @spec write_all!() :: [String.t()]
   def write_all! do
-    documentation = load_documentation()
-
     files =
-      generated_modules(documentation)
-      |> Enum.map(fn ast ->
-        module = extract_module_name!(ast)
-        path = module_to_path(module)
-        source = render_source(ast)
-
+      sources()
+      |> Enum.map(fn {path, source} ->
         File.mkdir_p!(Path.dirname(path))
         File.write!(path, source)
         path
@@ -39,6 +36,28 @@ defmodule ExOpenAI.Codegen.SourceFileGenerator do
     prune_stale_files!(files)
 
     files
+  end
+
+  @spec sources() :: %{String.t() => String.t()}
+  def sources do
+    load_documentation()
+    |> generated_modules()
+    |> Map.new(fn ast ->
+      {ast |> extract_module_name!() |> module_to_path(), render_source(ast)}
+    end)
+  end
+
+  @spec stale_sources() :: [String.t()]
+  def stale_sources do
+    sources = sources()
+
+    changed =
+      Enum.flat_map(sources, fn {path, source} ->
+        if File.read(path) == {:ok, source}, do: [], else: [path]
+      end)
+
+    removed = Path.wildcard(Path.join(@generated_root, "**/*.ex")) -- Map.keys(sources)
+    Enum.sort(changed ++ removed)
   end
 
   defp generated_modules(documentation) do
@@ -89,7 +108,17 @@ defmodule ExOpenAI.Codegen.SourceFileGenerator do
 
   defp rewrite_doc_attributes(source) do
     Regex.replace(~r/@(moduledoc|doc)\s+"((?:[^"\\]|\\.)*)"/, source, fn _, attr, escaped ->
-      {doc, _binding} = Code.eval_string("\"#{escaped}\"")
+      doc = Code.string_to_quoted!("\"#{escaped}\"")
+
+      doc =
+        doc
+        |> then(&Regex.replace(~r/[ \t]+\n/, &1, "\n"))
+        |> String.replace("](/", "](https://platform.openai.com/")
+        |> String.replace("](../", "](https://platform.openai.com/docs/api-reference/")
+        |> String.replace("\\", "\\\\")
+        |> String.replace("\#{", "\\\#{")
+        |> String.replace("\"\"\"", "\\\"\\\"\\\"")
+
       ~s/@#{attr} """\n#{doc}\n"""/
     end)
   end

@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ChatCompletionRequestMessage do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ChatCompletionRequestMessage.
 
@@ -15,4 +13,11 @@ defmodule ExOpenAI.Components.ChatCompletionRequestMessage do
             | ExOpenAI.Components.ChatCompletionRequestAssistantMessage.t())
            | ExOpenAI.Components.ChatCompletionRequestToolMessage.t())
           | ExOpenAI.Components.ChatCompletionRequestFunctionMessage.t()
+  @type input() ::
+          ((((ExOpenAI.Components.ChatCompletionRequestDeveloperMessage.input()
+              | ExOpenAI.Components.ChatCompletionRequestSystemMessage.input())
+             | ExOpenAI.Components.ChatCompletionRequestUserMessage.input())
+            | ExOpenAI.Components.ChatCompletionRequestAssistantMessage.input())
+           | ExOpenAI.Components.ChatCompletionRequestToolMessage.input())
+          | ExOpenAI.Components.ChatCompletionRequestFunctionMessage.input()
 end

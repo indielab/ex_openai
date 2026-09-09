@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.RealtimeConversationItem do
-  use ExOpenAI.Jason
-
   @moduledoc """
   A single item within a Realtime conversation.
 
@@ -18,4 +16,14 @@ defmodule ExOpenAI.Components.RealtimeConversationItem do
             | ExOpenAI.Components.RealtimeMCPListTools.t())
            | ExOpenAI.Components.RealtimeMCPToolCall.t())
           | ExOpenAI.Components.RealtimeMCPApprovalRequest.t()
+  @type input() ::
+          (((((((ExOpenAI.Components.RealtimeConversationItemMessageSystem.input()
+                 | ExOpenAI.Components.RealtimeConversationItemMessageUser.input())
+                | ExOpenAI.Components.RealtimeConversationItemMessageAssistant.input())
+               | ExOpenAI.Components.RealtimeConversationItemFunctionCall.input())
+              | ExOpenAI.Components.RealtimeConversationItemFunctionCallOutput.input())
+             | ExOpenAI.Components.RealtimeMCPApprovalResponse.input())
+            | ExOpenAI.Components.RealtimeMCPListTools.input())
+           | ExOpenAI.Components.RealtimeMCPToolCall.input())
+          | ExOpenAI.Components.RealtimeMCPApprovalRequest.input()
 end

@@ -4,12 +4,12 @@
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/ex_openai)
 [![Hex.pm Download Total](https://img.shields.io/hexpm/dt/ex_openai)](https://hex.pm/packages/ex_openai)
 
-ExOpenAI is an (unofficial) Elixir SDK for interacting with the [OpenAI APIs](https://platform.openai.com/docs/api-reference/introduction). This SDK is fully auto-generated using [metaprogramming](https://elixirschool.com/en/lessons/advanced/metaprogramming/) and always reflects the latest state of the OpenAI API.
+ExOpenAI is an (unofficial) Elixir SDK for interacting with the [OpenAI APIs](https://platform.openai.com/docs/api-reference/introduction). Its API modules and types are generated from the bundled OpenAPI specification.
 
 ## Features
 
-- Complete implementation of all OpenAI API endpoints
-- Auto-generated with strict typing and documentation
+- Generated API modules for the bundled OpenAI specification
+- Generated typespecs and API documentation
 - Elixir-style API with required arguments as function parameters and optional arguments as keyword lists
 - Support for streaming responses with SSE
 - Editor features: autocompletion, typechecking, and inline documentation
@@ -68,14 +68,14 @@ messages = [
 
 # Responses
 {:ok, response} = ExOpenAI.Responses.create_response(
-  "Tell me a joke about programming",
-  "gpt-4o-mini"
+  input: "Tell me a joke about programming",
+  model: "gpt-4o-mini"
 )
 
 # Continue the conversation
 {:ok, follow_up} = ExOpenAI.Responses.create_response(
-  "Explain why that joke is funny",
-  "gpt-4o-mini",
+  input: "Explain why that joke is funny",
+  model: "gpt-4o-mini",
   previous_response_id: response.id
 )
 ```
@@ -84,7 +84,7 @@ More examples in [Examples](docs/examples.md)
 
 ## API Overview
 
-ExOpenAI supports all OpenAI API endpoints, organized into logical modules:
+The API is organized into resource modules, including:
 
 - **Assistants** - Create and manage assistants
 - **Audio** - Speech, transcription, and translation
@@ -111,10 +111,8 @@ callback = fn
     IO.puts("\nDone")
 
   {:data, %ExOpenAI.Components.CreateChatCompletionStreamResponse{} = chunk} ->
-	  IO.inspect(chunk)
-
-    chunk.choices
-    |> Enum.map_join("", fn choice -> Map.get(choice.delta, :content, "") end)
+    (chunk.choices || [])
+    |> Enum.map_join("", fn choice -> Map.get(choice.delta || %{}, :content) || "" end)
     |> IO.write()
 
   {:error, err} ->
@@ -158,11 +156,19 @@ audio_data = File.read!("path/to/audio.wav")
 - [Configuration Options](docs/configuration.md)
 - [Examples](docs/examples.md)
 
-## Known Limitations
+## Types and response data
 
-- Streaming `*_stream` functions are typed at the call boundary, but callback/process chunk payloads are not converted into fully typed structs.
-- Streaming responses are returned with atomized keys; deltas are not accumulated into final typed structs yet.
-  - See `docs/streaming.md` for a sample streaming session and current behavior.
+Request components accept structs or atom-keyed maps through their `input()` types.
+Response components use `t()` and return structs with atom keys. Dynamic objects,
+such as metadata and JSON Schema properties, retain their string keys.
+
+Dialyzer catches incompatible positional arguments and explicitly typed schemas,
+but does not validate every keyword option or nested union. The SDK does not
+perform runtime JSON Schema validation.
+
+Streaming calls return `{:ok, reference()}`. Chat chunks and Responses events use
+their generated structs; applications accumulate deltas themselves. See the
+[Streaming Guide](docs/streaming.md) for callback and process examples.
 
 ## Contributing
 
@@ -171,7 +177,11 @@ Contributions are welcome! If you find a bug or want to add a feature, please op
 To update the SDK when OpenAI changes their API:
 
 ```bash
-mix update_openai_docs
+mise exec -- mix update_openai_docs
+mise run generate_openai
+mise run check
+mise run test
+mise run lint
 ```
 
 ## Projects Using ExOpenAI

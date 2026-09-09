@@ -7,21 +7,22 @@ defmodule ExOpenAI.Components.WebhookBatchCompleted do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) of when the batch API request was completed.
+    Format: `unixtime`
 
-  * `:data` - **required** - `{:%{}, [], [{{:required, [], [:id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:data` - **required** - `%{required(:id) => String.t()}`
     Event data payload.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The unique ID of the event.
 
-  * `:object` - **optional** - `:event`  
-    The object of the event. Always `event`.  
+  * `:object` - **optional** - `:event`
+    The object of the event. Always `event`.
     Allowed values: `"event"`
 
-  * `:type` - **required** - `:"batch.completed"`  
-    The type of the event. Always `batch.completed`.  
+  * `:type` - **required** - `:"batch.completed"`
+    The type of the event. Always `batch.completed`.
     Allowed values: `"batch.completed"`
   """
   @type t() :: %{
@@ -32,5 +33,15 @@ defmodule ExOpenAI.Components.WebhookBatchCompleted do
           object: :event | nil,
           type: :"batch.completed"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:data) => %{required(:id) => String.t()},
+              required(:id) => String.t(),
+              optional(:object) => :event | String.t(),
+              required(:type) => :"batch.completed" | String.t()
+            }
   defstruct [:created_at, :data, :id, :object, :type]
 end

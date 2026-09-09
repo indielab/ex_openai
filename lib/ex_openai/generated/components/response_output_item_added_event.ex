@@ -6,17 +6,17 @@ defmodule ExOpenAI.Components.ResponseOutputItemAddedEvent do
 
   ## Fields
 
-  * `:item` - **required** - `ExOpenAI.Components.OutputItem.t()`  
+  * `:item` - **required** - `ExOpenAI.Components.OutputItem.t()`
     The output item that was added.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item that was added.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.output_item.added"`  
-    The type of the event. Always `response.output_item.added`.  
+  * `:type` - **required** - `:"response.output_item.added"`
+    The type of the event. Always `response.output_item.added`.
     Allowed values: `"response.output_item.added"`
   """
   @type t() :: %{
@@ -26,5 +26,14 @@ defmodule ExOpenAI.Components.ResponseOutputItemAddedEvent do
           sequence_number: integer(),
           type: :"response.output_item.added"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:item) => ExOpenAI.Components.OutputItem.input(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.output_item.added" | String.t()
+            }
   defstruct [:item, :output_index, :sequence_number, :type]
 end

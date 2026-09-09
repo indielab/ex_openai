@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ThreadItem do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ThreadItem.
 
@@ -15,4 +13,11 @@ defmodule ExOpenAI.Components.ThreadItem do
             | ExOpenAI.Components.ClientToolCallItem.t())
            | ExOpenAI.Components.TaskItem.t())
           | ExOpenAI.Components.TaskGroupItem.t()
+  @type input() ::
+          ((((ExOpenAI.Components.UserMessageItem.input()
+              | ExOpenAI.Components.AssistantMessageItem.input())
+             | ExOpenAI.Components.WidgetMessageItem.input())
+            | ExOpenAI.Components.ClientToolCallItem.input())
+           | ExOpenAI.Components.TaskItem.input())
+          | ExOpenAI.Components.TaskGroupItem.input()
 end

@@ -1,12 +1,11 @@
 defmodule ExOpenAI.Components.ResponsePromptVariables do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ResponsePromptVariables.
 
   ## Type
 
-  `map() | any()`
+  `map() | nil`
   """
-  @type t() :: map() | any()
+  @type t() :: map() | nil
+  @type input() :: map() | nil
 end

@@ -6,14 +6,14 @@ defmodule ExOpenAI.Components.GroupUserAssignment do
 
   ## Fields
 
-  * `:group_id` - **required** - `String.t()`  
+  * `:group_id` - **required** - `String.t()`
     Identifier of the group the user was added to.
 
-  * `:object` - **required** - `:"group.user"`  
-    Always `group.user`.  
+  * `:object` - **required** - `:"group.user"`
+    Always `group.user`.
     Allowed values: `"group.user"`
 
-  * `:user_id` - **required** - `String.t()`  
+  * `:user_id` - **required** - `String.t()`
     Identifier of the user that was added.
   """
   @type t() :: %{
@@ -22,5 +22,13 @@ defmodule ExOpenAI.Components.GroupUserAssignment do
           object: :"group.user",
           user_id: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:group_id) => String.t(),
+              required(:object) => :"group.user" | String.t(),
+              required(:user_id) => String.t()
+            }
   defstruct [:group_id, :object, :user_id]
 end

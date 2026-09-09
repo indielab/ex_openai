@@ -9,12 +9,12 @@ defmodule ExOpenAI.Components.RealtimeClientEventInputAudioBufferCommit do
 
   ## Fields
 
-  * `:event_id` - **optional** - `String.t()`  
-    Optional client-generated ID used to identify this event.  
+  * `:event_id` - **optional** - `String.t()`
+    Optional client-generated ID used to identify this event.
     Constraints: maxLength: 512
 
-  * `:type` - **required** - `:"input_audio_buffer.commit"`  
-    The event type, must be `input_audio_buffer.commit`.  
+  * `:type` - **required** - `:"input_audio_buffer.commit"`
+    The event type, must be `input_audio_buffer.commit`.
     Allowed values: `"input_audio_buffer.commit"`
   """
   @type t() :: %{
@@ -22,5 +22,12 @@ defmodule ExOpenAI.Components.RealtimeClientEventInputAudioBufferCommit do
           event_id: String.t() | nil,
           type: :"input_audio_buffer.commit"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:event_id) => String.t(),
+              required(:type) => :"input_audio_buffer.commit" | String.t()
+            }
   defstruct [:event_id, :type]
 end

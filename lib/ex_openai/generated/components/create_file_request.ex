@@ -8,18 +8,18 @@ defmodule ExOpenAI.Components.CreateFileRequest do
 
   * `:expires_after` - **optional** - `ExOpenAI.Components.FileExpirationAfter.t()`
 
-  * `:file` - **required** - `binary()`  
-    The File object (not file name) to be uploaded.  
+  * `:file` - **required** - `binary()`
+    The File object (not file name) to be uploaded.
     Format: `binary`
 
-  * `:purpose` - **required** - `:assistants | :batch | :"fine-tune" | :vision | :user_data | :evals`  
+  * `:purpose` - **required** - `:assistants | :batch | :"fine-tune" | :vision | :user_data | :evals`
     The intended purpose of the uploaded file. One of:
   - `assistants`: Used in the Assistants API
   - `batch`: Used in the Batch API
   - `fine-tune`: Used for fine-tuning
   - `vision`: Images used for vision fine-tuning
   - `user_data`: Flexible file type for any purpose
-  - `evals`: Used for eval data sets  
+  - `evals`: Used for eval data sets
     Allowed values: `"assistants"`, `"batch"`, `"fine-tune"`, `"vision"`, `"user_data"`, `"evals"`
   """
   @type t() :: %{
@@ -28,5 +28,15 @@ defmodule ExOpenAI.Components.CreateFileRequest do
           file: binary(),
           purpose: ((((:assistants | :batch) | :"fine-tune") | :vision) | :user_data) | :evals
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:expires_after) => ExOpenAI.Components.FileExpirationAfter.input(),
+              required(:file) => binary() | {String.t(), binary()},
+              required(:purpose) =>
+                (((((:assistants | :batch) | :"fine-tune") | :vision) | :user_data) | :evals)
+                | String.t()
+            }
   defstruct [:expires_after, :file, :purpose]
 end

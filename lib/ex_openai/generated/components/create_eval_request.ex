@@ -6,15 +6,15 @@ defmodule ExOpenAI.Components.CreateEvalRequest do
 
   ## Fields
 
-  * `:data_source_config` - **required** - `map()`  
+  * `:data_source_config` - **required** - `map()`
     The configuration for the data source used for the evaluation runs. Dictates the schema of the data used in the evaluation.
 
   * `:metadata` - **optional** - `ExOpenAI.Components.Metadata.t()`
 
-  * `:name` - **optional** - `String.t()`  
+  * `:name` - **optional** - `String.t()`
     The name of the evaluation.
 
-  * `:testing_criteria` - **required** - `[ExOpenAI.Components.CreateEvalLabelModelGrader.t() | ExOpenAI.Components.EvalGraderStringCheck.t() | ExOpenAI.Components.EvalGraderTextSimilarity.t() | ExOpenAI.Components.EvalGraderPython.t() | ExOpenAI.Components.EvalGraderScoreModel.t()]`  
+  * `:testing_criteria` - **required** - `list( ExOpenAI.Components.CreateEvalLabelModelGrader.t() | ExOpenAI.Components.EvalGraderStringCheck.t() | ExOpenAI.Components.EvalGraderTextSimilarity.t() | ExOpenAI.Components.EvalGraderPython.t() | ExOpenAI.Components.EvalGraderScoreModel.t() )`
     A list of graders for all eval runs in this group. Graders can reference variables in the data source using double curly braces notation, like `{{item.variable_name}}`. To reference the model's output, use the `sample` namespace (ie, `{{sample.output_text}}`).
   """
   @type t() :: %{
@@ -31,5 +31,24 @@ defmodule ExOpenAI.Components.CreateEvalRequest do
               | ExOpenAI.Components.EvalGraderScoreModel.t()
             )
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data_source_config) =>
+                (ExOpenAI.Components.CreateEvalCustomDataSourceConfig.input()
+                 | ExOpenAI.Components.CreateEvalLogsDataSourceConfig.input())
+                | ExOpenAI.Components.CreateEvalStoredCompletionsDataSourceConfig.input(),
+              optional(:metadata) => ExOpenAI.Components.Metadata.input(),
+              optional(:name) => String.t(),
+              required(:testing_criteria) =>
+                list(
+                  (((ExOpenAI.Components.CreateEvalLabelModelGrader.input()
+                     | ExOpenAI.Components.EvalGraderStringCheck.input())
+                    | ExOpenAI.Components.EvalGraderTextSimilarity.input())
+                   | ExOpenAI.Components.EvalGraderPython.input())
+                  | ExOpenAI.Components.EvalGraderScoreModel.input()
+                )
+            }
   defstruct [:data_source_config, :metadata, :name, :testing_criteria]
 end

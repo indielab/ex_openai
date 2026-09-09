@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ResponsesClientEvent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Client events accepted by the Responses WebSocket server.
 
@@ -10,4 +8,5 @@ defmodule ExOpenAI.Components.ResponsesClientEvent do
   `ExOpenAI.Components.ResponsesClientEventResponseCreate.t()`
   """
   @type t() :: ExOpenAI.Components.ResponsesClientEventResponseCreate.t()
+  @type input() :: ExOpenAI.Components.ResponsesClientEventResponseCreate.input()
 end

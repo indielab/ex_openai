@@ -49,7 +49,7 @@ defmodule ExOpenAI.Codegen.ResponseConverterUnionTest do
        ]}
 
     value = %{"foo" => 1}
-    assert ResponseConverter.parse_remote_type(type_ast, value) == %{foo: 1}
+    assert ResponseConverter.parse_remote_type(type_ast, value) == value
   end
 
   test "union leaves lists untouched" do

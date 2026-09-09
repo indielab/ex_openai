@@ -10,15 +10,17 @@ defmodule ExOpenAI.Components.EvalCustomDataSourceConfig do
 
   ## Fields
 
-  * `:schema` - **required** - `map()`  
+  * `:schema` - **required** - `map()`
     The json schema for the run data source items.
   Learn how to build JSON schemas [here](https://json-schema.org/).
 
-  * `:type` - **required** - `:custom`  
-    The type of data source. Always `custom`.  
-    Allowed values: `"custom"`  
+  * `:type` - **required** - `:custom`
+    The type of data source. Always `custom`.
+    Allowed values: `"custom"`
     Default: `"custom"`
   """
   @type t() :: %{__struct__: __MODULE__, schema: map(), type: :custom}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:schema) => map(), required(:type) => :custom | String.t()}
   defstruct [:schema, :type]
 end

@@ -6,17 +6,17 @@ defmodule ExOpenAI.Components.ContainerNetworkPolicyAllowlistParam do
 
   ## Fields
 
-  * `:allowed_domains` - **required** - `[String.t()]`  
-    A list of allowed domains when type is `allowlist`.  
+  * `:allowed_domains` - **required** - `list(String.t())`
+    A list of allowed domains when type is `allowlist`.
     Constraints: minItems: 1
 
-  * `:domain_secrets` - **optional** - `[ExOpenAI.Components.ContainerNetworkPolicyDomainSecretParam.t()]`  
-    Optional domain-scoped secrets for allowlisted domains.  
+  * `:domain_secrets` - **optional** - `list(ExOpenAI.Components.ContainerNetworkPolicyDomainSecretParam.t())`
+    Optional domain-scoped secrets for allowlisted domains.
     Constraints: minItems: 1
 
-  * `:type` - **required** - `:allowlist`  
-    Allow outbound network access only to specified domains. Always `allowlist`.  
-    Allowed values: `"allowlist"`  
+  * `:type` - **required** - `:allowlist`
+    Allow outbound network access only to specified domains. Always `allowlist`.
+    Allowed values: `"allowlist"`
     Default: `"allowlist"`
   """
   @type t() :: %{
@@ -26,5 +26,14 @@ defmodule ExOpenAI.Components.ContainerNetworkPolicyAllowlistParam do
             list(ExOpenAI.Components.ContainerNetworkPolicyDomainSecretParam.t()) | nil,
           type: :allowlist
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:allowed_domains) => list(String.t()),
+              optional(:domain_secrets) =>
+                list(ExOpenAI.Components.ContainerNetworkPolicyDomainSecretParam.input()),
+              required(:type) => :allowlist | String.t()
+            }
   defstruct [:allowed_domains, :domain_secrets, :type]
 end

@@ -16,13 +16,13 @@ defmodule ExOpenAI.Components.RealtimeBetaClientEventSessionUpdate do
 
   ## Fields
 
-  * `:event_id` - **optional** - `String.t()`  
+  * `:event_id` - **optional** - `String.t()`
     Optional client-generated ID used to identify this event.
 
   * `:session` - **required** - `ExOpenAI.Components.RealtimeSessionCreateRequest.t()`
 
-  * `:type` - **required** - `:"session.update"`  
-    The event type, must be `session.update`.  
+  * `:type` - **required** - `:"session.update"`
+    The event type, must be `session.update`.
     Allowed values: `"session.update"`
   """
   @type t() :: %{
@@ -31,5 +31,13 @@ defmodule ExOpenAI.Components.RealtimeBetaClientEventSessionUpdate do
           session: ExOpenAI.Components.RealtimeSessionCreateRequest.t(),
           type: :"session.update"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:event_id) => String.t(),
+              required(:session) => ExOpenAI.Components.RealtimeSessionCreateRequest.input(),
+              required(:type) => :"session.update" | String.t()
+            }
   defstruct [:event_id, :session, :type]
 end

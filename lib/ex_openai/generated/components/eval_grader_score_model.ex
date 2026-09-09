@@ -6,26 +6,26 @@ defmodule ExOpenAI.Components.EvalGraderScoreModel do
 
   ## Fields
 
-  * `:input` - **required** - `[ExOpenAI.Components.EvalItem.t()]`  
+  * `:input` - **required** - `list(ExOpenAI.Components.EvalItem.t())`
     The input messages evaluated by the grader. Supports text, output text, input image, and input audio content blocks, and may include template strings.
 
-  * `:model` - **required** - `String.t()`  
+  * `:model` - **required** - `String.t()`
     The model to use for the evaluation.
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the grader.
 
-  * `:pass_threshold` - **optional** - `number()`  
+  * `:pass_threshold` - **optional** - `number()`
     The threshold for the score.
 
-  * `:range` - **optional** - `[number()]`  
+  * `:range` - **optional** - `list(number())`
     The range of the score. Defaults to `[0, 1]`.
 
-  * `:sampling_params` - **optional** - `{:%{}, [], [{{:optional, [], [:max_completions_tokens]}, {:|, [], [{:integer, [], []}, {:any, [], []}]}}, {{:optional, [], [:reasoning_effort]}, {{:., [], [ExOpenAI.Components.ReasoningEffort, :t]}, [], []}}, {{:optional, [], [:seed]}, {:|, [], [{:integer, [], []}, {:any, [], []}]}}, {{:optional, [], [:temperature]}, {:|, [], [{:number, [], []}, {:any, [], []}]}}, {{:optional, [], [:top_p]}, {:|, [], [{:number, [], []}, {:any, [], []}]}}]}`  
+  * `:sampling_params` - **optional** - `%{ optional(:max_completions_tokens) => integer() | nil, optional(:reasoning_effort) => ExOpenAI.Components.ReasoningEffort.t(), optional(:seed) => integer() | nil, optional(:temperature) => number() | nil, optional(:top_p) => number() | nil }`
     The sampling parameters for the model.
 
-  * `:type` - **required** - `:score_model`  
-    The object type, which is always `score_model`.  
+  * `:type` - **required** - `:score_model`
+    The object type, which is always `score_model`.
     Allowed values: `"score_model"`
   """
   @type t() :: %{
@@ -37,14 +37,32 @@ defmodule ExOpenAI.Components.EvalGraderScoreModel do
           range: list(number()) | nil,
           sampling_params:
             %{
-              optional(:max_completions_tokens) => integer() | any(),
+              optional(:max_completions_tokens) => integer() | nil,
               optional(:reasoning_effort) => ExOpenAI.Components.ReasoningEffort.t(),
-              optional(:seed) => integer() | any(),
-              optional(:temperature) => number() | any(),
-              optional(:top_p) => number() | any()
+              optional(:seed) => integer() | nil,
+              optional(:temperature) => number() | nil,
+              optional(:top_p) => number() | nil
             }
             | nil,
           type: :score_model
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:input) => list(ExOpenAI.Components.EvalItem.input()),
+              required(:model) => String.t(),
+              required(:name) => String.t(),
+              optional(:pass_threshold) => number(),
+              optional(:range) => list(number()),
+              optional(:sampling_params) => %{
+                optional(:max_completions_tokens) => integer() | nil,
+                optional(:reasoning_effort) => ExOpenAI.Components.ReasoningEffort.input(),
+                optional(:seed) => integer() | nil,
+                optional(:temperature) => number() | nil,
+                optional(:top_p) => number() | nil
+              },
+              required(:type) => :score_model | String.t()
+            }
   defstruct [:input, :model, :name, :pass_threshold, :range, :sampling_params, :type]
 end

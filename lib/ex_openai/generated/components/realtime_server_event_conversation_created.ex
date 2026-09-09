@@ -7,14 +7,14 @@ defmodule ExOpenAI.Components.RealtimeServerEventConversationCreated do
 
   ## Fields
 
-  * `:conversation` - **required** - `{:%{}, [], [{{:optional, [], [:id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:object]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:conversation` - **required** - `%{optional(:id) => String.t(), optional(:object) => String.t()}`
     The conversation resource.
 
-  * `:event_id` - **required** - `String.t()`  
+  * `:event_id` - **required** - `String.t()`
     The unique ID of the server event.
 
-  * `:type` - **required** - `:"conversation.created"`  
-    The event type, must be `conversation.created`.  
+  * `:type` - **required** - `:"conversation.created"`
+    The event type, must be `conversation.created`.
     Allowed values: `"conversation.created"`
   """
   @type t() :: %{
@@ -23,5 +23,16 @@ defmodule ExOpenAI.Components.RealtimeServerEventConversationCreated do
           event_id: String.t(),
           type: :"conversation.created"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:conversation) => %{
+                optional(:id) => String.t(),
+                optional(:object) => String.t()
+              },
+              required(:event_id) => String.t(),
+              required(:type) => :"conversation.created" | String.t()
+            }
   defstruct [:conversation, :event_id, :type]
 end

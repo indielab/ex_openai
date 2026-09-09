@@ -6,16 +6,17 @@ defmodule ExOpenAI.Components.CreateTranslationResponseVerboseJson do
 
   ## Fields
 
-  * `:duration` - **required** - `number()`  
+  * `:duration` - **required** - `number()`
     The duration of the input audio.
+    Format: `double`
 
-  * `:language` - **required** - `String.t()`  
+  * `:language` - **required** - `String.t()`
     The language of the output translation (always `english`).
 
-  * `:segments` - **optional** - `[ExOpenAI.Components.TranscriptionSegment.t()]`  
+  * `:segments` - **optional** - `list(ExOpenAI.Components.TranscriptionSegment.t())`
     Segments of the translated text and their corresponding details.
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     The translated text.
   """
   @type t() :: %{
@@ -25,5 +26,14 @@ defmodule ExOpenAI.Components.CreateTranslationResponseVerboseJson do
           segments: list(ExOpenAI.Components.TranscriptionSegment.t()) | nil,
           text: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:duration) => number(),
+              required(:language) => String.t(),
+              optional(:segments) => list(ExOpenAI.Components.TranscriptionSegment.input()),
+              required(:text) => String.t()
+            }
   defstruct [:duration, :language, :segments, :text]
 end

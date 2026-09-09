@@ -7,14 +7,14 @@ defmodule ExOpenAI.Components.RunStepDeltaObject do
 
   ## Fields
 
-  * `:delta` - **required** - `{:%{}, [], [{{:optional, [], [:step_details]}, {:map, [], []}}]}`  
+  * `:delta` - **required** - `%{optional(:step_details) => map()}`
     The delta containing the fields that have changed on the run step.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The identifier of the run step, which can be referenced in API endpoints.
 
-  * `:object` - **required** - `:"thread.run.step.delta"`  
-    The object type, which is always `thread.run.step.delta`.  
+  * `:object` - **required** - `:"thread.run.step.delta"`
+    The object type, which is always `thread.run.step.delta`.
     Allowed values: `"thread.run.step.delta"`
   """
   @type t() :: %{
@@ -23,5 +23,17 @@ defmodule ExOpenAI.Components.RunStepDeltaObject do
           id: String.t(),
           object: :"thread.run.step.delta"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:delta) => %{
+                optional(:step_details) =>
+                  ExOpenAI.Components.RunStepDeltaStepDetailsMessageCreationObject.input()
+                  | ExOpenAI.Components.RunStepDeltaStepDetailsToolCallsObject.input()
+              },
+              required(:id) => String.t(),
+              required(:object) => :"thread.run.step.delta" | String.t()
+            }
   defstruct [:delta, :id, :object]
 end

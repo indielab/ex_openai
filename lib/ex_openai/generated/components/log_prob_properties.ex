@@ -7,13 +7,13 @@ defmodule ExOpenAI.Components.LogProbProperties do
 
   ## Fields
 
-  * `:bytes` - **required** - `[integer()]`  
+  * `:bytes` - **required** - `list(integer())`
     The bytes that were used to generate the log probability.
 
-  * `:logprob` - **required** - `number()`  
+  * `:logprob` - **required** - `number()`
     The log probability of the token.
 
-  * `:token` - **required** - `String.t()`  
+  * `:token` - **required** - `String.t()`
     The token that was used to generate the log probability.
   """
   @type t() :: %{
@@ -22,5 +22,13 @@ defmodule ExOpenAI.Components.LogProbProperties do
           logprob: number(),
           token: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:bytes) => list(integer()),
+              required(:logprob) => number(),
+              required(:token) => String.t()
+            }
   defstruct [:bytes, :logprob, :token]
 end

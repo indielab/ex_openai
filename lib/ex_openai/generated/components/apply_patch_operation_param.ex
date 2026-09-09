@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ApplyPatchOperationParam do
-  use ExOpenAI.Jason
-
   @moduledoc """
   One of the create_file, delete_file, or update_file operations supplied to the apply_patch tool.
 
@@ -12,4 +10,8 @@ defmodule ExOpenAI.Components.ApplyPatchOperationParam do
           (ExOpenAI.Components.ApplyPatchCreateFileOperationParam.t()
            | ExOpenAI.Components.ApplyPatchDeleteFileOperationParam.t())
           | ExOpenAI.Components.ApplyPatchUpdateFileOperationParam.t()
+  @type input() ::
+          (ExOpenAI.Components.ApplyPatchCreateFileOperationParam.input()
+           | ExOpenAI.Components.ApplyPatchDeleteFileOperationParam.input())
+          | ExOpenAI.Components.ApplyPatchUpdateFileOperationParam.input()
 end

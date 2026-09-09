@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ComputerEnvironment do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ComputerEnvironment.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ComputerEnvironment do
   `"windows"`, `"mac"`, `"linux"`, `"ubuntu"`, `"browser"`
   """
   @type t() :: (((:windows | :mac) | :linux) | :ubuntu) | :browser
+  @type input() :: ((((:windows | :mac) | :linux) | :ubuntu) | :browser) | String.t()
 end

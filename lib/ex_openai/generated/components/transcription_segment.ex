@@ -6,40 +6,40 @@ defmodule ExOpenAI.Components.TranscriptionSegment do
 
   ## Fields
 
-  * `:avg_logprob` - **required** - `number()`  
-    Average logprob of the segment. If the value is lower than -1, consider the logprobs failed.  
+  * `:avg_logprob` - **required** - `number()`
+    Average logprob of the segment. If the value is lower than -1, consider the logprobs failed.
     Format: `float`
 
-  * `:compression_ratio` - **required** - `number()`  
-    Compression ratio of the segment. If the value is greater than 2.4, consider the compression failed.  
+  * `:compression_ratio` - **required** - `number()`
+    Compression ratio of the segment. If the value is greater than 2.4, consider the compression failed.
     Format: `float`
 
-  * `:end` - **required** - `number()`  
-    End time of the segment in seconds.  
-    Format: `float`
+  * `:end` - **required** - `number()`
+    End time of the segment in seconds.
+    Format: `double`
 
-  * `:id` - **required** - `integer()`  
+  * `:id` - **required** - `integer()`
     Unique identifier of the segment.
 
-  * `:no_speech_prob` - **required** - `number()`  
-    Probability of no speech in the segment. If the value is higher than 1.0 and the `avg_logprob` is below -1, consider this segment silent.  
+  * `:no_speech_prob` - **required** - `number()`
+    Probability of no speech in the segment. If the value is higher than 1.0 and the `avg_logprob` is below -1, consider this segment silent.
     Format: `float`
 
-  * `:seek` - **required** - `integer()`  
+  * `:seek` - **required** - `integer()`
     Seek offset of the segment.
 
-  * `:start` - **required** - `number()`  
-    Start time of the segment in seconds.  
+  * `:start` - **required** - `number()`
+    Start time of the segment in seconds.
+    Format: `double`
+
+  * `:temperature` - **required** - `number()`
+    Temperature parameter used for generating the segment.
     Format: `float`
 
-  * `:temperature` - **required** - `number()`  
-    Temperature parameter used for generating the segment.  
-    Format: `float`
-
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     Text content of the segment.
 
-  * `:tokens` - **required** - `[integer()]`  
+  * `:tokens` - **required** - `list(integer())`
     Array of token IDs for the text content.
   """
   @type t() :: %{
@@ -55,6 +55,21 @@ defmodule ExOpenAI.Components.TranscriptionSegment do
           text: String.t(),
           tokens: list(integer())
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:avg_logprob) => number(),
+              required(:compression_ratio) => number(),
+              required(:end) => number(),
+              required(:id) => integer(),
+              required(:no_speech_prob) => number(),
+              required(:seek) => integer(),
+              required(:start) => number(),
+              required(:temperature) => number(),
+              required(:text) => String.t(),
+              required(:tokens) => list(integer())
+            }
   defstruct [
     :avg_logprob,
     :compression_ratio,

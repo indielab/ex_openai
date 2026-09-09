@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.OrderEnum do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema OrderEnum.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.OrderEnum do
   `"asc"`, `"desc"`
   """
   @type t() :: :asc | :desc
+  @type input() :: (:asc | :desc) | String.t()
 end

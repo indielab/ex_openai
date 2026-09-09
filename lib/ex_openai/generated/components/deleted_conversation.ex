@@ -10,8 +10,8 @@ defmodule ExOpenAI.Components.DeletedConversation do
 
   * `:id` - **required** - `String.t()`
 
-  * `:object` - **required** - `:"conversation.deleted"`  
-    Allowed values: `"conversation.deleted"`  
+  * `:object` - **required** - `:"conversation.deleted"`
+    Allowed values: `"conversation.deleted"`
     Default: `"conversation.deleted"`
   """
   @type t() :: %{
@@ -20,5 +20,13 @@ defmodule ExOpenAI.Components.DeletedConversation do
           id: String.t(),
           object: :"conversation.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"conversation.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

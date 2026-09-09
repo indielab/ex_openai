@@ -1,0 +1,31 @@
+# SDK-owned additions to the upstream document. Existing fields must be reviewed,
+# never overwritten, when an upstream update overlaps an addition.
+
+# The request schemas advertise text formats omitted from the response content.
+- target: [paths, '/audio/transcriptions', post, responses, '200', content]
+  add:
+    text/plain:
+      schema:
+        type: string
+- target: [paths, '/audio/translations', post, responses, '200', content]
+  add:
+    text/plain:
+      schema:
+        type: string
+
+# Run operations emit the existing AssistantStreamEvent union in SSE envelopes.
+- target: [paths, '/threads/runs', post, responses, '200', content]
+  add:
+    text/event-stream:
+      schema:
+        $ref: '#/components/schemas/AssistantStreamEvent'
+- target: [paths, '/threads/{thread_id}/runs', post, responses, '200', content]
+  add:
+    text/event-stream:
+      schema:
+        $ref: '#/components/schemas/AssistantStreamEvent'
+- target: [paths, '/threads/{thread_id}/runs/{run_id}/submit_tool_outputs', post, responses, '200', content]
+  add:
+    text/event-stream:
+      schema:
+        $ref: '#/components/schemas/AssistantStreamEvent'

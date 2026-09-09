@@ -6,16 +6,16 @@ defmodule ExOpenAI.Components.WorkflowParam do
 
   ## Fields
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier for the workflow invoked by the session.
 
-  * `:state_variables` - **optional** - `map()`  
+  * `:state_variables` - **optional** - `map()`
     State variables forwarded to the workflow. Keys may be up to 64 characters, values must be primitive types, and the map defaults to an empty object.
 
-  * `:tracing` - **optional** - `ExOpenAI.Components.WorkflowTracingParam.t()`  
+  * `:tracing` - **optional** - `ExOpenAI.Components.WorkflowTracingParam.t()`
     Optional tracing overrides for the workflow invocation. When omitted, tracing is enabled by default.
 
-  * `:version` - **optional** - `String.t()`  
+  * `:version` - **optional** - `String.t()`
     Specific workflow version to run. Defaults to the latest deployed version.
   """
   @type t() :: %{
@@ -25,5 +25,14 @@ defmodule ExOpenAI.Components.WorkflowParam do
           tracing: ExOpenAI.Components.WorkflowTracingParam.t() | nil,
           version: String.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:id) => String.t(),
+              optional(:state_variables) => map(),
+              optional(:tracing) => ExOpenAI.Components.WorkflowTracingParam.input(),
+              optional(:version) => String.t()
+            }
   defstruct [:id, :state_variables, :tracing, :version]
 end

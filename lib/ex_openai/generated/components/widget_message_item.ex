@@ -6,26 +6,27 @@ defmodule ExOpenAI.Components.WidgetMessageItem do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     Unix timestamp (in seconds) for when the item was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier of the thread item.
 
-  * `:object` - **required** - `:"chatkit.thread_item"`  
-    Type discriminator that is always `chatkit.thread_item`.  
-    Allowed values: `"chatkit.thread_item"`  
+  * `:object` - **required** - `:"chatkit.thread_item"`
+    Type discriminator that is always `chatkit.thread_item`.
+    Allowed values: `"chatkit.thread_item"`
     Default: `"chatkit.thread_item"`
 
-  * `:thread_id` - **required** - `String.t()`  
+  * `:thread_id` - **required** - `String.t()`
     Identifier of the parent thread.
 
-  * `:type` - **required** - `:"chatkit.widget"`  
-    Type discriminator that is always `chatkit.widget`.  
-    Allowed values: `"chatkit.widget"`  
+  * `:type` - **required** - `:"chatkit.widget"`
+    Type discriminator that is always `chatkit.widget`.
+    Allowed values: `"chatkit.widget"`
     Default: `"chatkit.widget"`
 
-  * `:widget` - **required** - `String.t()`  
+  * `:widget` - **required** - `String.t()`
     Serialized widget payload rendered in the UI.
   """
   @type t() :: %{
@@ -37,5 +38,16 @@ defmodule ExOpenAI.Components.WidgetMessageItem do
           type: :"chatkit.widget",
           widget: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:object) => :"chatkit.thread_item" | String.t(),
+              required(:thread_id) => String.t(),
+              required(:type) => :"chatkit.widget" | String.t(),
+              required(:widget) => String.t()
+            }
   defstruct [:created_at, :id, :object, :thread_id, :type, :widget]
 end

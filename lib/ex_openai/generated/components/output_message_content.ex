@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.OutputMessageContent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema OutputMessageContent.
 
@@ -9,4 +7,7 @@ defmodule ExOpenAI.Components.OutputMessageContent do
   `ExOpenAI.Components.OutputTextContent.t() | ExOpenAI.Components.RefusalContent.t()`
   """
   @type t() :: ExOpenAI.Components.OutputTextContent.t() | ExOpenAI.Components.RefusalContent.t()
+  @type input() ::
+          ExOpenAI.Components.OutputTextContent.input()
+          | ExOpenAI.Components.RefusalContent.input()
 end

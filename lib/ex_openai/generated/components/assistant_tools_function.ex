@@ -8,8 +8,8 @@ defmodule ExOpenAI.Components.AssistantToolsFunction do
 
   * `:function` - **required** - `ExOpenAI.Components.FunctionObject.t()`
 
-  * `:type` - **required** - `:function`  
-    The type of tool being defined: `function`  
+  * `:type` - **required** - `:function`
+    The type of tool being defined: `function`
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -17,5 +17,12 @@ defmodule ExOpenAI.Components.AssistantToolsFunction do
           function: ExOpenAI.Components.FunctionObject.t(),
           type: :function
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:function) => ExOpenAI.Components.FunctionObject.input(),
+              required(:type) => :function | String.t()
+            }
   defstruct [:function, :type]
 end

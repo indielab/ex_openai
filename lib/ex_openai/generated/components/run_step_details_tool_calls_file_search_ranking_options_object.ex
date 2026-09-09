@@ -8,8 +8,8 @@ defmodule ExOpenAI.Components.RunStepDetailsToolCallsFileSearchRankingOptionsObj
 
   * `:ranker` - **required** - `ExOpenAI.Components.FileSearchRanker.t()`
 
-  * `:score_threshold` - **required** - `number()`  
-    The score threshold for the file search. All values must be a floating point number between 0 and 1.  
+  * `:score_threshold` - **required** - `number()`
+    The score threshold for the file search. All values must be a floating point number between 0 and 1.
     Constraints: minimum: 0, maximum: 1
   """
   @type t() :: %{
@@ -17,5 +17,12 @@ defmodule ExOpenAI.Components.RunStepDetailsToolCallsFileSearchRankingOptionsObj
           ranker: ExOpenAI.Components.FileSearchRanker.t(),
           score_threshold: number()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:ranker) => ExOpenAI.Components.FileSearchRanker.input(),
+              required(:score_threshold) => number()
+            }
   defstruct [:ranker, :score_threshold]
 end

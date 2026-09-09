@@ -6,10 +6,10 @@ defmodule ExOpenAI.Components.MessageContentTextObject do
 
   ## Fields
 
-  * `:text` - **required** - `{:%{}, [], [{{:required, [], [:annotations]}, {:list, [], [{:|, [], [{{:., [], [ExOpenAI.Components.MessageContentTextAnnotationsFileCitationObject, :t]}, [], []}, {{:., [], [ExOpenAI.Components.MessageContentTextAnnotationsFilePathObject, :t]}, [], []}]}]}}, {{:required, [], [:value]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:text` - **required** - `%{ required(:annotations) => list( ExOpenAI.Components.MessageContentTextAnnotationsFileCitationObject.t() | ExOpenAI.Components.MessageContentTextAnnotationsFilePathObject.t() ), required(:value) => String.t() }`
 
-  * `:type` - **required** - `:text`  
-    Always `text`.  
+  * `:type` - **required** - `:text`
+    Always `text`.
     Allowed values: `"text"`
   """
   @type t() :: %{
@@ -24,5 +24,19 @@ defmodule ExOpenAI.Components.MessageContentTextObject do
           },
           type: :text
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:text) => %{
+                required(:annotations) =>
+                  list(
+                    ExOpenAI.Components.MessageContentTextAnnotationsFileCitationObject.input()
+                    | ExOpenAI.Components.MessageContentTextAnnotationsFilePathObject.input()
+                  ),
+                required(:value) => String.t()
+              },
+              required(:type) => :text | String.t()
+            }
   defstruct [:text, :type]
 end

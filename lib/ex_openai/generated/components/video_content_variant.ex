@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.VideoContentVariant do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema VideoContentVariant.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.VideoContentVariant do
   `"video"`, `"thumbnail"`, `"spritesheet"`
   """
   @type t() :: (:video | :thumbnail) | :spritesheet
+  @type input() :: ((:video | :thumbnail) | :spritesheet) | String.t()
 end

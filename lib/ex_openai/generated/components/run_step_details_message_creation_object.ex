@@ -6,10 +6,10 @@ defmodule ExOpenAI.Components.RunStepDetailsMessageCreationObject do
 
   ## Fields
 
-  * `:message_creation` - **required** - `{:%{}, [], [{{:required, [], [:message_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:message_creation` - **required** - `%{required(:message_id) => String.t()}`
 
-  * `:type` - **required** - `:message_creation`  
-    Always `message_creation`.  
+  * `:type` - **required** - `:message_creation`
+    Always `message_creation`.
     Allowed values: `"message_creation"`
   """
   @type t() :: %{
@@ -17,5 +17,12 @@ defmodule ExOpenAI.Components.RunStepDetailsMessageCreationObject do
           message_creation: %{required(:message_id) => String.t()},
           type: :message_creation
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:message_creation) => %{required(:message_id) => String.t()},
+              required(:type) => :message_creation | String.t()
+            }
   defstruct [:message_creation, :type]
 end

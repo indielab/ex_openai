@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ToolSearchExecutionType do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ToolSearchExecutionType.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ToolSearchExecutionType do
   `"server"`, `"client"`
   """
   @type t() :: :server | :client
+  @type input() :: (:server | :client) | String.t()
 end

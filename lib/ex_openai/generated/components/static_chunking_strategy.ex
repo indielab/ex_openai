@@ -6,13 +6,13 @@ defmodule ExOpenAI.Components.StaticChunkingStrategy do
 
   ## Fields
 
-  * `:chunk_overlap_tokens` - **required** - `integer()`  
+  * `:chunk_overlap_tokens` - **required** - `integer()`
     The number of tokens that overlap between chunks. The default value is `400`.
 
   Note that the overlap must not exceed half of `max_chunk_size_tokens`.
 
-  * `:max_chunk_size_tokens` - **required** - `integer()`  
-    The maximum number of tokens in each chunk. The default value is `800`. The minimum value is `100` and the maximum value is `4096`.  
+  * `:max_chunk_size_tokens` - **required** - `integer()`
+    The maximum number of tokens in each chunk. The default value is `800`. The minimum value is `100` and the maximum value is `4096`.
     Constraints: minimum: 100, maximum: 4096
   """
   @type t() :: %{
@@ -20,5 +20,12 @@ defmodule ExOpenAI.Components.StaticChunkingStrategy do
           chunk_overlap_tokens: integer(),
           max_chunk_size_tokens: integer()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:chunk_overlap_tokens) => integer(),
+              required(:max_chunk_size_tokens) => integer()
+            }
   defstruct [:chunk_overlap_tokens, :max_chunk_size_tokens]
 end

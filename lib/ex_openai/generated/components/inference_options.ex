@@ -6,14 +6,21 @@ defmodule ExOpenAI.Components.InferenceOptions do
 
   ## Fields
 
-  * `:model` - **required** - `String.t() | any()`
+  * `:model` - **required** - `String.t() | nil`
 
-  * `:tool_choice` - **required** - `ExOpenAI.Components.ToolChoice.t() | any()`
+  * `:tool_choice` - **required** - `ExOpenAI.Components.ToolChoice.t() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          model: String.t() | any(),
-          tool_choice: ExOpenAI.Components.ToolChoice.t() | any()
+          model: String.t() | nil,
+          tool_choice: ExOpenAI.Components.ToolChoice.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:model) => String.t() | nil,
+              required(:tool_choice) => ExOpenAI.Components.ToolChoice.input() | nil
+            }
   defstruct [:model, :tool_choice]
 end

@@ -6,23 +6,24 @@ defmodule ExOpenAI.Components.ThreadResource do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     Unix timestamp (in seconds) for when the thread was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier of the thread.
 
-  * `:object` - **required** - `:"chatkit.thread"`  
-    Type discriminator that is always `chatkit.thread`.  
-    Allowed values: `"chatkit.thread"`  
+  * `:object` - **required** - `:"chatkit.thread"`
+    Type discriminator that is always `chatkit.thread`.
+    Allowed values: `"chatkit.thread"`
     Default: `"chatkit.thread"`
 
-  * `:status` - **required** - `ExOpenAI.Components.ActiveStatus.t() | ExOpenAI.Components.LockedStatus.t() | ExOpenAI.Components.ClosedStatus.t()`  
+  * `:status` - **required** - `ExOpenAI.Components.ActiveStatus.t() | ExOpenAI.Components.LockedStatus.t() | ExOpenAI.Components.ClosedStatus.t()`
     Current status for the thread. Defaults to `active` for newly created threads.
 
-  * `:title` - **required** - `String.t() | any()`
+  * `:title` - **required** - `String.t() | nil`
 
-  * `:user` - **required** - `String.t()`  
+  * `:user` - **required** - `String.t()`
     Free-form string that identifies your end user who owns the thread.
   """
   @type t() :: %{
@@ -33,8 +34,22 @@ defmodule ExOpenAI.Components.ThreadResource do
           status:
             (ExOpenAI.Components.ActiveStatus.t() | ExOpenAI.Components.LockedStatus.t())
             | ExOpenAI.Components.ClosedStatus.t(),
-          title: String.t() | any(),
+          title: String.t() | nil,
           user: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:object) => :"chatkit.thread" | String.t(),
+              required(:status) =>
+                (ExOpenAI.Components.ActiveStatus.input()
+                 | ExOpenAI.Components.LockedStatus.input())
+                | ExOpenAI.Components.ClosedStatus.input(),
+              required(:title) => String.t() | nil,
+              required(:user) => String.t()
+            }
   defstruct [:created_at, :id, :object, :status, :title, :user]
 end

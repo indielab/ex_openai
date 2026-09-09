@@ -6,9 +6,11 @@ defmodule ExOpenAI.Components.ToggleCertificatesRequest do
 
   ## Fields
 
-  * `:certificate_ids` - **required** - `[String.t()]`  
+  * `:certificate_ids` - **required** - `list(String.t())`
     Constraints: minItems: 1, maxItems: 10
   """
   @type t() :: %{__struct__: __MODULE__, certificate_ids: list(String.t())}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:certificate_ids) => list(String.t())}
   defstruct [:certificate_ids]
 end

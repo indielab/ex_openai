@@ -11,21 +11,21 @@ defmodule ExOpenAI.Components.RealtimeTranscriptionSessionCreateResponse do
 
   ## Fields
 
-  * `:client_secret` - **required** - `{:%{}, [], [{{:required, [], [:expires_at]}, {:integer, [], []}}, {{:required, [], [:value]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:client_secret` - **required** - `%{required(:expires_at) => integer(), required(:value) => String.t()}`
     Ephemeral key returned by the API. Only present when the session is
   created on the server via REST API.
 
-  * `:input_audio_format` - **optional** - `String.t()`  
+  * `:input_audio_format` - **optional** - `String.t()`
     The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
 
-  * `:input_audio_transcription` - **optional** - `ExOpenAI.Components.AudioTranscription.t()`  
+  * `:input_audio_transcription` - **optional** - `ExOpenAI.Components.AudioTranscriptionResponse.t()`
     Configuration of the transcription model.
 
-  * `:modalities` - **optional** - `any()`  
+  * `:modalities` - **optional** - `any()`
     The set of modalities the model can respond with. To disable audio,
   set this to ["text"].
 
-  * `:turn_detection` - **optional** - `{:%{}, [], [{{:optional, [], [:prefix_padding_ms]}, {:integer, [], []}}, {{:optional, [], [:silence_duration_ms]}, {:integer, [], []}}, {{:optional, [], [:threshold]}, {:number, [], []}}, {{:optional, [], [:type]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`  
+  * `:turn_detection` - **optional** - `%{ optional(:prefix_padding_ms) => integer(), optional(:silence_duration_ms) => integer(), optional(:threshold) => number(), optional(:type) => String.t() }`
     Configuration for turn detection. Can be set to `null` to turn off. Server
   VAD means that the model will detect the start and end of speech based on
   audio volume and respond at the end of user speech.
@@ -34,7 +34,7 @@ defmodule ExOpenAI.Components.RealtimeTranscriptionSessionCreateResponse do
           __struct__: __MODULE__,
           client_secret: %{required(:expires_at) => integer(), required(:value) => String.t()},
           input_audio_format: String.t() | nil,
-          input_audio_transcription: ExOpenAI.Components.AudioTranscription.t() | nil,
+          input_audio_transcription: ExOpenAI.Components.AudioTranscriptionResponse.t() | nil,
           modalities: any() | nil,
           turn_detection:
             %{
@@ -45,6 +45,25 @@ defmodule ExOpenAI.Components.RealtimeTranscriptionSessionCreateResponse do
             }
             | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:client_secret) => %{
+                required(:expires_at) => integer(),
+                required(:value) => String.t()
+              },
+              optional(:input_audio_format) => String.t(),
+              optional(:input_audio_transcription) =>
+                ExOpenAI.Components.AudioTranscriptionResponse.input(),
+              optional(:modalities) => any(),
+              optional(:turn_detection) => %{
+                optional(:prefix_padding_ms) => integer(),
+                optional(:silence_duration_ms) => integer(),
+                optional(:threshold) => number(),
+                optional(:type) => String.t()
+              }
+            }
   defstruct [
     :client_secret,
     :input_audio_format,

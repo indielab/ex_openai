@@ -6,12 +6,12 @@ defmodule ExOpenAI.Components.EvalJsonlFileContentSource do
 
   ## Fields
 
-  * `:content` - **required** - `[{:%{}, [], [{{:required, [], [:item]}, {:map, [], []}}, {{:optional, [], [:sample]}, {:map, [], []}}]}]`  
+  * `:content` - **required** - `list(%{required(:item) => map(), optional(:sample) => map()})`
     The content of the jsonl file.
 
-  * `:type` - **required** - `:file_content`  
-    The type of jsonl source. Always `file_content`.  
-    Allowed values: `"file_content"`  
+  * `:type` - **required** - `:file_content`
+    The type of jsonl source. Always `file_content`.
+    Allowed values: `"file_content"`
     Default: `"file_content"`
   """
   @type t() :: %{
@@ -19,5 +19,12 @@ defmodule ExOpenAI.Components.EvalJsonlFileContentSource do
           content: list(%{required(:item) => map(), optional(:sample) => map()}),
           type: :file_content
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content) => list(%{required(:item) => map(), optional(:sample) => map()}),
+              required(:type) => :file_content | String.t()
+            }
   defstruct [:content, :type]
 end

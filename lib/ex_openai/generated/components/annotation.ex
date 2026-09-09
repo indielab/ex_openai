@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.Annotation do
-  use ExOpenAI.Jason
-
   @moduledoc """
   An annotation that applies to a span of output text.
 
@@ -12,4 +10,9 @@ defmodule ExOpenAI.Components.Annotation do
           ((ExOpenAI.Components.FileCitationBody.t() | ExOpenAI.Components.UrlCitationBody.t())
            | ExOpenAI.Components.ContainerFileCitationBody.t())
           | ExOpenAI.Components.FilePath.t()
+  @type input() ::
+          ((ExOpenAI.Components.FileCitationBody.input()
+            | ExOpenAI.Components.UrlCitationBody.input())
+           | ExOpenAI.Components.ContainerFileCitationBody.input())
+          | ExOpenAI.Components.FilePath.input()
 end

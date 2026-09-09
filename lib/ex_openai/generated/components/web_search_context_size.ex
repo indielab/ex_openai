@@ -1,8 +1,6 @@
 defmodule ExOpenAI.Components.WebSearchContextSize do
-  use ExOpenAI.Jason
-
   @moduledoc """
-  High level guidance for the amount of context window space to use for the 
+  High level guidance for the amount of context window space to use for the
   search. One of `low`, `medium`, or `high`. `medium` is the default.
 
 
@@ -15,4 +13,5 @@ defmodule ExOpenAI.Components.WebSearchContextSize do
   `"low"`, `"medium"`, `"high"`
   """
   @type t() :: (:low | :medium) | :high
+  @type input() :: ((:low | :medium) | :high) | String.t()
 end

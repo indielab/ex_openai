@@ -7,20 +7,20 @@ defmodule ExOpenAI.Components.ResponseCustomToolCallInputDoneEvent do
 
   ## Fields
 
-  * `:input` - **required** - `String.t()`  
+  * `:input` - **required** - `String.t()`
     The complete input data for the custom tool call.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     Unique identifier for the API item associated with this event.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output this event applies to.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.custom_tool_call_input.done"`  
-    The event type identifier.  
+  * `:type` - **required** - `:"response.custom_tool_call_input.done"`
+    The event type identifier.
     Allowed values: `"response.custom_tool_call_input.done"`
   """
   @type t() :: %{
@@ -31,5 +31,15 @@ defmodule ExOpenAI.Components.ResponseCustomToolCallInputDoneEvent do
           sequence_number: integer(),
           type: :"response.custom_tool_call_input.done"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:input) => String.t(),
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.custom_tool_call_input.done" | String.t()
+            }
   defstruct [:input, :item_id, :output_index, :sequence_number, :type]
 end

@@ -6,14 +6,14 @@ defmodule ExOpenAI.Components.CreateVideoExtendJsonBody do
 
   ## Fields
 
-  * `:prompt` - **required** - `String.t()`  
-    Updated text prompt that directs the extension generation.  
+  * `:prompt` - **required** - `String.t()`
+    Updated text prompt that directs the extension generation.
     Constraints: minLength: 1, maxLength: 32000
 
-  * `:seconds` - **required** - `ExOpenAI.Components.VideoSeconds.t()`  
+  * `:seconds` - **required** - `ExOpenAI.Components.VideoSeconds.t()`
     Length of the newly generated extension segment in seconds (allowed values: 4, 8, 12, 16, 20).
 
-  * `:video` - **required** - `ExOpenAI.Components.VideoReferenceInputParam.t()`  
+  * `:video` - **required** - `ExOpenAI.Components.VideoReferenceInputParam.t()`
     Reference to the completed video to extend.
   """
   @type t() :: %{
@@ -22,5 +22,13 @@ defmodule ExOpenAI.Components.CreateVideoExtendJsonBody do
           seconds: ExOpenAI.Components.VideoSeconds.t(),
           video: ExOpenAI.Components.VideoReferenceInputParam.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:prompt) => String.t(),
+              required(:seconds) => ExOpenAI.Components.VideoSeconds.input(),
+              required(:video) => ExOpenAI.Components.VideoReferenceInputParam.input()
+            }
   defstruct [:prompt, :seconds, :video]
 end

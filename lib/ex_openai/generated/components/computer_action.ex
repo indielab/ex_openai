@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ComputerAction do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ComputerAction.
 
@@ -17,4 +15,14 @@ defmodule ExOpenAI.Components.ComputerAction do
             | ExOpenAI.Components.ScrollParam.t())
            | ExOpenAI.Components.TypeParam.t())
           | ExOpenAI.Components.WaitParam.t()
+  @type input() ::
+          (((((((ExOpenAI.Components.ClickParam.input()
+                 | ExOpenAI.Components.DoubleClickAction.input())
+                | ExOpenAI.Components.DragParam.input())
+               | ExOpenAI.Components.KeyPressAction.input())
+              | ExOpenAI.Components.MoveParam.input())
+             | ExOpenAI.Components.ScreenshotParam.input())
+            | ExOpenAI.Components.ScrollParam.input())
+           | ExOpenAI.Components.TypeParam.input())
+          | ExOpenAI.Components.WaitParam.input()
 end

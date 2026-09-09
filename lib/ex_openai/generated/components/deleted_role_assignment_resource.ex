@@ -6,12 +6,14 @@ defmodule ExOpenAI.Components.DeletedRoleAssignmentResource do
 
   ## Fields
 
-  * `:deleted` - **required** - `boolean()`  
+  * `:deleted` - **required** - `boolean()`
     Whether the assignment was removed.
 
-  * `:object` - **required** - `String.t()`  
+  * `:object` - **required** - `String.t()`
     Identifier for the deleted assignment, such as `group.role.deleted` or `user.role.deleted`.
   """
   @type t() :: %{__struct__: __MODULE__, deleted: boolean(), object: String.t()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:deleted) => boolean(), required(:object) => String.t()}
   defstruct [:deleted, :object]
 end

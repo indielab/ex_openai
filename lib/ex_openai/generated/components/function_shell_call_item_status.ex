@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.FunctionShellCallItemStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Status values reported for shell tool calls.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.FunctionShellCallItemStatus do
   `"in_progress"`, `"completed"`, `"incomplete"`
   """
   @type t() :: (:in_progress | :completed) | :incomplete
+  @type input() :: ((:in_progress | :completed) | :incomplete) | String.t()
 end

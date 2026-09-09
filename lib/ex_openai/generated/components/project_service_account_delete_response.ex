@@ -10,7 +10,7 @@ defmodule ExOpenAI.Components.ProjectServiceAccountDeleteResponse do
 
   * `:id` - **required** - `String.t()`
 
-  * `:object` - **required** - `:"organization.project.service_account.deleted"`  
+  * `:object` - **required** - `:"organization.project.service_account.deleted"`
     Allowed values: `"organization.project.service_account.deleted"`
   """
   @type t() :: %{
@@ -19,5 +19,13 @@ defmodule ExOpenAI.Components.ProjectServiceAccountDeleteResponse do
           id: String.t(),
           object: :"organization.project.service_account.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"organization.project.service_account.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

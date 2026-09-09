@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ToolChoiceOptions do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Controls which (if any) tool is called by the model.
 
@@ -21,4 +19,5 @@ defmodule ExOpenAI.Components.ToolChoiceOptions do
   `"none"`, `"auto"`, `"required"`
   """
   @type t() :: (:none | :auto) | :required
+  @type input() :: ((:none | :auto) | :required) | String.t()
 end

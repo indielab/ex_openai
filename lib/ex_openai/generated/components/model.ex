@@ -15,5 +15,14 @@ defmodule ExOpenAI.Components.Model do
           object: :model,
           owned_by: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created) => integer(),
+              required(:id) => String.t(),
+              required(:object) => :model | String.t(),
+              required(:owned_by) => String.t()
+            }
   defstruct [:created, :id, :object, :owned_by]
 end

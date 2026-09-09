@@ -1,12 +1,11 @@
 defmodule ExOpenAI.Components.Metadata do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema Metadata.
 
   ## Type
 
-  `map() | any()`
+  `map() | nil`
   """
-  @type t() :: map() | any()
+  @type t() :: map() | nil
+  @type input() :: map() | nil
 end

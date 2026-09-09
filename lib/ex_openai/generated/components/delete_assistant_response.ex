@@ -10,7 +10,7 @@ defmodule ExOpenAI.Components.DeleteAssistantResponse do
 
   * `:id` - **required** - `String.t()`
 
-  * `:object` - **required** - `:"assistant.deleted"`  
+  * `:object` - **required** - `:"assistant.deleted"`
     Allowed values: `"assistant.deleted"`
   """
   @type t() :: %{
@@ -19,5 +19,13 @@ defmodule ExOpenAI.Components.DeleteAssistantResponse do
           id: String.t(),
           object: :"assistant.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"assistant.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

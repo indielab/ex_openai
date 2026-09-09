@@ -7,46 +7,48 @@ defmodule ExOpenAI.Components.EvalRun do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     Unix timestamp (in seconds) when the evaluation run was created.
+    Format: `unixtime`
 
-  * `:data_source` - **required** - `map()`  
+  * `:data_source` - **required** - `map()`
     Information about the run's data source.
 
   * `:error` - **required** - `ExOpenAI.Components.EvalApiError.t()`
 
-  * `:eval_id` - **required** - `String.t()`  
+  * `:eval_id` - **required** - `String.t()`
     The identifier of the associated evaluation.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Unique identifier for the evaluation run.
 
   * `:metadata` - **required** - `ExOpenAI.Components.Metadata.t()`
 
-  * `:model` - **required** - `String.t()`  
+  * `:model` - **required** - `String.t()`
     The model that is evaluated, if applicable.
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the evaluation run.
 
-  * `:object` - **required** - `:"eval.run"`  
-    The type of the object. Always "eval.run".  
-    Allowed values: `"eval.run"`  
+  * `:object` - **required** - `:"eval.run"`
+    The type of the object. Always "eval.run".
+    Allowed values: `"eval.run"`
     Default: `"eval.run"`
 
-  * `:per_model_usage` - **required** - `[{:%{}, [], [{{:required, [], [:cached_tokens]}, {:integer, [], []}}, {{:required, [], [:completion_tokens]}, {:integer, [], []}}, {{:required, [], [:invocation_count]}, {:integer, [], []}}, {{:required, [], [:model_name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:prompt_tokens]}, {:integer, [], []}}, {{:required, [], [:total_tokens]}, {:integer, [], []}}]}]`  
+  * `:per_model_usage` - **required** - `list(%{ required(:cached_tokens) => integer(), required(:completion_tokens) => integer(), required(:invocation_count) => integer(), required(:model_name) => String.t(), required(:prompt_tokens) => integer(), required(:total_tokens) => integer() })`
     Usage statistics for each model during the evaluation run.
 
-  * `:per_testing_criteria_results` - **required** - `[{:%{}, [], [{{:required, [], [:failed]}, {:integer, [], []}}, {{:required, [], [:passed]}, {:integer, [], []}}, {{:required, [], [:testing_criteria]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}]`  
+  * `:per_testing_criteria_results` - **required** - `list(%{ required(:failed) => integer(), required(:passed) => integer(), required(:testing_criteria) => String.t() })`
     Results per testing criteria applied during the evaluation run.
 
-  * `:report_url` - **required** - `String.t()`  
+  * `:report_url` - **required** - `String.t()`
     The URL to the rendered evaluation run report on the UI dashboard.
+    Format: `uri`
 
-  * `:result_counts` - **required** - `{:%{}, [], [{{:required, [], [:errored]}, {:integer, [], []}}, {{:required, [], [:failed]}, {:integer, [], []}}, {{:required, [], [:passed]}, {:integer, [], []}}, {{:required, [], [:total]}, {:integer, [], []}}]}`  
+  * `:result_counts` - **required** - `%{ required(:errored) => integer(), required(:failed) => integer(), required(:passed) => integer(), required(:total) => integer() }`
     Counters summarizing the outcomes of the evaluation run.
 
-  * `:status` - **required** - `String.t()`  
+  * `:status` - **required** - `String.t()`
     The status of the evaluation run.
   """
   @type t() :: %{
@@ -84,6 +86,46 @@ defmodule ExOpenAI.Components.EvalRun do
           },
           status: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:data_source) =>
+                (ExOpenAI.Components.CreateEvalJsonlRunDataSource.input()
+                 | ExOpenAI.Components.CreateEvalCompletionsRunDataSource.input())
+                | ExOpenAI.Components.CreateEvalResponsesRunDataSource.input(),
+              required(:error) => ExOpenAI.Components.EvalApiError.input(),
+              required(:eval_id) => String.t(),
+              required(:id) => String.t(),
+              required(:metadata) => ExOpenAI.Components.Metadata.input(),
+              required(:model) => String.t(),
+              required(:name) => String.t(),
+              required(:object) => :"eval.run" | String.t(),
+              required(:per_model_usage) =>
+                list(%{
+                  required(:cached_tokens) => integer(),
+                  required(:completion_tokens) => integer(),
+                  required(:invocation_count) => integer(),
+                  required(:model_name) => String.t(),
+                  required(:prompt_tokens) => integer(),
+                  required(:total_tokens) => integer()
+                }),
+              required(:per_testing_criteria_results) =>
+                list(%{
+                  required(:failed) => integer(),
+                  required(:passed) => integer(),
+                  required(:testing_criteria) => String.t()
+                }),
+              required(:report_url) => String.t(),
+              required(:result_counts) => %{
+                required(:errored) => integer(),
+                required(:failed) => integer(),
+                required(:passed) => integer(),
+                required(:total) => integer()
+              },
+              required(:status) => String.t()
+            }
   defstruct [
     :created_at,
     :data_source,

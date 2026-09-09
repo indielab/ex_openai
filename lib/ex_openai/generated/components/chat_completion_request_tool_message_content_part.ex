@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ChatCompletionRequestToolMessageContentPart do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ChatCompletionRequestToolMessageContentPart.
 
@@ -9,4 +7,5 @@ defmodule ExOpenAI.Components.ChatCompletionRequestToolMessageContentPart do
   `ExOpenAI.Components.ChatCompletionRequestMessageContentPartText.t()`
   """
   @type t() :: ExOpenAI.Components.ChatCompletionRequestMessageContentPartText.t()
+  @type input() :: ExOpenAI.Components.ChatCompletionRequestMessageContentPartText.input()
 end

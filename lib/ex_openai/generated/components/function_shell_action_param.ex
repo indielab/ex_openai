@@ -6,18 +6,26 @@ defmodule ExOpenAI.Components.FunctionShellActionParam do
 
   ## Fields
 
-  * `:commands` - **required** - `[String.t()]`  
+  * `:commands` - **required** - `list(String.t())`
     Ordered shell commands for the execution environment to run.
 
-  * `:max_output_length` - **optional** - `integer() | any()`
+  * `:max_output_length` - **optional** - `integer() | nil`
 
-  * `:timeout_ms` - **optional** - `integer() | any()`
+  * `:timeout_ms` - **optional** - `integer() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           commands: list(String.t()),
-          max_output_length: (integer() | any()) | nil,
-          timeout_ms: (integer() | any()) | nil
+          max_output_length: (integer() | nil) | nil,
+          timeout_ms: (integer() | nil) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:commands) => list(String.t()),
+              optional(:max_output_length) => integer() | nil,
+              optional(:timeout_ms) => integer() | nil
+            }
   defstruct [:commands, :max_output_length, :timeout_ms]
 end

@@ -12,5 +12,12 @@ defmodule ExOpenAI.Components.FineTuneSupervisedMethod do
           __struct__: __MODULE__,
           hyperparameters: ExOpenAI.Components.FineTuneSupervisedHyperparameters.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:hyperparameters) =>
+                ExOpenAI.Components.FineTuneSupervisedHyperparameters.input()
+            }
   defstruct [:hyperparameters]
 end

@@ -6,26 +6,27 @@ defmodule ExOpenAI.Components.ImagesResponse do
 
   ## Fields
 
-  * `:background` - **optional** - `:transparent | :opaque`  
-    The background parameter used for the image generation. Either `transparent` or `opaque`.  
+  * `:background` - **optional** - `:transparent | :opaque`
+    The background parameter used for the image generation. Either `transparent` or `opaque`.
     Allowed values: `"transparent"`, `"opaque"`
 
-  * `:created` - **required** - `integer()`  
+  * `:created` - **required** - `integer()`
     The Unix timestamp (in seconds) of when the image was created.
+    Format: `unixtime`
 
-  * `:data` - **optional** - `[ExOpenAI.Components.Image.t()]`  
+  * `:data` - **optional** - `list(ExOpenAI.Components.Image.t())`
     The list of generated images.
 
-  * `:output_format` - **optional** - `:png | :webp | :jpeg`  
-    The output format of the image generation. Either `png`, `webp`, or `jpeg`.  
+  * `:output_format` - **optional** - `:png | :webp | :jpeg`
+    The output format of the image generation. Either `png`, `webp`, or `jpeg`.
     Allowed values: `"png"`, `"webp"`, `"jpeg"`
 
-  * `:quality` - **optional** - `:low | :medium | :high`  
-    The quality of the image generated. Either `low`, `medium`, or `high`.  
+  * `:quality` - **optional** - `:low | :medium | :high`
+    The quality of the image generated. Either `low`, `medium`, or `high`.
     Allowed values: `"low"`, `"medium"`, `"high"`
 
-  * `:size` - **optional** - `:"1024x1024" | :"1024x1536" | :"1536x1024"`  
-    The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`.  
+  * `:size` - **optional** - `:"1024x1024" | :"1024x1536" | :"1536x1024"`
+    The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`.
     Allowed values: `"1024x1024"`, `"1024x1536"`, `"1536x1024"`
 
   * `:usage` - **optional** - `ExOpenAI.Components.ImageGenUsage.t()`
@@ -40,5 +41,17 @@ defmodule ExOpenAI.Components.ImagesResponse do
           size: ((:"1024x1024" | :"1024x1536") | :"1536x1024") | nil,
           usage: ExOpenAI.Components.ImageGenUsage.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:background) => (:transparent | :opaque) | String.t(),
+              required(:created) => integer(),
+              optional(:data) => list(ExOpenAI.Components.Image.input()),
+              optional(:output_format) => ((:png | :webp) | :jpeg) | String.t(),
+              optional(:quality) => ((:low | :medium) | :high) | String.t(),
+              optional(:size) => ((:"1024x1024" | :"1024x1536") | :"1536x1024") | String.t(),
+              optional(:usage) => ExOpenAI.Components.ImageGenUsage.input()
+            }
   defstruct [:background, :created, :data, :output_format, :quality, :size, :usage]
 end

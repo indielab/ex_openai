@@ -1,8 +1,8 @@
 defmodule ExOpenAI.Codegen.ResponseConverterTest do
   use ExUnit.Case, async: true
 
-  alias ExOpenAI.Codegen.ResponseConverter
   alias ExOpenAI.Codegen.DocsParser.Schema
+  alias ExOpenAI.Codegen.ResponseConverter
 
   @moduledoc """
   Tests for the response conversion logic.
@@ -17,12 +17,12 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
   """
 
   describe "convert_response/2" do
-    test "handles response with 'response' and 'type' keys" do
+    test "preserves event envelopes without a schema" do
       response = {:ok, %{"response" => %{"id" => "123", "name" => "test"}, "type" => "some_type"}}
       schema = %Schema{ref: "#/components/schemas/SomeComponent"}
 
       result = ResponseConverter.convert_response(response, schema)
-      assert {:ok, %{"id" => "123", "name" => "test"}} = result
+      assert result == response
     end
 
     test "passes through reference values unchanged" do
@@ -135,7 +135,7 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
       assert {:ok, %ExOpenAI.Components.ResponseTextDeltaEvent{} = converted} =
                ResponseConverter.convert_response(response, schema)
 
-      assert converted.type == "response.output_text.delta"
+      assert converted.type == :"response.output_text.delta"
       assert converted.item_id == "msg_123"
       assert converted.delta == "Hello"
     end
@@ -306,7 +306,7 @@ defmodule ExOpenAI.Codegen.ResponseConverterTest do
                      "msg_68593161dcc0819a8e0ee42deab92f32046391d626b27379"
 
             assert output_item.role == :assistant
-            assert output_item.status == "completed"
+            assert output_item.status == :completed
             assert output_item.type == :message
 
             assert is_list(output_item.content)

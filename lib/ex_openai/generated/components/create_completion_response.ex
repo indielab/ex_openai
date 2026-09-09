@@ -7,23 +7,24 @@ defmodule ExOpenAI.Components.CreateCompletionResponse do
 
   ## Fields
 
-  * `:choices` - **required** - `[{:%{}, [], [{{:required, [], [:finish_reason]}, {:|, [], [{:|, [], [:stop, :length]}, :content_filter]}}, {{:required, [], [:index]}, {:integer, [], []}}, {{:required, [], [:logprobs]}, {:|, [], [{:%{}, [], [{{:optional, [], [:text_offset]}, {:list, [], [{:integer, [], []}]}}, {{:optional, [], [:token_logprobs]}, {:list, [], [{:number, [], []}]}}, {{:optional, [], [:tokens]}, {:list, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}]}}, {{:optional, [], [:top_logprobs]}, {:list, [], [{:map, [], []}]}}]}, {:any, [], []}]}}, {{:required, [], [:text]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}]`  
+  * `:choices` - **required** - `list(%{ required(:finish_reason) => :stop | :length | :content_filter, required(:index) => integer(), required(:logprobs) => %{ optional(:text_offset) => list(integer()), optional(:token_logprobs) => list(number()), optional(:tokens) => list(String.t()), optional(:top_logprobs) => list(map()) } | nil, required(:text) => String.t() })`
     The list of completion choices the model generated for the input prompt.
 
-  * `:created` - **required** - `integer()`  
+  * `:created` - **required** - `integer()`
     The Unix timestamp (in seconds) of when the completion was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     A unique identifier for the completion.
 
-  * `:model` - **required** - `String.t()`  
+  * `:model` - **required** - `String.t()`
     The model used for completion.
 
-  * `:object` - **required** - `:text_completion`  
-    The object type, which is always "text_completion"  
+  * `:object` - **required** - `:text_completion`
+    The object type, which is always "text_completion"
     Allowed values: `"text_completion"`
 
-  * `:system_fingerprint` - **optional** - `String.t()`  
+  * `:system_fingerprint` - **optional** - `String.t()`
     This fingerprint represents the backend configuration that the model runs with.
 
   Can be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism.
@@ -43,7 +44,7 @@ defmodule ExOpenAI.Components.CreateCompletionResponse do
                   optional(:tokens) => list(String.t()),
                   optional(:top_logprobs) => list(map())
                 }
-                | any(),
+                | nil,
               required(:text) => String.t()
             }),
           created: integer(),
@@ -53,5 +54,30 @@ defmodule ExOpenAI.Components.CreateCompletionResponse do
           system_fingerprint: String.t() | nil,
           usage: ExOpenAI.Components.CompletionUsage.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:choices) =>
+                list(%{
+                  required(:finish_reason) => ((:stop | :length) | :content_filter) | String.t(),
+                  required(:index) => integer(),
+                  required(:logprobs) =>
+                    %{
+                      optional(:text_offset) => list(integer()),
+                      optional(:token_logprobs) => list(number()),
+                      optional(:tokens) => list(String.t()),
+                      optional(:top_logprobs) => list(map())
+                    }
+                    | nil,
+                  required(:text) => String.t()
+                }),
+              required(:created) => integer(),
+              required(:id) => String.t(),
+              required(:model) => String.t(),
+              required(:object) => :text_completion | String.t(),
+              optional(:system_fingerprint) => String.t(),
+              optional(:usage) => ExOpenAI.Components.CompletionUsage.input()
+            }
   defstruct [:choices, :created, :id, :model, :object, :system_fingerprint, :usage]
 end

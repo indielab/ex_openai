@@ -6,10 +6,12 @@ defmodule ExOpenAI.Components.AutoChunkingStrategyRequestParam do
 
   ## Fields
 
-  * `:type` - **required** - `:auto`  
-    Always `auto`.  
+  * `:type` - **required** - `:auto`
+    Always `auto`.
     Allowed values: `"auto"`
   """
   @type t() :: %{__struct__: __MODULE__, type: :auto}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:type) => :auto | String.t()}
   defstruct [:type]
 end

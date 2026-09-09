@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.SearchContextSize do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema SearchContextSize.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.SearchContextSize do
   `"low"`, `"medium"`, `"high"`
   """
   @type t() :: (:low | :medium) | :high
+  @type input() :: ((:low | :medium) | :high) | String.t()
 end

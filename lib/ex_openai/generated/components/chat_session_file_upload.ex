@@ -6,18 +6,26 @@ defmodule ExOpenAI.Components.ChatSessionFileUpload do
 
   ## Fields
 
-  * `:enabled` - **required** - `boolean()`  
+  * `:enabled` - **required** - `boolean()`
     Indicates if uploads are enabled for the session.
 
-  * `:max_file_size` - **required** - `integer() | any()`
+  * `:max_file_size` - **required** - `integer() | nil`
 
-  * `:max_files` - **required** - `integer() | any()`
+  * `:max_files` - **required** - `integer() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           enabled: boolean(),
-          max_file_size: integer() | any(),
-          max_files: integer() | any()
+          max_file_size: integer() | nil,
+          max_files: integer() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:enabled) => boolean(),
+              required(:max_file_size) => integer() | nil,
+              required(:max_files) => integer() | nil
+            }
   defstruct [:enabled, :max_file_size, :max_files]
 end

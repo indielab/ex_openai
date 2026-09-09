@@ -7,13 +7,16 @@ defmodule ExOpenAI.Components.ToolChoiceFunction do
 
   ## Fields
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the function to call.
 
-  * `:type` - **required** - `:function`  
-    For function calling, the type is always `function`.  
+  * `:type` - **required** - `:function`
+    For function calling, the type is always `function`.
     Allowed values: `"function"`
   """
   @type t() :: %{__struct__: __MODULE__, name: String.t(), type: :function}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t() | %{required(:name) => String.t(), required(:type) => :function | String.t()}
   defstruct [:name, :type]
 end

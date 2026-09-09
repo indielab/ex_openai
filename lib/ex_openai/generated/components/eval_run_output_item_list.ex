@@ -7,21 +7,21 @@ defmodule ExOpenAI.Components.EvalRunOutputItemList do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.EvalRunOutputItem.t()]`  
+  * `:data` - **required** - `list(ExOpenAI.Components.EvalRunOutputItem.t())`
     An array of eval run output item objects.
 
-  * `:first_id` - **required** - `String.t()`  
+  * `:first_id` - **required** - `String.t()`
     The identifier of the first eval run output item in the data array.
 
-  * `:has_more` - **required** - `boolean()`  
+  * `:has_more` - **required** - `boolean()`
     Indicates whether there are more eval run output items available.
 
-  * `:last_id` - **required** - `String.t()`  
+  * `:last_id` - **required** - `String.t()`
     The identifier of the last eval run output item in the data array.
 
-  * `:object` - **required** - `:list`  
-    The type of this object. It is always set to "list".  
-    Allowed values: `"list"`  
+  * `:object` - **required** - `:list`
+    The type of this object. It is always set to "list".
+    Allowed values: `"list"`
     Default: `"list"`
   """
   @type t() :: %{
@@ -32,5 +32,15 @@ defmodule ExOpenAI.Components.EvalRunOutputItemList do
           last_id: String.t(),
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.EvalRunOutputItem.input()),
+              required(:first_id) => String.t(),
+              required(:has_more) => boolean(),
+              required(:last_id) => String.t(),
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

@@ -7,33 +7,34 @@ defmodule ExOpenAI.Components.ImageEditPartialImageEvent do
 
   ## Fields
 
-  * `:b64_json` - **required** - `String.t()`  
+  * `:b64_json` - **required** - `String.t()`
     Base64-encoded partial image data, suitable for rendering as an image.
 
-  * `:background` - **required** - `:transparent | :opaque | :auto`  
-    The background setting for the requested edited image.  
+  * `:background` - **required** - `:transparent | :opaque | :auto`
+    The background setting for the requested edited image.
     Allowed values: `"transparent"`, `"opaque"`, `"auto"`
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp when the event was created.
+    Format: `unixtime`
 
-  * `:output_format` - **required** - `:png | :webp | :jpeg`  
-    The output format for the requested edited image.  
+  * `:output_format` - **required** - `:png | :webp | :jpeg`
+    The output format for the requested edited image.
     Allowed values: `"png"`, `"webp"`, `"jpeg"`
 
-  * `:partial_image_index` - **required** - `integer()`  
+  * `:partial_image_index` - **required** - `integer()`
     0-based index for the partial image (streaming).
 
-  * `:quality` - **required** - `:low | :medium | :high | :auto`  
-    The quality setting for the requested edited image.  
+  * `:quality` - **required** - `:low | :medium | :high | :auto`
+    The quality setting for the requested edited image.
     Allowed values: `"low"`, `"medium"`, `"high"`, `"auto"`
 
-  * `:size` - **required** - `:"1024x1024" | :"1024x1536" | :"1536x1024" | :auto`  
-    The size of the requested edited image.  
+  * `:size` - **required** - `:"1024x1024" | :"1024x1536" | :"1536x1024" | :auto`
+    The size of the requested edited image.
     Allowed values: `"1024x1024"`, `"1024x1536"`, `"1536x1024"`, `"auto"`
 
-  * `:type` - **required** - `:"image_edit.partial_image"`  
-    The type of the event. Always `image_edit.partial_image`.  
+  * `:type` - **required** - `:"image_edit.partial_image"`
+    The type of the event. Always `image_edit.partial_image`.
     Allowed values: `"image_edit.partial_image"`
   """
   @type t() :: %{
@@ -47,6 +48,20 @@ defmodule ExOpenAI.Components.ImageEditPartialImageEvent do
           size: ((:"1024x1024" | :"1024x1536") | :"1536x1024") | :auto,
           type: :"image_edit.partial_image"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:b64_json) => String.t(),
+              required(:background) => ((:transparent | :opaque) | :auto) | String.t(),
+              required(:created_at) => integer(),
+              required(:output_format) => ((:png | :webp) | :jpeg) | String.t(),
+              required(:partial_image_index) => integer(),
+              required(:quality) => (((:low | :medium) | :high) | :auto) | String.t(),
+              required(:size) =>
+                (((:"1024x1024" | :"1024x1536") | :"1536x1024") | :auto) | String.t(),
+              required(:type) => :"image_edit.partial_image" | String.t()
+            }
   defstruct [
     :b64_json,
     :background,

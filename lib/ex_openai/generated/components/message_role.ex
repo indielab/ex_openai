@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.MessageRole do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema MessageRole.
 
@@ -16,4 +14,9 @@ defmodule ExOpenAI.Components.MessageRole do
           ((((((:unknown | :user) | :assistant) | :system) | :critic) | :discriminator)
            | :developer)
           | :tool
+  @type input() ::
+          (((((((:unknown | :user) | :assistant) | :system) | :critic) | :discriminator)
+            | :developer)
+           | :tool)
+          | String.t()
 end

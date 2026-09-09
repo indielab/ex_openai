@@ -6,9 +6,11 @@ defmodule ExOpenAI.Components.UpdateVoiceConsentRequest do
 
   ## Fields
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The updated label for this consent recording.
   """
   @type t() :: %{__struct__: __MODULE__, name: String.t()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:name) => String.t()}
   defstruct [:name]
 end

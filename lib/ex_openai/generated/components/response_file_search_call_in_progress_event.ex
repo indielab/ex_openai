@@ -6,17 +6,17 @@ defmodule ExOpenAI.Components.ResponseFileSearchCallInProgressEvent do
 
   ## Fields
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The ID of the output item that the file search call is initiated.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item that the file search call is initiated.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.file_search_call.in_progress"`  
-    The type of the event. Always `response.file_search_call.in_progress`.  
+  * `:type` - **required** - `:"response.file_search_call.in_progress"`
+    The type of the event. Always `response.file_search_call.in_progress`.
     Allowed values: `"response.file_search_call.in_progress"`
   """
   @type t() :: %{
@@ -26,5 +26,14 @@ defmodule ExOpenAI.Components.ResponseFileSearchCallInProgressEvent do
           sequence_number: integer(),
           type: :"response.file_search_call.in_progress"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.file_search_call.in_progress" | String.t()
+            }
   defstruct [:item_id, :output_index, :sequence_number, :type]
 end

@@ -10,16 +10,16 @@ defmodule ExOpenAI.Components.CreateEvalCustomDataSourceConfig do
 
   ## Fields
 
-  * `:include_sample_schema` - **optional** - `boolean()`  
-    Whether the eval should expect you to populate the sample namespace (ie, by generating responses off of your data source)  
+  * `:include_sample_schema` - **optional** - `boolean()`
+    Whether the eval should expect you to populate the sample namespace (ie, by generating responses off of your data source)
     Default: `false`
 
-  * `:item_schema` - **required** - `map()`  
+  * `:item_schema` - **required** - `map()`
     The json schema for each row in the data source.
 
-  * `:type` - **required** - `:custom`  
-    The type of data source. Always `custom`.  
-    Allowed values: `"custom"`  
+  * `:type` - **required** - `:custom`
+    The type of data source. Always `custom`.
+    Allowed values: `"custom"`
     Default: `"custom"`
   """
   @type t() :: %{
@@ -28,5 +28,13 @@ defmodule ExOpenAI.Components.CreateEvalCustomDataSourceConfig do
           item_schema: map(),
           type: :custom
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:include_sample_schema) => boolean(),
+              required(:item_schema) => map(),
+              required(:type) => :custom | String.t()
+            }
   defstruct [:include_sample_schema, :item_schema, :type]
 end
