@@ -157,6 +157,54 @@ defmodule ExOpenAI.Codegen.SchemaResolver do
 
   defp file_schema?(_, _schemas, _seen), do: false
 
+  @doc false
+  def sdk_stream_option?(operation, schemas) do
+    body_fields = optional_body_properties(operation.request_body, schemas)
+    query_fields = Enum.filter(operation.parameters || [], &(&1.in == "query"))
+
+    not is_nil(response_schema(operation, :success, "text/event-stream")) and
+      not Enum.any?(body_fields, fn {name, _} -> name == "stream" end) and
+      not Enum.any?(query_fields, &(&1.name == "stream"))
+  end
+
+  @doc false
+  def event_envelope?(schema, schemas), do: event_envelope?(schema, schemas, [])
+
+  defp event_envelope?(%Schema{ref: "#/components/schemas/" <> name}, schemas, seen) do
+    name not in seen and event_envelope?(Map.get(schemas, name), schemas, [name | seen])
+  end
+
+  defp event_envelope?(%Schema{one_of: members}, schemas, seen)
+       when is_list(members) and members != [] do
+    Enum.all?(members, &event_envelope?(&1, schemas, seen))
+  end
+
+  defp event_envelope?(%Schema{any_of: members}, schemas, seen)
+       when is_list(members) and members != [] do
+    Enum.all?(members, &event_envelope?(&1, schemas, seen))
+  end
+
+  defp event_envelope?(
+         %Schema{
+           properties: %{"event" => %Schema{type: "string"}, "data" => _},
+           required: required
+         },
+         _schemas,
+         _seen
+       )
+       when is_list(required),
+       do: "event" in required and "data" in required
+
+  defp event_envelope?(_schema, _schemas, _seen), do: false
+
+  @doc false
+  def raw_response?(%Schema{type: "string"}), do: true
+
+  def raw_response?(%Schema{one_of: members}) when is_list(members) and members != [],
+    do: Enum.all?(members, &raw_response?/1)
+
+  def raw_response?(_schema), do: false
+
   @doc "Returns the schema for a status code or all documented successful responses."
   def response_schema(operation, status_code \\ :success, content_type \\ nil)
 
@@ -174,22 +222,26 @@ defmodule ExOpenAI.Codegen.SchemaResolver do
       |> Enum.flat_map(fn {_code, response} ->
         content = Map.get(response, :content) || %{}
 
-        media_type =
-          content_type ||
-            if(Map.has_key?(content, "application/json"),
-              do: "application/json",
-              else:
-                content
-                |> Map.keys()
-                |> Enum.reject(&(&1 == "text/event-stream"))
-                |> Enum.sort()
-                |> List.first()
-            )
+        media_types =
+          if content_type,
+            do: [content_type],
+            else:
+              content |> Map.keys() |> Enum.reject(&(&1 == "text/event-stream")) |> Enum.sort()
 
-        case get_in(content, [media_type, "schema"]) do
-          schema when is_map(schema) -> [Schema.parse_schema("response", schema)]
-          _ -> []
-        end
+        Enum.flat_map(media_types, fn media_type ->
+          case get_in(content, [media_type, "schema"]) do
+            schema when is_map(schema) -> [Schema.parse_schema("response", schema)]
+            _ -> []
+          end
+        end)
+      end)
+      |> Enum.flat_map(fn
+        %Schema{one_of: members, discriminator: nil, nullable: nullable}
+        when is_list(members) and nullable != true ->
+          members
+
+        schema ->
+          [schema]
       end)
       |> Enum.uniq()
 

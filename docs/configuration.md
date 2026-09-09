@@ -60,6 +60,12 @@ passed through to HTTPoison.
 IO.inspect(models.data)
 ```
 
+Schema-defined header parameters can be passed as endpoint options. For example,
+`Responses.beta_create_response("openai-beta": ["responses_multi_agent=v1"])`
+sends `openai-beta: responses_multi_agent=v1`. Array values are comma-separated.
+An endpoint header replaces a configured header of the same name, ignoring case;
+other configured headers remain in place.
+
 ## Custom HTTP client
 
 Set `http_client` to a module implementing `ExOpenAI.Client.api_call/6`. A test

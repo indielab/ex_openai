@@ -9,7 +9,7 @@ This guide follows that process step by step, from a YAML schema to the code tha
 There are three stages to keep track of:
 
 ```text
-docs.yaml -> parsed Schema/Path structs -> quoted Elixir AST -> generated .ex files
+docs.yaml + overlay.yaml -> parsed Schema/Path structs -> quoted Elixir AST -> generated .ex files
                                                                     |
                                                                mix compile
                                                                     |
@@ -24,7 +24,7 @@ The generator runs when you invoke `mix generate_openai_sources`. Its output is 
 
 ### 1. Reading and Parsing "docs.yaml"
 
-The process begins with parsing OpenAI's API specification, stored as a YAML file at `lib/ex_openai/docs/docs.yaml`. `SourceFileGenerator.load_documentation/0` reads the file and passes its contents to `DocsParser.get_documentation/1`.
+The process begins with parsing OpenAI's API specification, stored as a YAML file at `lib/ex_openai/docs/docs.yaml`. `SourceFileGenerator.load_documentation/0` reads the upstream file and the SDK-owned `lib/ex_openai/docs/overlay.yaml`, then passes them to `DocsParser.get_documentation/2`. The overlay adds missing definitions to the decoded map before it becomes typed structs. `DocsParser.get_documentation/1` still parses a document without corrections.
 
 You can follow the executable Elixir examples in order from the repository root with `mise exec -- iex -S mix`. They inspect or construct code without making API requests. Blocks marked as text show abbreviated output.
 
@@ -85,6 +85,29 @@ IO.inspect(documentation.components["CreateCompletionRequest"].required)
 ```
 
 The parser preserves a `$ref` as a reference. Resolving it is a later operation, so parsing one schema does not require expanding every other schema it mentions.
+
+The overlay keeps API-specific corrections outside the generic parser and generators.
+Each entry names an existing map with a `target` list and declares new fields in
+`add`. For example, the transcription correction adds `text/plain` under the
+operation's successful response content while retaining its JSON schema.
+
+`SchemaOverlay.apply!/2` requires every target to exist and every added field to
+be absent. If an upstream update removes a target or supplies a field, generation
+fails with the affected path. Review that correction against the new upstream
+schema and remove or adjust the overlay entry before regenerating.
+
+Streaming behavior comes from the response schemas. A `text/event-stream`
+response enables the SDK's `stream` option. To decide whether callbacks need the
+SSE envelope, the resolver follows component references and union members and
+checks that every variant requires a string `event` field and a `data` field.
+Payload schemas without that shape are passed to the converter without wrapping.
+
+Request format options remain caller-controlled. For example, speech streaming
+requires both `stream: true` and `stream_format: :sse`; the generator does not
+choose a request format on the caller's behalf.
+
+The response resolver combines schemas from all successful non-SSE media types.
+SSE schemas are selected separately for callback conversion.
 
 ### 2. Converting Raw JSON Schema Types
 
@@ -509,9 +532,11 @@ The final call is `ExOpenAI.Config.http_client().api_call/6`, with the method, U
 
 The API client (`ExOpenAI.Client`) handles the actual HTTP requests. For a JSON POST it converts the keyword body to a map, strips configuration-only fields, and encodes it with Jason. It then applies configured headers, authentication, base URL, and HTTP options before calling HTTPoison.
 
+Generated calls pass schema headers in `:request_headers`, raw-body selection in `:response_mode`, and Assistants SSE wrapping in `:event_envelope`. Custom transports that do not delegate to `ExOpenAI.Client` must honor these options before invoking the response converter.
+
 Response processing has two layers:
 
-1. `Client` interprets HTTP results. It treats 2xx statuses as successful, decodes `application/json` bodies, and preserves bytes for other content types. A downloaded JSON-looking file must retain its exact contents.
+1. `Client` interprets HTTP results. It treats 2xx statuses as successful, decodes `application/json` bodies unless the generated call marks a successful response as raw, and preserves bytes for other content types. A downloaded JSON-looking file must retain its exact contents.
 2. The endpoint's converter interprets the successful payload using the schema selected during generation.
 
 **Short Example:**
@@ -594,7 +619,7 @@ This keeps arbitrary response data from creating an unbounded set of atoms. An i
 
 To add or extend functionality:
 
-1. Update `lib/ex_openai/docs/docs.yaml` under the correct endpoints and components when the API specification changes.
+1. Refresh `lib/ex_openai/docs/docs.yaml` from upstream when the API specification changes. Keep SDK-owned corrections in `lib/ex_openai/docs/overlay.yaml` and review any overlay conflicts reported by generation.
 2. For a new schema shape, inspect `DocsParser.Schema`, `SchemaResolver`, and `TypespecGenerator`. Follow the shape through parsing, resolution, and both input and response types.
 3. For a new endpoint, check the generated function's arity, argument order, body, query, content type, and success schema. Changes to request construction belong in `PathModuleGenerator`; shared schema selection belongs in `SchemaResolver`.
 4. For response or streaming changes, inspect the emitted schema and the compiled component type as well as `ResponseConverter` or `StreamingClient`. Test the event envelope and helper lifecycle where applicable.

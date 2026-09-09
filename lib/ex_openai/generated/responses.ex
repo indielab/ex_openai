@@ -373,8 +373,9 @@ defmodule ExOpenAI.Responses do
     """
     (
       @type beta_compactconversation_opt() ::
-              ((((((({:input,
-                      (String.t() | list(ExOpenAI.Components.BetaInputItem.input())) | nil}
+              (((((((({:"openai-beta", list(:"responses_multi_agent=v1" | String.t())}
+                      | {:input,
+                         (String.t() | list(ExOpenAI.Components.BetaInputItem.input())) | nil})
                      | {:instructions, String.t() | nil})
                     | {:model, ExOpenAI.Components.BetaModelIdsCompaction.input()})
                    | {:previous_response_id, String.t() | nil})
@@ -409,11 +410,26 @@ defmodule ExOpenAI.Responses do
 
       body_params = body_params ++ optional_body_params
 
+      (
+        headers =
+          Enum.map(Keyword.take(opts, [:"openai-beta"]), fn {name, value} ->
+            {Atom.to_string(name),
+             if is_list(value) do
+               Enum.join(value, ",")
+             else
+               to_string(value)
+             end}
+          end)
+
+        opts = Keyword.put(opts, :request_headers, headers)
+      )
+
       optional_params_to_drop =
         [
           :input,
           :instructions,
           :model,
+          :"openai-beta",
           :previous_response_id,
           :prompt_cache_key,
           :prompt_cache_options,
@@ -600,7 +616,9 @@ defmodule ExOpenAI.Responses do
     """
     (
       @type beta_getinputtokencounts_opt() ::
-              ((((((((((({:conversation, ExOpenAI.Components.BetaConversationParam.input() | nil}
+              (((((((((((({:"openai-beta", list(:"responses_multi_agent=v1" | String.t())}
+                          | {:conversation,
+                             ExOpenAI.Components.BetaConversationParam.input() | nil})
                          | {:input,
                             (String.t() | list(ExOpenAI.Components.BetaInputItem.input())) | nil})
                         | {:instructions, String.t() | nil})
@@ -642,12 +660,27 @@ defmodule ExOpenAI.Responses do
 
       body_params = body_params ++ optional_body_params
 
+      (
+        headers =
+          Enum.map(Keyword.take(opts, [:"openai-beta"]), fn {name, value} ->
+            {Atom.to_string(name),
+             if is_list(value) do
+               Enum.join(value, ",")
+             else
+               to_string(value)
+             end}
+          end)
+
+        opts = Keyword.put(opts, :request_headers, headers)
+      )
+
       optional_params_to_drop =
         [
           :conversation,
           :input,
           :instructions,
           :model,
+          :"openai-beta",
           :parallel_tool_calls,
           :personality,
           :previous_response_id,
@@ -884,7 +917,9 @@ defmodule ExOpenAI.Responses do
       Optional beta features to enable for this request.
     """
     (
-      @type beta_cancel_response_opt() :: ExOpenAI.request_option()
+      @type beta_cancel_response_opt() ::
+              {:"openai-beta", list(:"responses_multi_agent=v1" | String.t())}
+              | ExOpenAI.request_option()
       @spec beta_cancel_response(response_id :: String.t(), opts :: [beta_cancel_response_opt()]) ::
               {:ok, ExOpenAI.Components.BetaResponse.t()} | {:error, any()}
     )
@@ -897,7 +932,22 @@ defmodule ExOpenAI.Responses do
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
-      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+
+      (
+        headers =
+          Enum.map(Keyword.take(opts, [:"openai-beta"]), fn {name, value} ->
+            {Atom.to_string(name),
+             if is_list(value) do
+               Enum.join(value, ",")
+             else
+               to_string(value)
+             end}
+          end)
+
+        opts = Keyword.put(opts, :request_headers, headers)
+      )
+
+      optional_params_to_drop = [:"openai-beta"] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
@@ -1027,9 +1077,10 @@ defmodule ExOpenAI.Responses do
     """
     (
       @type beta_list_input_items_opt() ::
-              ((({:limit, integer()} | {:order, (:asc | :desc) | String.t()})
-                | {:after, String.t()})
-               | {:include, list(ExOpenAI.Components.BetaIncludeEnum.input())})
+              (((({:limit, integer()} | {:order, (:asc | :desc) | String.t()})
+                 | {:after, String.t()})
+                | {:include, list(ExOpenAI.Components.BetaIncludeEnum.input())})
+               | {:"openai-beta", list(:"responses_multi_agent=v1" | String.t())})
               | ExOpenAI.request_option()
       @spec beta_list_input_items(
               response_id :: String.t(),
@@ -1046,8 +1097,22 @@ defmodule ExOpenAI.Responses do
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
 
+      (
+        headers =
+          Enum.map(Keyword.take(opts, [:"openai-beta"]), fn {name, value} ->
+            {Atom.to_string(name),
+             if is_list(value) do
+               Enum.join(value, ",")
+             else
+               to_string(value)
+             end}
+          end)
+
+        opts = Keyword.put(opts, :request_headers, headers)
+      )
+
       optional_params_to_drop =
-        [:after, :include, :limit, :order] |> Enum.reject(&(&1 == :stream))
+        [:after, :include, :limit, :"openai-beta", :order] |> Enum.reject(&(&1 == :stream))
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
@@ -1087,7 +1152,9 @@ defmodule ExOpenAI.Responses do
       Optional beta features to enable for this request.
     """
     (
-      @type beta_delete_response_opt() :: ExOpenAI.request_option()
+      @type beta_delete_response_opt() ::
+              {:"openai-beta", list(:"responses_multi_agent=v1" | String.t())}
+              | ExOpenAI.request_option()
       @spec beta_delete_response(response_id :: String.t(), opts :: [beta_delete_response_opt()]) ::
               {:ok, term()} | {:error, any()}
     )
@@ -1100,7 +1167,22 @@ defmodule ExOpenAI.Responses do
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
-      optional_params_to_drop = [] |> Enum.reject(&(&1 == :stream))
+
+      (
+        headers =
+          Enum.map(Keyword.take(opts, [:"openai-beta"]), fn {name, value} ->
+            {Atom.to_string(name),
+             if is_list(value) do
+               Enum.join(value, ",")
+             else
+               to_string(value)
+             end}
+          end)
+
+        opts = Keyword.put(opts, :request_headers, headers)
+      )
+
+      optional_params_to_drop = [:"openai-beta"] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
@@ -1159,10 +1241,11 @@ defmodule ExOpenAI.Responses do
     """
     (
       @type beta_get_response_opt() ::
-              ((({:include, list(ExOpenAI.Components.BetaIncludeEnum.input())}
-                 | {:stream, boolean()})
-                | {:starting_after, integer()})
-               | {:include_obfuscation, boolean()})
+              (((({:include, list(ExOpenAI.Components.BetaIncludeEnum.input())}
+                  | {:stream, boolean()})
+                 | {:starting_after, integer()})
+                | {:include_obfuscation, boolean()})
+               | {:"openai-beta", list(:"responses_multi_agent=v1" | String.t())})
               | ExOpenAI.request_option()
       @spec beta_get_response(response_id :: String.t(), opts :: [beta_get_response_opt()]) ::
               {:ok, ExOpenAI.Components.BetaResponse.t() | reference()} | {:error, any()}
@@ -1180,8 +1263,22 @@ defmodule ExOpenAI.Responses do
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
 
+      (
+        headers =
+          Enum.map(Keyword.take(opts, [:"openai-beta"]), fn {name, value} ->
+            {Atom.to_string(name),
+             if is_list(value) do
+               Enum.join(value, ",")
+             else
+               to_string(value)
+             end}
+          end)
+
+        opts = Keyword.put(opts, :request_headers, headers)
+      )
+
       optional_params_to_drop =
-        [:include, :include_obfuscation, :starting_after, :stream]
+        [:include, :include_obfuscation, :"openai-beta", :starting_after, :stream]
         |> Enum.reject(&(&1 == :stream))
 
       opts = Keyword.drop(opts, optional_params_to_drop)
@@ -1311,7 +1408,9 @@ defmodule ExOpenAI.Responses do
     """
     (
       @type beta_create_response_opt() ::
-              ((((((((((((((((((((((((((((((({:background, boolean() | nil}
+              (((((((((((((((((((((((((((((((({:"openai-beta",
+                                               list(:"responses_multi_agent=v1" | String.t())}
+                                              | {:background, boolean() | nil})
                                              | {:context_management,
                                                 list(
                                                   ExOpenAI.Components.BetaContextManagementParam.input()
@@ -1404,6 +1503,20 @@ defmodule ExOpenAI.Responses do
 
       body_params = body_params ++ optional_body_params
 
+      (
+        headers =
+          Enum.map(Keyword.take(opts, [:"openai-beta"]), fn {name, value} ->
+            {Atom.to_string(name),
+             if is_list(value) do
+               Enum.join(value, ",")
+             else
+               to_string(value)
+             end}
+          end)
+
+        opts = Keyword.put(opts, :request_headers, headers)
+      )
+
       optional_params_to_drop =
         [
           :background,
@@ -1418,6 +1531,7 @@ defmodule ExOpenAI.Responses do
           :model,
           :moderation,
           :multi_agent,
+          :"openai-beta",
           :parallel_tool_calls,
           :previous_response_id,
           :prompt,

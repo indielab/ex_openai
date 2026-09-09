@@ -104,7 +104,9 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
     http_method = FunctionBodyGenerator.determine_http_method(operation)
     content_type = FunctionBodyGenerator.determine_content_type(operation)
-    supports_streaming? = :stream in optional_param_names
+
+    supports_streaming? =
+      :stream in optional_param_names or not is_nil(stream_response_schema_ref)
 
     stream_convert_response_ast =
       case stream_response_schema_ref do
@@ -153,6 +155,11 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     # Build the data we need for the function body
     path_param_names = Enum.map(path_params, fn p -> String.to_atom(p.name) end)
     query_param_names = Enum.map(query_params, fn p -> String.to_atom(p.name) end)
+
+    header_param_names =
+      (operation.parameters || [])
+      |> Enum.filter(&(&1.in == "header"))
+      |> Enum.map(&String.to_atom(&1.name))
 
     optional_body_names =
       SchemaResolver.optional_body_properties(operation.request_body, schemas)
@@ -220,6 +227,38 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         # Add optional parameters from opts to body_params
         optional_body_params = Keyword.take(opts, unquote(optional_body_names))
         body_params = body_params ++ optional_body_params
+
+        unquote_splicing(
+          List.wrap(
+            if header_param_names != [] do
+              quote do
+                headers =
+                  Enum.map(Keyword.take(opts, unquote(header_param_names)), fn {name, value} ->
+                    {Atom.to_string(name),
+                     if(is_list(value), do: Enum.join(value, ","), else: to_string(value))}
+                  end)
+
+                opts = Keyword.put(opts, :request_headers, headers)
+              end
+            end
+          )
+        )
+
+        unquote_splicing(
+          List.wrap(
+            if SchemaResolver.raw_response?(response_schema_ref) do
+              quote do: opts = Keyword.put(opts, :response_mode, :raw)
+            end
+          )
+        )
+
+        unquote_splicing(
+          List.wrap(
+            if SchemaResolver.event_envelope?(stream_response_schema_ref, schemas) do
+              quote do: opts = Keyword.put(opts, :event_envelope, true)
+            end
+          )
+        )
 
         # Keep :stream in opts for streaming client while still sending it in body
         optional_params_to_drop =
@@ -442,26 +481,26 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
   defp extract_required_fields(_), do: []
 
-  # Extract optional parameters from operation (query params + optional body params)
+  # Extract optional parameters from query, headers, and the request body
   defp extract_optional_parameters(%Operation{} = operation, schemas) do
-    # Extract query parameters (always optional)
-    query_params = extract_query_parameter_names(operation.parameters)
+    # Query and header parameters are supplied through opts.
+    parameter_names = extract_query_and_header_parameter_names(operation.parameters)
 
     # Extract optional body parameters
     optional_body_params = extract_optional_body_parameters(operation.request_body, schemas)
 
     # Combine and sort for consistent ordering
-    (query_params ++ optional_body_params)
+    (parameter_names ++ optional_body_params)
     |> Enum.uniq()
     |> Enum.sort()
   end
 
-  # Extract query parameter names
-  defp extract_query_parameter_names(nil), do: []
+  # Extract query and header parameter names
+  defp extract_query_and_header_parameter_names(nil), do: []
 
-  defp extract_query_parameter_names(params) when is_list(params) do
+  defp extract_query_and_header_parameter_names(params) when is_list(params) do
     params
-    |> Enum.filter(fn param -> param.in == "query" end)
+    |> Enum.filter(fn param -> param.in in ["query", "header"] end)
     |> Enum.map(fn param -> String.to_atom(param.name) end)
   end
 

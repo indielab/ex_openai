@@ -172,6 +172,9 @@ audio = {"audio.mp3", File.read!("path/to/audio.mp3")}
 IO.inspect({transcription, translation})
 ```
 
+With `response_format: :text`, `:srt`, or `:vtt`, transcription and translation
+return the response text as a binary. JSON formats return generated structs.
+
 ```elixir
 {:ok, audio} = ExOpenAI.Audio.create_speech("Hello world", "tts-1", :alloy, response_format: "mp3")
 File.write!("output.mp3", audio)
@@ -202,6 +205,8 @@ IO.inspect(content)
 {:ok, deleted} = ExOpenAI.Files.delete_file(file.id)
 IO.inspect(deleted.deleted)
 ```
+
+File downloads preserve the exact response bytes, including JSON files.
 
 ## Streaming
 

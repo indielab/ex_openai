@@ -563,38 +563,11 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   # discriminator-like :type field inferred from the component typespec.
   defp pick_union_type(types, value) when is_map(value) do
     scored =
-      Enum.map(types, fn
-        # Remote component types
-        {:remote_type, _, [{:atom, _, module}, {:atom, _, :t}, []]} = type ->
-          if component_module?(module) and module_exists?(module) do
-            specs = fetch_types(module)
-            keys = get_struct_keys(module)
-            base = count_matching_keys(value, keys)
-            bonus = type_match_bonus(specs, value)
-            {base + bonus, type}
-          else
-            {0, type}
-          end
-
-        # Map type – generic match for maps
-        {:type, _, :map, _} = type ->
-          {1, type}
-
-        # List type – generic match for lists (handled in list clause)
-        {:type, _, :list, _} = type ->
-          {0, type}
-
-        # Nil in union – handled by the nil branch above, so it gets no score here.
-        {:atom, _, nil} = type ->
-          {0, type}
-
-        type ->
-          {0, type}
-      end)
+      Enum.map(types, &{union_score(&1, value), &1})
       |> Enum.sort_by(fn {score, _type} -> score end, :desc)
 
     case scored do
-      [{0, _} | _] ->
+      [{score, _} | _] when score <= 0 ->
         value
 
       [{_score, best_type} | _] ->
@@ -621,6 +594,54 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   end
 
   defp pick_union_type(_types, value), do: value
+
+  defp union_score({:remote_type, _, [{:atom, _, module}, {:atom, _, :t}, []]}, value) do
+    cond do
+      not component_module?(module) ->
+        0
+
+      module_exists?(module) ->
+        specs = fetch_types(module)
+        allowed_events = allowed_type_strings(specs, :event)
+        event = value |> fetch_discriminator_value("event") |> normalize_discriminator_value()
+
+        if allowed_events != [] and event not in allowed_events do
+          -1
+        else
+          count_matching_keys(value, get_struct_keys(module)) + type_match_bonus(specs, value)
+        end
+
+      component_alias?(module) ->
+        union_score(component_type(module), value)
+
+      true ->
+        0
+    end
+  end
+
+  defp union_score({:type, _, :union, types}, value),
+    do: types |> Enum.map(&union_score(&1, value)) |> Enum.max(fn -> 0 end)
+
+  defp union_score({:type, _, :map, fields}, value) when is_list(fields) do
+    Enum.reduce_while(fields, 1, fn
+      {:type, _, _, [{:atom, _, key}, {:atom, _, literal}]}, score ->
+        case fetch_field(value, key) do
+          {:ok, raw} when raw == literal ->
+            {:cont, score + 100}
+
+          {:ok, raw} when is_binary(raw) ->
+            if raw == Atom.to_string(literal), do: {:cont, score + 100}, else: {:halt, -1}
+
+          _ ->
+            {:halt, -1}
+        end
+
+      _, score ->
+        {:cont, score}
+    end)
+  end
+
+  defp union_score(_, _), do: 0
 
   # Compute a bonus score when a union variant's :type field matches the value's type.
   defp type_match_bonus(typespecs, value) do

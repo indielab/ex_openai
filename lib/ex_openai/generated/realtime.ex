@@ -99,6 +99,7 @@ defmodule ExOpenAI.Realtime do
       body_params = [sdp: sdp]
       optional_body_params = Keyword.take(opts, [:session])
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :response_mode, :raw)
       optional_params_to_drop = [:session] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 

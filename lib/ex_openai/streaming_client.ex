@@ -31,15 +31,16 @@ defmodule ExOpenAI.StreamingClient do
     end
   end
 
-  def start_link(stream_to, convert_response) do
-    GenServer.start_link(__MODULE__, {stream_to, convert_response})
+  def start_link(stream_to, convert_response, opts \\ []) do
+    GenServer.start_link(__MODULE__, {stream_to, convert_response, opts})
   end
 
   @impl true
-  def init({stream_to, convert_response}) do
+  def init({stream_to, convert_response, opts}) do
     {:ok,
      %{
        stream_to: stream_to,
+       event_envelope: Keyword.get(opts, :event_envelope, false),
        convert_response_fx: convert_response,
        buffer: "",
        finished: false,
@@ -125,11 +126,19 @@ defmodule ExOpenAI.StreamingClient do
 
       true ->
         case Jason.decode(Enum.join(data, "\n")) do
-          {:ok, payload} -> process_payload(payload, state)
+          {:ok, payload} -> process_event(event, payload, state)
           {:error, error} -> fail(state, error)
         end
     end
   end
+
+  defp process_event("error", payload, state), do: fail(state, payload)
+
+  defp process_event(event, payload, %{event_envelope: true} = state) when is_binary(event) do
+    process_payload(%{"event" => event, "data" => payload}, state)
+  end
+
+  defp process_event(_event, payload, state), do: process_payload(payload, state)
 
   defp strip_space(" " <> value), do: value
   defp strip_space(value), do: value

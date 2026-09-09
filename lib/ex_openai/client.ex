@@ -5,7 +5,13 @@ defmodule ExOpenAI.Client do
 
   def add_base_url(url, base_url), do: Config.api_url(base_url) <> url
 
-  def process_response(%HTTPoison.Response{headers: headers, body: body} = response) do
+  def process_response(response), do: response
+
+  defp decode_response({:ok, %HTTPoison.Response{status_code: code}} = response, :raw)
+       when code in 200..299,
+       do: response
+
+  defp decode_response({:ok, %HTTPoison.Response{headers: headers, body: body} = response}, _) do
     json? =
       Enum.any?(headers, fn {name, value} ->
         String.downcase(name) == "content-type" and
@@ -15,13 +21,15 @@ defmodule ExOpenAI.Client do
 
     if json? do
       case Jason.decode(body) do
-        {:ok, decoded} -> %{response | body: decoded}
-        _ -> response
+        {:ok, decoded} -> {:ok, %{response | body: decoded}}
+        _ -> {:ok, response}
       end
     else
-      response
+      {:ok, response}
     end
   end
+
+  defp decode_response(response, _), do: response
 
   def handle_response(httpoison_response) do
     case httpoison_response do
@@ -77,6 +85,18 @@ defmodule ExOpenAI.Client do
     [{"Content-type", "multipart/form-data"} | headers]
   end
 
+  @doc false
+  def merge_request_headers(headers, overrides) do
+    Enum.reduce(overrides, headers, fn {name, value}, acc ->
+      [
+        {to_string(name), value}
+        | Enum.reject(acc, fn {key, _} ->
+            String.downcase(to_string(key)) == String.downcase(to_string(name))
+          end)
+      ]
+    end)
+  end
+
   def request_options, do: Config.http_options()
 
   def default_headers, do: Config.http_headers()
@@ -87,7 +107,11 @@ defmodule ExOpenAI.Client do
            Keyword.fetch(request_options, :stream_to),
          true <- stream_val do
       # spawn a new StreamingClient and tell it to forward data to `stream_to`
-      {:ok, sse_client_pid} = ExOpenAI.StreamingClient.start_link(stream_to, convert_response)
+      {:ok, sse_client_pid} =
+        ExOpenAI.StreamingClient.start_link(stream_to, convert_response,
+          event_envelope: Keyword.get(request_options, :event_envelope, false)
+        )
+
       [stream_to: sse_client_pid]
     else
       _ ->
@@ -110,13 +134,14 @@ defmodule ExOpenAI.Client do
       |> add_json_request_headers()
       |> add_organization_header(Map.get(request_options_map, :openai_organization_key, nil))
       |> add_bearer_header(Map.get(request_options_map, :openai_api_key, nil))
+      |> merge_request_headers(Map.get(request_options_map, :request_headers, []))
 
     base_url = Map.get(request_options_map, :base_url)
 
     url
     |> add_base_url(base_url)
     |> get(headers, request_options)
-    |> finish_request(stream_options, convert_response)
+    |> finish_request(stream_options, convert_response, request_options)
   end
 
   defp strip_params(params) do
@@ -146,13 +171,14 @@ defmodule ExOpenAI.Client do
       |> add_json_request_headers()
       |> add_organization_header(Map.get(request_options_map, :openai_organization_key, nil))
       |> add_bearer_header(Map.get(request_options_map, :openai_api_key, nil))
+      |> merge_request_headers(Map.get(request_options_map, :request_headers, []))
 
     base_url = Map.get(request_options_map, :base_url)
 
     url
     |> add_base_url(base_url)
     |> post(body, headers, request_options)
-    |> finish_request(stream_options, convert_response)
+    |> finish_request(stream_options, convert_response, request_options)
   end
 
   def api_delete(url, request_options \\ [], convert_response) do
@@ -170,13 +196,14 @@ defmodule ExOpenAI.Client do
       |> add_json_request_headers()
       |> add_organization_header(Map.get(request_options_map, :openai_organization_key, nil))
       |> add_bearer_header(Map.get(request_options_map, :openai_api_key, nil))
+      |> merge_request_headers(Map.get(request_options_map, :request_headers, []))
 
     base_url = Map.get(request_options_map, :base_url)
 
     url
     |> add_base_url(base_url)
     |> delete(headers, request_options)
-    |> finish_request(stream_options, convert_response)
+    |> finish_request(stream_options, convert_response, request_options)
   end
 
   @doc false
@@ -272,17 +299,18 @@ defmodule ExOpenAI.Client do
       |> add_multipart_request_headers()
       |> add_organization_header(Map.get(request_options_map, :openai_organization_key, nil))
       |> add_bearer_header(Map.get(request_options_map, :openai_api_key, nil))
+      |> merge_request_headers(Map.get(request_options_map, :request_headers, []))
 
     base_url = Map.get(request_options_map, :base_url)
 
     url
     |> add_base_url(base_url)
     |> post(multipart_body, headers, request_options)
-    |> finish_request(stream_options, convert_response)
+    |> finish_request(stream_options, convert_response, request_options)
   end
 
-  defp finish_request(response, stream_options, convert_response) do
-    result = handle_response(response)
+  defp finish_request(response, stream_options, convert_response, request_options) do
+    result = response |> decode_response(request_options[:response_mode]) |> handle_response()
 
     if match?({:error, _}, result) and is_pid(stream_options[:stream_to]) do
       GenServer.cast(stream_options[:stream_to], :stop)

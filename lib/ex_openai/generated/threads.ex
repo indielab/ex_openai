@@ -249,6 +249,7 @@ defmodule ExOpenAI.Threads do
         ])
 
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :event_envelope, true)
 
       optional_params_to_drop =
         [
@@ -277,7 +278,9 @@ defmodule ExOpenAI.Threads do
           fn response ->
             ExOpenAI.Codegen.ResponseConverter.convert_response(
               response,
-              %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RunObject"}
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/AssistantStreamEvent"
+              }
             )
           end
         else
@@ -987,6 +990,7 @@ defmodule ExOpenAI.Threads do
         ])
 
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :event_envelope, true)
 
       optional_params_to_drop =
         [
@@ -1017,7 +1021,9 @@ defmodule ExOpenAI.Threads do
           fn response ->
             ExOpenAI.Codegen.ResponseConverter.convert_response(
               response,
-              %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RunObject"}
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/AssistantStreamEvent"
+              }
             )
           end
         else
@@ -1390,6 +1396,7 @@ defmodule ExOpenAI.Threads do
       body_params = [tool_outputs: tool_outputs]
       optional_body_params = Keyword.take(opts, [:stream])
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :event_envelope, true)
       optional_params_to_drop = [:stream] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
@@ -1398,7 +1405,9 @@ defmodule ExOpenAI.Threads do
           fn response ->
             ExOpenAI.Codegen.ResponseConverter.convert_response(
               response,
-              %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/RunObject"}
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/AssistantStreamEvent"
+              }
             )
           end
         else

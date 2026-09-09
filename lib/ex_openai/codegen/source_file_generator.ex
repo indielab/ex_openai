@@ -9,15 +9,18 @@ defmodule ExOpenAI.Codegen.SourceFileGenerator do
 
   @generated_root Path.expand("../generated", __DIR__)
   @docs_path Path.expand("../docs/docs.yaml", __DIR__)
+  @overlay_path Path.expand("../docs/overlay.yaml", __DIR__)
 
   @spec generated_root() :: String.t()
   def generated_root, do: @generated_root
 
   @spec load_documentation() :: DocsParser.t()
   def load_documentation do
+    overlay = YamlElixir.read_from_file!(@overlay_path)
+
     @docs_path
     |> File.read!()
-    |> DocsParser.get_documentation()
+    |> DocsParser.get_documentation(overlay)
   end
 
   @spec write_all!() :: [String.t()]

@@ -41,14 +41,18 @@ defmodule ExOpenAI.Audio do
       The format to stream the audio in. Supported formats are `sse` and `audio`. `sse` is not supported for `tts-1` or `tts-1-hd`.
       Allowed values: `"sse"`, `"audio"`
       Default: `"audio"`
+
+    * `stream` - **optional** - `boolean()`
+      Deliver typed SSE events to `stream_to`. Supply any request format options needed to select SSE. Defaults to `false`.
     """
     (
       @type create_speech_opt() ::
-              ((({:instructions, String.t()}
-                 | {:response_format,
-                    (((((:mp3 | :opus) | :aac) | :flac) | :wav) | :pcm) | String.t()})
-                | {:speed, number()})
-               | {:stream_format, (:sse | :audio) | String.t()})
+              (((({:instructions, String.t()}
+                  | {:response_format,
+                     (((((:mp3 | :opus) | :aac) | :flac) | :wav) | :pcm) | String.t()})
+                 | {:speed, number()})
+                | {:stream_format, (:sse | :audio) | String.t()})
+               | {:stream, boolean()})
               | ExOpenAI.request_option()
       @spec create_speech(
               input :: String.t(),
@@ -59,7 +63,7 @@ defmodule ExOpenAI.Audio do
                 | String.t(),
               voice :: ExOpenAI.Components.VoiceIdsOrCustomVoice.input(),
               opts :: [create_speech_opt()]
-            ) :: {:ok, binary()} | {:error, any()}
+            ) :: {:ok, binary() | reference()} | {:error, any()}
     )
 
     def create_speech(input, model, voice, opts \\ []) do
@@ -72,18 +76,31 @@ defmodule ExOpenAI.Audio do
         Keyword.take(opts, [:instructions, :response_format, :speed, :stream_format])
 
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :response_mode, :raw)
 
       optional_params_to_drop =
         [:instructions, :response_format, :speed, :stream_format] |> Enum.reject(&(&1 == :stream))
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
-      convert_response = fn response ->
-        ExOpenAI.Codegen.ResponseConverter.convert_response(
-          response,
-          %ExOpenAI.Codegen.DocsParser.Schema{type: "string", format: "binary"}
-        )
-      end
+      convert_response =
+        if Keyword.get(opts, :stream, false) do
+          fn response ->
+            ExOpenAI.Codegen.ResponseConverter.convert_response(
+              response,
+              %ExOpenAI.Codegen.DocsParser.Schema{
+                ref: "#/components/schemas/CreateSpeechResponseStreamEvent"
+              }
+            )
+          end
+        else
+          fn response ->
+            ExOpenAI.Codegen.ResponseConverter.convert_response(
+              response,
+              %ExOpenAI.Codegen.DocsParser.Schema{type: "string", format: "binary"}
+            )
+          end
+        end
 
       nil
 
@@ -189,9 +206,10 @@ defmodule ExOpenAI.Audio do
               opts :: [create_transcription_opt()]
             ) ::
               {:ok,
-               ((ExOpenAI.Components.CreateTranscriptionResponseJson.t()
-                 | ExOpenAI.Components.CreateTranscriptionResponseDiarizedJson.t())
-                | ExOpenAI.Components.CreateTranscriptionResponseVerboseJson.t())
+               (((ExOpenAI.Components.CreateTranscriptionResponseJson.t()
+                  | ExOpenAI.Components.CreateTranscriptionResponseDiarizedJson.t())
+                 | ExOpenAI.Components.CreateTranscriptionResponseVerboseJson.t())
+                | String.t())
                | reference()}
               | {:error, any()}
     )
@@ -263,7 +281,8 @@ defmodule ExOpenAI.Audio do
                   },
                   %ExOpenAI.Codegen.DocsParser.Schema{
                     ref: "#/components/schemas/CreateTranscriptionResponseVerboseJson"
-                  }
+                  },
+                  %ExOpenAI.Codegen.DocsParser.Schema{type: "string"}
                 ]
               }
             )
@@ -324,8 +343,9 @@ defmodule ExOpenAI.Audio do
               opts :: [create_translation_opt()]
             ) ::
               {:ok,
-               ExOpenAI.Components.CreateTranslationResponseJson.t()
-               | ExOpenAI.Components.CreateTranslationResponseVerboseJson.t()}
+               (ExOpenAI.Components.CreateTranslationResponseJson.t()
+                | ExOpenAI.Components.CreateTranslationResponseVerboseJson.t())
+               | String.t()}
               | {:error, any()}
     )
 
@@ -352,7 +372,8 @@ defmodule ExOpenAI.Audio do
               },
               %ExOpenAI.Codegen.DocsParser.Schema{
                 ref: "#/components/schemas/CreateTranslationResponseVerboseJson"
-              }
+              },
+              %ExOpenAI.Codegen.DocsParser.Schema{type: "string"}
             ]
           }
         )

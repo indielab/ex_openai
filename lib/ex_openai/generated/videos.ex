@@ -449,7 +449,7 @@ defmodule ExOpenAI.Videos do
               {:variant, ExOpenAI.Components.VideoContentVariant.input()}
               | ExOpenAI.request_option()
       @spec retrieve_video_content(video_id :: String.t(), opts :: [retrieve_video_content_opt()]) ::
-              {:ok, String.t()} | {:error, any()}
+              {:ok, String.t() | binary()} | {:error, any()}
     )
 
     def retrieve_video_content(video_id, opts \\ []) do
@@ -460,13 +460,19 @@ defmodule ExOpenAI.Videos do
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
+      opts = Keyword.put(opts, :response_mode, :raw)
       optional_params_to_drop = [:variant] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
 
       convert_response = fn response ->
         ExOpenAI.Codegen.ResponseConverter.convert_response(
           response,
-          %ExOpenAI.Codegen.DocsParser.Schema{type: "string"}
+          %ExOpenAI.Codegen.DocsParser.Schema{
+            one_of: [
+              %ExOpenAI.Codegen.DocsParser.Schema{type: "string"},
+              %ExOpenAI.Codegen.DocsParser.Schema{type: "string", format: "binary"}
+            ]
+          }
         )
       end
 

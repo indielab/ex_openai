@@ -76,3 +76,14 @@ Typespecs describe the API but do not perform runtime validation. Dialyzer check
 for definite inconsistencies and can miss invalid keyword values or nested union
 members. An explicit component return contract provides a stronger check when
 constructing a request schema in application code.
+
+## Upstream corrections
+
+SDK generation uses `SourceFileGenerator.load_documentation/0`, which supplies
+`overlay.yaml` to `DocsParser.get_documentation/2`. The overlay is applied to the
+YAML map before parsing; it does not rewrite `docs.yaml`. Direct calls to
+`get_documentation/1` parse only the supplied document.
+
+Streaming support and event envelopes are derived from the response schemas.
+See the [codegen tutorial](codegen.md) for the overlay format, schema inference,
+and upstream conflict checks.

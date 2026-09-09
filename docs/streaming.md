@@ -8,6 +8,26 @@ The receiver gets `{:data, chunk}` for data, `{:error, reason}` for errors, and
 `:finish` when the stream completes successfully. A terminal error can end the
 stream without `:finish`.
 
+## Assistants and speech events
+
+`Threads.create_thread_and_run/2`, `Threads.create_run/3`, and
+`Threads.submit_tool_ouputs_to_run/4` preserve the SSE event name in the callback:
+
+```elixir
+{:data, %{event: :"thread.message.delta", data: %ExOpenAI.Components.MessageDeltaObject{}}}
+```
+
+The `data` field uses the component type for that event. Handle other events too,
+including run status changes and message completion. Unknown events retain their
+original payload, so receivers should include a catch-all clause.
+
+For `Audio.create_speech/4`, pass `stream: true`, `stream_format: :sse`, and
+`stream_to: callback_or_pid`. The format must be supplied explicitly because
+`stream: true` controls delivery to the receiver and does not change request
+format options. Callbacks receive `SpeechAudioDeltaEvent` and
+`SpeechAudioDoneEvent` structs. Without `stream: true`, speech returns buffered
+bytes, including the SSE text if `stream_format: :sse` was requested.
+
 ## Chat callback
 
 ```elixir

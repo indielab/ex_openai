@@ -38,9 +38,12 @@ defmodule ExOpenAI.Codegen.DocsParser do
   @doc """
   Parses OpenAPI YAML documentation and returns typed structs.
   """
-  @spec get_documentation(String.t()) :: Documentation.t()
-  def get_documentation(yml) do
-    parsed_yaml = YamlElixir.read_from_string!(yml)
+  @spec get_documentation(String.t(), [map()]) :: Documentation.t()
+  def get_documentation(yml, overlay \\ []) do
+    parsed_yaml =
+      yml
+      |> YamlElixir.read_from_string!()
+      |> ExOpenAI.Codegen.SchemaOverlay.apply!(overlay)
 
     %Documentation{
       components: Schema.parse_components(parsed_yaml["components"]),

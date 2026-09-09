@@ -287,7 +287,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
           optional(String.t()) => Schema.t()
         }) :: [Macro.t()]
   defp build_option_tuple_types(operation, _body_schema, schemas) do
-    query_params = get_query_parameters(operation)
+    query_params = get_query_parameters(operation) ++ get_header_parameters(operation)
 
     optional_body_params =
       SchemaResolver.optional_body_properties(operation.request_body, schemas)
@@ -312,7 +312,13 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
         end
       end)
 
-    query_option_types ++ body_option_types ++ [quote(do: ExOpenAI.request_option())]
+    stream_types =
+      if SchemaResolver.sdk_stream_option?(operation, schemas),
+        do: [quote(do: {:stream, boolean()})],
+        else: []
+
+    query_option_types ++
+      body_option_types ++ stream_types ++ [quote(do: ExOpenAI.request_option())]
   end
 
   # Fold a list of option tuple AST nodes into the union used by both
@@ -400,17 +406,15 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     end
   end
 
-  # Detect whether the normal generated function supports `stream: true`.
-  #
-  # The generated runtime branch is driven by the presence of `:stream` in the
-  # optional parameter list, so the spec generator needs the same check.
+  # SSE responses support the SDK stream option even without a stream request field.
   defp supports_streaming_option?(%Operation{} = operation, schemas) do
     query_params = get_query_parameters(operation)
 
     optional_body_params =
       SchemaResolver.optional_body_properties(operation.request_body, schemas)
 
-    Enum.any?(query_params, &(&1.name == "stream")) or
+    SchemaResolver.sdk_stream_option?(operation, schemas) or
+      Enum.any?(query_params, &(&1.name == "stream")) or
       Enum.any?(optional_body_params, fn {name, _schema} -> name == "stream" end)
   end
 
@@ -502,6 +506,15 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       end)
 
     docs = docs ++ header_docs
+
+    docs =
+      if SchemaResolver.sdk_stream_option?(operation, schemas),
+        do:
+          docs ++
+            [
+              "* `stream` - **optional** - `boolean()`\n  Deliver typed SSE events to `stream_to`. Supply any request format options needed to select SSE. Defaults to `false`."
+            ],
+        else: docs
 
     Enum.join(docs, "\n\n")
   end
