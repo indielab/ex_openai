@@ -7,20 +7,20 @@ defmodule ExOpenAI.Components.ResponseCustomToolCallInputDeltaEvent do
 
   ## Fields
 
-  * `:delta` - **required** - `String.t()`  
+  * `:delta` - **required** - `String.t()`
     The incremental input data (delta) for the custom tool call.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     Unique identifier for the API item associated with this event.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output this delta applies to.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.custom_tool_call_input.delta"`  
-    The event type identifier.  
+  * `:type` - **required** - `:"response.custom_tool_call_input.delta"`
+    The event type identifier.
     Allowed values: `"response.custom_tool_call_input.delta"`
   """
   @type t() :: %{
@@ -31,5 +31,15 @@ defmodule ExOpenAI.Components.ResponseCustomToolCallInputDeltaEvent do
           sequence_number: integer(),
           type: :"response.custom_tool_call_input.delta"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:delta) => String.t(),
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.custom_tool_call_input.delta" | String.t()
+            }
   defstruct [:delta, :item_id, :output_index, :sequence_number, :type]
 end

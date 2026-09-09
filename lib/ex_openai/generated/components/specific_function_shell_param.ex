@@ -6,11 +6,13 @@ defmodule ExOpenAI.Components.SpecificFunctionShellParam do
 
   ## Fields
 
-  * `:type` - **required** - `:shell`  
-    The tool to call. Always `shell`.  
-    Allowed values: `"shell"`  
+  * `:type` - **required** - `:shell`
+    The tool to call. Always `shell`.
+    Allowed values: `"shell"`
     Default: `"shell"`
   """
   @type t() :: %{__struct__: __MODULE__, type: :shell}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:type) => :shell | String.t()}
   defstruct [:type]
 end

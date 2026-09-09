@@ -7,12 +7,14 @@ defmodule ExOpenAI.Components.EvalApiError do
 
   ## Fields
 
-  * `:code` - **required** - `String.t()`  
+  * `:code` - **required** - `String.t()`
     The error code.
 
-  * `:message` - **required** - `String.t()`  
+  * `:message` - **required** - `String.t()`
     The error message.
   """
   @type t() :: %{__struct__: __MODULE__, code: String.t(), message: String.t()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:code) => String.t(), required(:message) => String.t()}
   defstruct [:code, :message]
 end

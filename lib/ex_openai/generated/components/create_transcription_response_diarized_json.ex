@@ -7,20 +7,21 @@ defmodule ExOpenAI.Components.CreateTranscriptionResponseDiarizedJson do
 
   ## Fields
 
-  * `:duration` - **required** - `number()`  
+  * `:duration` - **required** - `number()`
     Duration of the input audio in seconds.
+    Format: `double`
 
-  * `:segments` - **required** - `[ExOpenAI.Components.TranscriptionDiarizedSegment.t()]`  
+  * `:segments` - **required** - `list(ExOpenAI.Components.TranscriptionDiarizedSegment.t())`
     Segments of the transcript annotated with timestamps and speaker labels.
 
-  * `:task` - **required** - `:transcribe`  
-    The type of task that was run. Always `transcribe`.  
+  * `:task` - **required** - `:transcribe`
+    The type of task that was run. Always `transcribe`.
     Allowed values: `"transcribe"`
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     The concatenated transcript text for the entire audio input.
 
-  * `:usage` - **optional** - `map()`  
+  * `:usage` - **optional** - `map()`
     Token or duration usage statistics for the request.
   """
   @type t() :: %{
@@ -31,5 +32,18 @@ defmodule ExOpenAI.Components.CreateTranscriptionResponseDiarizedJson do
           text: String.t(),
           usage: map() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:duration) => number(),
+              required(:segments) =>
+                list(ExOpenAI.Components.TranscriptionDiarizedSegment.input()),
+              required(:task) => :transcribe | String.t(),
+              required(:text) => String.t(),
+              optional(:usage) =>
+                ExOpenAI.Components.TranscriptTextUsageTokens.input()
+                | ExOpenAI.Components.TranscriptTextUsageDuration.input()
+            }
   defstruct [:duration, :segments, :task, :text, :usage]
 end

@@ -6,11 +6,11 @@ defmodule ExOpenAI.Components.ResponseAudioTranscriptDoneEvent do
 
   ## Fields
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.audio.transcript.done"`  
-    The type of the event. Always `response.audio.transcript.done`.  
+  * `:type` - **required** - `:"response.audio.transcript.done"`
+    The type of the event. Always `response.audio.transcript.done`.
     Allowed values: `"response.audio.transcript.done"`
   """
   @type t() :: %{
@@ -18,5 +18,12 @@ defmodule ExOpenAI.Components.ResponseAudioTranscriptDoneEvent do
           sequence_number: integer(),
           type: :"response.audio.transcript.done"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.audio.transcript.done" | String.t()
+            }
   defstruct [:sequence_number, :type]
 end

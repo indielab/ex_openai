@@ -1,3 +1,15 @@
 [tasks.generate_openai]
 run = "mix generate_openai_sources"
 description = "Generate OpenAI SDK source files under lib/ex_openai/generated"
+
+[tasks.test]
+run = "mix test"
+description = "Run the full test suite"
+
+[tasks.check]
+run = ["mix clean", "mix compile --warnings-as-errors", "mix generate_openai_sources --check", "mix dialyzer --no-compile --format dialyzer"]
+description = "Check compilation, generated sources, and static types"
+
+[tasks.lint]
+run = ["mix format --check-formatted", "mix credo --strict"]
+description = "Check formatting and code quality"

@@ -12,5 +12,8 @@ defmodule ExOpenAI.Components.UpdateVectorStoreFileAttributesRequest do
           __struct__: __MODULE__,
           attributes: ExOpenAI.Components.VectorStoreFileAttributes.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t() | %{required(:attributes) => ExOpenAI.Components.VectorStoreFileAttributes.input()}
   defstruct [:attributes]
 end

@@ -9,14 +9,14 @@ defmodule ExOpenAI.Components.ChatCompletionRequestSystemMessage do
 
   ## Fields
 
-  * `:content` - **required** - `String.t() | [ExOpenAI.Components.ChatCompletionRequestSystemMessageContentPart.t()]`  
+  * `:content` - **required** - `String.t() | list(ExOpenAI.Components.ChatCompletionRequestSystemMessageContentPart.t())`
     The contents of the system message.
 
-  * `:name` - **optional** - `String.t()`  
+  * `:name` - **optional** - `String.t()`
     An optional name for the participant. Provides the model information to differentiate between participants of the same role.
 
-  * `:role` - **required** - `:system`  
-    The role of the messages author, in this case `system`.  
+  * `:role` - **required** - `:system`
+    The role of the messages author, in this case `system`.
     Allowed values: `"system"`
   """
   @type t() :: %{
@@ -27,5 +27,15 @@ defmodule ExOpenAI.Components.ChatCompletionRequestSystemMessage do
           name: String.t() | nil,
           role: :system
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content) =>
+                String.t()
+                | list(ExOpenAI.Components.ChatCompletionRequestSystemMessageContentPart.input()),
+              optional(:name) => String.t(),
+              required(:role) => :system | String.t()
+            }
   defstruct [:content, :name, :role]
 end

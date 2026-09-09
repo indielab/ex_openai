@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ApplyPatchCallOutputStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ApplyPatchCallOutputStatus.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ApplyPatchCallOutputStatus do
   `"completed"`, `"failed"`
   """
   @type t() :: :completed | :failed
+  @type input() :: (:completed | :failed) | String.t()
 end

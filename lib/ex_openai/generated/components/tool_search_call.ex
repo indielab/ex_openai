@@ -6,37 +6,49 @@ defmodule ExOpenAI.Components.ToolSearchCall do
 
   ## Fields
 
-  * `:arguments` - **required** - `any()`  
+  * `:arguments` - **required** - `any()`
     Arguments used for the tool search call.
 
-  * `:call_id` - **required** - `String.t() | any()`
+  * `:call_id` - **required** - `String.t() | nil`
 
-  * `:created_by` - **optional** - `String.t()`  
+  * `:created_by` - **optional** - `String.t()`
     The identifier of the actor that created the item.
 
-  * `:execution` - **required** - `ExOpenAI.Components.ToolSearchExecutionType.t()`  
+  * `:execution` - **required** - `ExOpenAI.Components.ToolSearchExecutionType.t()`
     Whether tool search was executed by the server or by the client.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The unique ID of the tool search call item.
 
-  * `:status` - **required** - `ExOpenAI.Components.FunctionCallStatus.t()`  
+  * `:status` - **required** - `ExOpenAI.Components.FunctionCallStatus.t()`
     The status of the tool search call item that was recorded.
 
-  * `:type` - **required** - `:tool_search_call`  
-    The type of the item. Always `tool_search_call`.  
-    Allowed values: `"tool_search_call"`  
+  * `:type` - **required** - `:tool_search_call`
+    The type of the item. Always `tool_search_call`.
+    Allowed values: `"tool_search_call"`
     Default: `"tool_search_call"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           arguments: any(),
-          call_id: String.t() | any(),
+          call_id: String.t() | nil,
           created_by: String.t() | nil,
           execution: ExOpenAI.Components.ToolSearchExecutionType.t(),
           id: String.t(),
           status: ExOpenAI.Components.FunctionCallStatus.t(),
           type: :tool_search_call
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:arguments) => any(),
+              required(:call_id) => String.t() | nil,
+              optional(:created_by) => String.t(),
+              required(:execution) => ExOpenAI.Components.ToolSearchExecutionType.input(),
+              required(:id) => String.t(),
+              required(:status) => ExOpenAI.Components.FunctionCallStatus.input(),
+              required(:type) => :tool_search_call | String.t()
+            }
   defstruct [:arguments, :call_id, :created_by, :execution, :id, :status, :type]
 end

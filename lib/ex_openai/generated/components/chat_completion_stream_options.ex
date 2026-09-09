@@ -1,14 +1,15 @@
 defmodule ExOpenAI.Components.ChatCompletionStreamOptions do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ChatCompletionStreamOptions.
 
   ## Type
 
-  `{:%{}, [], [{{:optional, [], [:include_obfuscation]}, {:boolean, [], []}}, {{:optional, [], [:include_usage]}, {:boolean, [], []}}]} | any()`
+  `%{optional(:include_obfuscation) => boolean(), optional(:include_usage) => boolean()} | nil`
   """
   @type t() ::
           %{optional(:include_obfuscation) => boolean(), optional(:include_usage) => boolean()}
-          | any()
+          | nil
+  @type input() ::
+          %{optional(:include_obfuscation) => boolean(), optional(:include_usage) => boolean()}
+          | nil
 end

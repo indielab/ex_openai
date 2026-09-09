@@ -6,12 +6,14 @@ defmodule ExOpenAI.Components.CoordParam do
 
   ## Fields
 
-  * `:x` - **required** - `integer()`  
+  * `:x` - **required** - `integer()`
     The x-coordinate.
 
-  * `:y` - **required** - `integer()`  
+  * `:y` - **required** - `integer()`
     The y-coordinate.
   """
   @type t() :: %{__struct__: __MODULE__, x: integer(), y: integer()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:x) => integer(), required(:y) => integer()}
   defstruct [:x, :y]
 end

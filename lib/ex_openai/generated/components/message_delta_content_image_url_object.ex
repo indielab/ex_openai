@@ -6,13 +6,13 @@ defmodule ExOpenAI.Components.MessageDeltaContentImageUrlObject do
 
   ## Fields
 
-  * `:image_url` - **optional** - `{:%{}, [], [{{:optional, [], [:detail]}, {:|, [], [{:|, [], [:auto, :low]}, :high]}}, {{:optional, [], [:url]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:image_url` - **optional** - `%{optional(:detail) => :auto | :low | :high, optional(:url) => String.t()}`
 
-  * `:index` - **required** - `integer()`  
+  * `:index` - **required** - `integer()`
     The index of the content part in the message.
 
-  * `:type` - **required** - `:image_url`  
-    Always `image_url`.  
+  * `:type` - **required** - `:image_url`
+    Always `image_url`.
     Allowed values: `"image_url"`
   """
   @type t() :: %{
@@ -22,5 +22,16 @@ defmodule ExOpenAI.Components.MessageDeltaContentImageUrlObject do
           index: integer(),
           type: :image_url
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:image_url) => %{
+                optional(:detail) => ((:auto | :low) | :high) | String.t(),
+                optional(:url) => String.t()
+              },
+              required(:index) => integer(),
+              required(:type) => :image_url | String.t()
+            }
   defstruct [:image_url, :index, :type]
 end

@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ImageGenActionEnum do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ImageGenActionEnum.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ImageGenActionEnum do
   `"generate"`, `"edit"`, `"auto"`
   """
   @type t() :: (:generate | :edit) | :auto
+  @type input() :: ((:generate | :edit) | :auto) | String.t()
 end

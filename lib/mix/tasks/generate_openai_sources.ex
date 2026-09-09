@@ -9,7 +9,19 @@ defmodule Mix.Tasks.GenerateOpenaiSources do
   alias ExOpenAI.Codegen.SourceFileGenerator
 
   @impl Mix.Task
-  def run(_args) do
+  def run(["--check"]) do
+    case SourceFileGenerator.stale_sources() do
+      [] ->
+        Mix.shell().info("Generated sources are current")
+
+      files ->
+        Mix.raise(
+          "Generated sources are stale:\n" <> Enum.map_join(files, "\n", &Path.relative_to_cwd/1)
+        )
+    end
+  end
+
+  def run([]) do
     Mix.shell().info("Generating OpenAI SDK source files...")
 
     files = SourceFileGenerator.write_all!()

@@ -6,23 +6,33 @@ defmodule ExOpenAI.Components.ProjectUserListResponse do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.ProjectUser.t()]`
+  * `:data` - **required** - `list(ExOpenAI.Components.ProjectUser.t())`
 
-  * `:first_id` - **required** - `String.t()`
+  * `:first_id` - **optional** - `String.t() | nil`
 
   * `:has_more` - **required** - `boolean()`
 
-  * `:last_id` - **required** - `String.t()`
+  * `:last_id` - **optional** - `String.t() | nil`
 
   * `:object` - **required** - `String.t()`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           data: list(ExOpenAI.Components.ProjectUser.t()),
-          first_id: String.t(),
+          first_id: (String.t() | nil) | nil,
           has_more: boolean(),
-          last_id: String.t(),
+          last_id: (String.t() | nil) | nil,
           object: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.ProjectUser.input()),
+              optional(:first_id) => String.t() | nil,
+              required(:has_more) => boolean(),
+              optional(:last_id) => String.t() | nil,
+              required(:object) => String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

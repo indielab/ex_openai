@@ -6,32 +6,32 @@ defmodule ExOpenAI.Components.ProjectRateLimit do
 
   ## Fields
 
-  * `:batch_1_day_max_input_tokens` - **optional** - `integer()`  
+  * `:batch_1_day_max_input_tokens` - **optional** - `integer()`
     The maximum batch input tokens per day. Only present for relevant models.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The identifier, which can be referenced in API endpoints.
 
-  * `:max_audio_megabytes_per_1_minute` - **optional** - `integer()`  
+  * `:max_audio_megabytes_per_1_minute` - **optional** - `integer()`
     The maximum audio megabytes per minute. Only present for relevant models.
 
-  * `:max_images_per_1_minute` - **optional** - `integer()`  
+  * `:max_images_per_1_minute` - **optional** - `integer()`
     The maximum images per minute. Only present for relevant models.
 
-  * `:max_requests_per_1_day` - **optional** - `integer()`  
+  * `:max_requests_per_1_day` - **optional** - `integer()`
     The maximum requests per day. Only present for relevant models.
 
-  * `:max_requests_per_1_minute` - **required** - `integer()`  
+  * `:max_requests_per_1_minute` - **required** - `integer()`
     The maximum requests per minute.
 
-  * `:max_tokens_per_1_minute` - **required** - `integer()`  
+  * `:max_tokens_per_1_minute` - **required** - `integer()`
     The maximum tokens per minute.
 
-  * `:model` - **required** - `String.t()`  
+  * `:model` - **required** - `String.t()`
     The model this rate limit applies to.
 
-  * `:object` - **required** - `:"project.rate_limit"`  
-    The object type, which is always `project.rate_limit`  
+  * `:object` - **required** - `:"project.rate_limit"`
+    The object type, which is always `project.rate_limit`
     Allowed values: `"project.rate_limit"`
   """
   @type t() :: %{
@@ -46,6 +46,20 @@ defmodule ExOpenAI.Components.ProjectRateLimit do
           model: String.t(),
           object: :"project.rate_limit"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:batch_1_day_max_input_tokens) => integer(),
+              required(:id) => String.t(),
+              optional(:max_audio_megabytes_per_1_minute) => integer(),
+              optional(:max_images_per_1_minute) => integer(),
+              optional(:max_requests_per_1_day) => integer(),
+              required(:max_requests_per_1_minute) => integer(),
+              required(:max_tokens_per_1_minute) => integer(),
+              required(:model) => String.t(),
+              required(:object) => :"project.rate_limit" | String.t()
+            }
   defstruct [
     :batch_1_day_max_input_tokens,
     :id,

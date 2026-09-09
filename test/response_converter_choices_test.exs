@@ -1,8 +1,8 @@
 defmodule ExOpenAI.ResponseConverterChoicesTest do
   use ExUnit.Case
 
-  alias ExOpenAI.Codegen.ResponseConverter
   alias ExOpenAI.Codegen.DocsParser.Schema
+  alias ExOpenAI.Codegen.ResponseConverter
   alias ExOpenAI.Components.ChatCompletionResponseMessage
 
   test "chat completion choices are converted to structs with atom keys" do

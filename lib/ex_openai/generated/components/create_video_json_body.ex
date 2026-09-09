@@ -6,20 +6,20 @@ defmodule ExOpenAI.Components.CreateVideoJsonBody do
 
   ## Fields
 
-  * `:input_reference` - **optional** - `:"Elixir.ExOpenAI.Components.ImageRefParam-2".t()`  
+  * `:input_reference` - **optional** - `:"Elixir.ExOpenAI.Components.ImageRefParam-2".t()`
     Optional reference object that guides generation. Provide exactly one of `image_url` or `file_id`.
 
-  * `:model` - **optional** - `ExOpenAI.Components.VideoModel.t()`  
+  * `:model` - **optional** - `ExOpenAI.Components.VideoModel.t()`
     The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to `sora-2`.
 
-  * `:prompt` - **required** - `String.t()`  
-    Text prompt that describes the video to generate.  
+  * `:prompt` - **required** - `String.t()`
+    Text prompt that describes the video to generate.
     Constraints: minLength: 1, maxLength: 32000
 
-  * `:seconds` - **optional** - `ExOpenAI.Components.VideoSeconds.t()`  
+  * `:seconds` - **optional** - `ExOpenAI.Components.VideoSeconds.t()`
     Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds.
 
-  * `:size` - **optional** - `ExOpenAI.Components.VideoSize.t()`  
+  * `:size` - **optional** - `ExOpenAI.Components.VideoSize.t()`
     Output resolution formatted as width x height (allowed values: 720x1280, 1280x720, 1024x1792, 1792x1024). Defaults to 720x1280.
   """
   @type t() :: %{
@@ -30,5 +30,15 @@ defmodule ExOpenAI.Components.CreateVideoJsonBody do
           seconds: ExOpenAI.Components.VideoSeconds.t() | nil,
           size: ExOpenAI.Components.VideoSize.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:input_reference) => :"Elixir.ExOpenAI.Components.ImageRefParam-2".input(),
+              optional(:model) => ExOpenAI.Components.VideoModel.input(),
+              required(:prompt) => String.t(),
+              optional(:seconds) => ExOpenAI.Components.VideoSeconds.input(),
+              optional(:size) => ExOpenAI.Components.VideoSize.input()
+            }
   defstruct [:input_reference, :model, :prompt, :seconds, :size]
 end

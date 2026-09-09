@@ -3,12 +3,35 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Run test
+    name: Elixir ${{ matrix.elixir }} / OTP ${{ matrix.erlang }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - elixir: 1.16.1-otp-26
+            erlang: '26.2'
+            primary: true
+          - elixir: 1.20.1-otp-29
+            erlang: '29.0.2'
+            primary: false
     steps:
-      - uses: actions/checkout@v3
-      - uses: erlef/setup-beam@v1
+      - uses: actions/checkout@v6
+      - uses: jdx/mise-action@v4
         with:
-          version-file: ".tool-versions"
-          version-type: "strict"
-      - run: mix deps.get
-      - run: mix test
+          tool_versions: |
+            elixir ${{ matrix.elixir }}
+            erlang ${{ matrix.erlang }}
+      - run: mise exec -- mix local.hex --force
+      - run: mise exec -- mix local.rebar --force
+      - run: mise exec -- mix deps.get
+      - run: mise run check
+        if: matrix.primary
+      - run: mise exec -- mix compile --warnings-as-errors
+        if: ${{ !matrix.primary }}
+      - run: mise run test
+      - run: mise run lint
+        if: matrix.primary
+      - run: mise exec -- mix docs --warnings-as-errors
+        if: matrix.primary
+      - run: mise exec -- mix hex.build
+        if: matrix.primary

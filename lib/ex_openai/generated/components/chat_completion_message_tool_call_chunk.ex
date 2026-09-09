@@ -6,15 +6,15 @@ defmodule ExOpenAI.Components.ChatCompletionMessageToolCallChunk do
 
   ## Fields
 
-  * `:function` - **optional** - `{:%{}, [], [{{:optional, [], [:arguments]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:function` - **optional** - `%{optional(:arguments) => String.t(), optional(:name) => String.t()}`
 
-  * `:id` - **optional** - `String.t()`  
+  * `:id` - **optional** - `String.t()`
     The ID of the tool call.
 
   * `:index` - **required** - `integer()`
 
-  * `:type` - **optional** - `:function`  
-    The type of the tool. Currently, only `function` is supported.  
+  * `:type` - **optional** - `:function`
+    The type of the tool. Currently, only `function` is supported.
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -24,5 +24,17 @@ defmodule ExOpenAI.Components.ChatCompletionMessageToolCallChunk do
           index: integer(),
           type: :function | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:function) => %{
+                optional(:arguments) => String.t(),
+                optional(:name) => String.t()
+              },
+              optional(:id) => String.t(),
+              required(:index) => integer(),
+              optional(:type) => :function | String.t()
+            }
   defstruct [:function, :id, :index, :type]
 end

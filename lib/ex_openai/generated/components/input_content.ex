@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.InputContent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema InputContent.
 
@@ -11,4 +9,8 @@ defmodule ExOpenAI.Components.InputContent do
   @type t() ::
           (ExOpenAI.Components.InputTextContent.t() | ExOpenAI.Components.InputImageContent.t())
           | ExOpenAI.Components.InputFileContent.t()
+  @type input() ::
+          (ExOpenAI.Components.InputTextContent.input()
+           | ExOpenAI.Components.InputImageContent.input())
+          | ExOpenAI.Components.InputFileContent.input()
 end

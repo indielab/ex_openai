@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ApplyPatchCallStatusParam do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Status values reported for apply_patch tool calls.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ApplyPatchCallStatusParam do
   `"in_progress"`, `"completed"`
   """
   @type t() :: :in_progress | :completed
+  @type input() :: (:in_progress | :completed) | String.t()
 end

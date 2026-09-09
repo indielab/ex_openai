@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ImageEditStreamEvent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ImageEditStreamEvent.
 
@@ -11,4 +9,7 @@ defmodule ExOpenAI.Components.ImageEditStreamEvent do
   @type t() ::
           ExOpenAI.Components.ImageEditPartialImageEvent.t()
           | ExOpenAI.Components.ImageEditCompletedEvent.t()
+  @type input() ::
+          ExOpenAI.Components.ImageEditPartialImageEvent.input()
+          | ExOpenAI.Components.ImageEditCompletedEvent.input()
 end

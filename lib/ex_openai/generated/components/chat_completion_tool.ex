@@ -9,8 +9,8 @@ defmodule ExOpenAI.Components.ChatCompletionTool do
 
   * `:function` - **required** - `ExOpenAI.Components.FunctionObject.t()`
 
-  * `:type` - **required** - `:function`  
-    The type of the tool. Currently, only `function` is supported.  
+  * `:type` - **required** - `:function`
+    The type of the tool. Currently, only `function` is supported.
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -18,5 +18,12 @@ defmodule ExOpenAI.Components.ChatCompletionTool do
           function: ExOpenAI.Components.FunctionObject.t(),
           type: :function
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:function) => ExOpenAI.Components.FunctionObject.input(),
+              required(:type) => :function | String.t()
+            }
   defstruct [:function, :type]
 end

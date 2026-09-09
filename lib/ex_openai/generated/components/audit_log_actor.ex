@@ -10,8 +10,8 @@ defmodule ExOpenAI.Components.AuditLogActor do
 
   * `:session` - **optional** - `ExOpenAI.Components.AuditLogActorSession.t()`
 
-  * `:type` - **optional** - `:session | :api_key`  
-    The type of actor. Is either `session` or `api_key`.  
+  * `:type` - **optional** - `:session | :api_key`
+    The type of actor. Is either `session` or `api_key`.
     Allowed values: `"session"`, `"api_key"`
   """
   @type t() :: %{
@@ -20,5 +20,13 @@ defmodule ExOpenAI.Components.AuditLogActor do
           session: ExOpenAI.Components.AuditLogActorSession.t() | nil,
           type: (:session | :api_key) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:api_key) => ExOpenAI.Components.AuditLogActorApiKey.input(),
+              optional(:session) => ExOpenAI.Components.AuditLogActorSession.input(),
+              optional(:type) => (:session | :api_key) | String.t()
+            }
   defstruct [:api_key, :session, :type]
 end

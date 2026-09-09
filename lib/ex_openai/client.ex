@@ -5,23 +5,36 @@ defmodule ExOpenAI.Client do
 
   def add_base_url(url, base_url), do: Config.api_url(base_url) <> url
 
-  def process_response_body(body) do
-    case Jason.decode(body) do
-      {:ok, decoded_json} -> {:ok, decoded_json}
-      # audio/speech endpoint returns binary data, so leave as is
-      _ -> {:ok, body}
+  def process_response(%HTTPoison.Response{headers: headers, body: body} = response) do
+    json? =
+      Enum.any?(headers, fn {name, value} ->
+        String.downcase(name) == "content-type" and
+          String.downcase(value) |> String.split(";") |> hd() |> String.trim() ==
+            "application/json"
+      end)
+
+    if json? do
+      case Jason.decode(body) do
+        {:ok, decoded} -> %{response | body: decoded}
+        _ -> response
+      end
+    else
+      response
     end
   end
 
   def handle_response(httpoison_response) do
     case httpoison_response do
-      {:ok, %HTTPoison.Response{status_code: 200, body: {:ok, body}}} ->
+      {:ok, %HTTPoison.Response{status_code: code, body: {:ok, body}}} when code in 200..299 ->
         {:ok, body}
 
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+      {:ok, %HTTPoison.Response{status_code: code, body: body}} when code in 200..299 ->
         {:ok, body}
 
       {:ok, %HTTPoison.Response{body: {:ok, body}}} ->
+        {:error, body}
+
+      {:ok, %HTTPoison.Response{body: body}} ->
         {:error, body}
 
       {:ok, %HTTPoison.AsyncResponse{id: ref}} ->
@@ -64,13 +77,13 @@ defmodule ExOpenAI.Client do
     [{"Content-type", "multipart/form-data"} | headers]
   end
 
-  def request_options(), do: Config.http_options()
+  def request_options, do: Config.http_options()
 
-  def default_headers(), do: Config.http_headers()
+  def default_headers, do: Config.http_headers()
 
   def stream_options(request_options, convert_response) do
     with {:ok, stream_val} <- Keyword.fetch(request_options, :stream),
-         {:ok, stream_to} when is_pid(stream_to) or is_function(stream_to) <-
+         {:ok, stream_to} when is_pid(stream_to) or is_function(stream_to, 1) <-
            Keyword.fetch(request_options, :stream_to),
          true <- stream_val do
       # spawn a new StreamingClient and tell it to forward data to `stream_to`
@@ -103,8 +116,7 @@ defmodule ExOpenAI.Client do
     url
     |> add_base_url(base_url)
     |> get(headers, request_options)
-    |> handle_response()
-    |> convert_response.()
+    |> finish_request(stream_options, convert_response)
   end
 
   defp strip_params(params) do
@@ -118,8 +130,7 @@ defmodule ExOpenAI.Client do
       params
       |> Enum.into(%{})
       |> strip_params()
-      |> Jason.encode()
-      |> elem(1)
+      |> Jason.encode!()
 
     request_options = Keyword.merge(request_options(), request_options)
     stream_options = stream_options(request_options, convert_response)
@@ -141,8 +152,7 @@ defmodule ExOpenAI.Client do
     url
     |> add_base_url(base_url)
     |> post(body, headers, request_options)
-    |> handle_response()
-    |> convert_response.()
+    |> finish_request(stream_options, convert_response)
   end
 
   def api_delete(url, request_options \\ [], convert_response) do
@@ -166,49 +176,77 @@ defmodule ExOpenAI.Client do
     url
     |> add_base_url(base_url)
     |> delete(headers, request_options)
-    |> handle_response()
-    |> convert_response.()
+    |> finish_request(stream_options, convert_response)
   end
 
-  defp multipart_param({name, {filename, content}}) do
-    strname = Atom.to_string(name)
-    # Ensure filename is a string
-    strfilename = to_string(filename)
+  @doc false
+  def prepare_multipart(params, file_fields, encoding \\ %{}) do
+    Enum.map(params, fn {name, value} ->
+      value = if name in file_fields, do: upload_value(to_string(name), value), else: value
 
-    cond do
-      # Strings can be valid bitstreams and bitstreams are valid binaries
-      # Using String.valid? for comparison instead
-      is_bitstring(content) and not String.valid?(content) ->
-        # Use MIME library to determine Content-Type
-        mime_type = MIME.from_path(strfilename)
-        # Add Content-Type header
-        {"file", content, {"form-data", [name: strname, filename: strfilename]},
-         [{"Content-Type", mime_type}]}
+      case get_in(encoding, [to_string(name), "contentType"]) do
+        nil -> {name, value}
+        content_type -> {name, {:content_type, content_type, value}}
+      end
+    end)
+  end
 
-      # Handle cases where content might not be a binary file needing mime type (e.g., other form fields passed in this format)
-      true ->
-        {strname, {strfilename, content}}
+  defp upload_value(name, value) when is_binary(value), do: {name, value}
+
+  defp upload_value(name, values) when is_list(values),
+    do: Enum.map(values, &upload_value(name, &1))
+
+  defp upload_value(_name, value), do: value
+
+  defp multipart_param({_name, nil}), do: []
+
+  defp multipart_param({name, {:content_type, content_type, value}}) do
+    body = if content_type == "application/json", do: Jason.encode!(value), else: to_string(value)
+    [{to_string(name), body, [{"Content-Type", content_type}]}]
+  end
+
+  defp multipart_param({name, {filename, content}}) when is_binary(content) do
+    filename = to_string(filename)
+
+    [
+      {"file", content,
+       {"form-data",
+        [name: quote_form_parameter(name), filename: quote_form_parameter(filename)]},
+       [{"Content-Type", MIME.from_path(filename)}]}
+    ]
+  end
+
+  defp multipart_param({name, %_{} = value}), do: multipart_param({name, Map.from_struct(value)})
+
+  defp multipart_param({name, value}) when is_map(value) do
+    value
+    |> Enum.sort_by(fn {key, _} -> to_string(key) end)
+    |> Enum.flat_map(fn {key, item} -> multipart_param({"#{name}[#{key}]", item}) end)
+  end
+
+  defp multipart_param({name, values}) when is_list(values) do
+    Enum.flat_map(values, &multipart_param({"#{name}[]", &1}))
+  end
+
+  defp multipart_param({name, value}) when is_binary(value) do
+    if String.valid?(value) do
+      [{to_string(name), value}]
+    else
+      multipart_param({name, {to_string(name), value}})
     end
   end
 
-  defp multipart_param({name, content}) do
-    strname = Atom.to_string(name)
+  defp multipart_param({name, value}), do: [{to_string(name), to_string(value)}]
 
-    cond do
-      # Treat raw binary (non-UTF8 text) as a file upload without an explicit filename.
-      # This is used for fields like `image` that are documented as `format: binary`
-      # in the OpenAPI schema.
-      is_bitstring(content) and not String.valid?(content) ->
-        filename = strname
-        mime_type = MIME.from_path(filename)
+  defp quote_form_parameter(value) do
+    value =
+      value
+      |> to_string()
+      |> String.replace("\r", "%0D")
+      |> String.replace("\n", "%0A")
+      |> String.replace("\"", "%22")
 
-        {"file", content, {"form-data", [name: strname, filename: filename]},
-         [{"Content-Type", mime_type}]}
-
-      # Regular form fields (e.g. strings, numbers) are sent as simple key/value parts.
-      true ->
-        {strname, content}
-    end
+    "\"" <> value <> "\""
   end
 
   def api_multipart_post(url, params \\ [], request_options \\ [], convert_response) do
@@ -227,7 +265,7 @@ defmodule ExOpenAI.Client do
        |> Enum.into(%{})
        |> strip_params()
        |> Map.to_list()
-       |> Enum.map(&multipart_param/1)}
+       |> Enum.flat_map(&multipart_param/1)}
 
     headers =
       default_headers()
@@ -240,15 +278,24 @@ defmodule ExOpenAI.Client do
     url
     |> add_base_url(base_url)
     |> post(multipart_body, headers, request_options)
-    |> handle_response()
-    |> convert_response.()
+    |> finish_request(stream_options, convert_response)
+  end
+
+  defp finish_request(response, stream_options, convert_response) do
+    result = handle_response(response)
+
+    if match?({:error, _}, result) and is_pid(stream_options[:stream_to]) do
+      GenServer.cast(stream_options[:stream_to], :stop)
+    end
+
+    convert_response.(result)
   end
 
   @callback api_call(
               method :: atom(),
               url :: String.t(),
               params :: Keyword.t(),
-              request_content_type :: Keyword.t(),
+              request_content_type :: atom(),
               request_options :: Keyword.t(),
               convert_response :: any()
             ) :: {:ok, res :: term()} | {:error, res :: term()}

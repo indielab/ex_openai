@@ -6,29 +6,39 @@ defmodule ExOpenAI.Components.FileSearchTool do
 
   ## Fields
 
-  * `:filters` - **optional** - `ExOpenAI.Components.Filters.t() | any()`
+  * `:filters` - **optional** - `ExOpenAI.Components.Filters.t() | nil`
 
-  * `:max_num_results` - **optional** - `integer()`  
+  * `:max_num_results` - **optional** - `integer()`
     The maximum number of results to return. This number should be between 1 and 50 inclusive.
 
-  * `:ranking_options` - **optional** - `ExOpenAI.Components.RankingOptions.t()`  
+  * `:ranking_options` - **optional** - `ExOpenAI.Components.RankingOptions.t()`
     Ranking options for search.
 
-  * `:type` - **required** - `:file_search`  
-    The type of the file search tool. Always `file_search`.  
-    Allowed values: `"file_search"`  
+  * `:type` - **required** - `:file_search`
+    The type of the file search tool. Always `file_search`.
+    Allowed values: `"file_search"`
     Default: `"file_search"`
 
-  * `:vector_store_ids` - **required** - `[String.t()]`  
+  * `:vector_store_ids` - **required** - `list(String.t())`
     The IDs of the vector stores to search.
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          filters: (ExOpenAI.Components.Filters.t() | any()) | nil,
+          filters: (ExOpenAI.Components.Filters.t() | nil) | nil,
           max_num_results: integer() | nil,
           ranking_options: ExOpenAI.Components.RankingOptions.t() | nil,
           type: :file_search,
           vector_store_ids: list(String.t())
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:filters) => ExOpenAI.Components.Filters.input() | nil,
+              optional(:max_num_results) => integer(),
+              optional(:ranking_options) => ExOpenAI.Components.RankingOptions.input(),
+              required(:type) => :file_search | String.t(),
+              required(:vector_store_ids) => list(String.t())
+            }
   defstruct [:filters, :max_num_results, :ranking_options, :type, :vector_store_ids]
 end

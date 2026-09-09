@@ -24,6 +24,88 @@ defmodule ExOpenAI.Codegen.TypespecGenerator do
     end
   end
 
+  @doc "Generates input types for structs, atom-keyed maps, and file uploads."
+  def schema_to_input_typespec(%Schema{} = schema, schemas \\ %{}) do
+    schema = maybe_resolve_schema(schema, schemas)
+    type = input_type(schema, schemas)
+    if schema.nullable, do: quote(do: unquote(type) | nil), else: type
+  end
+
+  defp input_type(%Schema{type: "string", format: "binary"}, _schemas) do
+    quote do: binary() | {String.t(), binary()}
+  end
+
+  defp input_type(%Schema{ref: "#/components/schemas/" <> name}, _schemas) do
+    module = Module.concat([ExOpenAI, Components, name])
+    quote do: unquote(module).input()
+  end
+
+  defp input_type(%Schema{enum: enum} = schema, schemas) when is_list(enum) and enum != [] do
+    type = schema_to_typespec(schema, schemas)
+    if Enum.all?(enum, &is_binary/1), do: quote(do: unquote(type) | String.t()), else: type
+  end
+
+  defp input_type(%Schema{type: "array", items: %Schema{} = items}, schemas) do
+    type = schema_to_input_typespec(items, schemas)
+    quote do: list(unquote(type))
+  end
+
+  defp input_type(%Schema{properties: properties, required: required}, schemas)
+       when is_map(properties) and map_size(properties) > 0 do
+    fields =
+      properties
+      |> Enum.sort_by(&elem(&1, 0))
+      |> Enum.map(fn {name, schema} ->
+        key = String.to_atom(name)
+        type = schema_to_input_typespec(schema, schemas)
+
+        if name in (required || []) do
+          quote do: {required(unquote(key)), unquote(type)}
+        else
+          quote do: {optional(unquote(key)), unquote(type)}
+        end
+      end)
+
+    quote do: %{unquote_splicing(fields)}
+  end
+
+  defp input_type(%Schema{one_of: schemas}, components) when is_list(schemas) and schemas != [] do
+    input_union(schemas, components)
+  end
+
+  defp input_type(%Schema{any_of: schemas}, components) when is_list(schemas) and schemas != [] do
+    input_union(schemas, components)
+  end
+
+  defp input_type(schema, schemas), do: get_base_type(schema, schemas)
+
+  defp input_union(schemas, components) do
+    [first | rest] = Enum.map(schemas, &schema_to_input_typespec(&1, components))
+    Enum.reduce(rest, first, fn type, acc -> quote(do: unquote(acc) | unquote(type)) end)
+  end
+
+  @doc "Renders a typespec as Markdown code without exposing its AST."
+  def type_to_string(type) do
+    type
+    |> Macro.postwalk(fn
+      {:|, _, types} ->
+        [last | rest] = types |> flatten_union() |> Enum.reverse()
+        Enum.reduce(rest, last, fn left, right -> {:|, [], [left, right]} end)
+
+      other ->
+        other
+    end)
+    |> Macro.to_string()
+    |> String.replace(~r/\s+/, " ")
+  end
+
+  defp flatten_union(types) do
+    Enum.flat_map(types, fn
+      {:|, _, nested} -> flatten_union(nested)
+      type -> [type]
+    end)
+  end
+
   # Get the base type without nullable wrapper
   defp get_base_type(%Schema{type: "string", format: "binary"}, _schemas) do
     # Binary string – used for file uploads (e.g. image, audio).
@@ -67,6 +149,8 @@ defmodule ExOpenAI.Codegen.TypespecGenerator do
   defp get_base_type(%Schema{type: "boolean"}, _schemas) do
     quote do: boolean()
   end
+
+  defp get_base_type(%Schema{type: "null"}, _schemas), do: nil
 
   defp get_base_type(%Schema{type: "array", items: items}, schemas) when not is_nil(items) do
     item_type = schema_to_typespec(items, schemas)
@@ -162,12 +246,10 @@ defmodule ExOpenAI.Codegen.TypespecGenerator do
        when is_list(all_of) and all_of != [] do
     resolved_schema = SchemaResolver.resolve_schema(schema, schemas)
 
-    cond do
-      resolved_schema.all_of == nil ->
-        get_base_type(resolved_schema, schemas)
-
-      true ->
-        quote do: any()
+    if resolved_schema.all_of == nil do
+      get_base_type(resolved_schema, schemas)
+    else
+      quote do: any()
     end
   end
 
@@ -204,7 +286,6 @@ defmodule ExOpenAI.Codegen.TypespecGenerator do
 
   # Handle other reference patterns - fallback to any()
   defp get_base_type(%Schema{ref: ref}, _schemas) when is_binary(ref) do
-    # TODO: Handle other reference patterns if needed
     quote do: any()
   end
 

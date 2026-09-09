@@ -3,26 +3,26 @@ defmodule ExOpenAI.Components.FileSearchToolCall do
 
   @moduledoc """
   The results of a file search tool call. See the
-  [file search guide](/docs/guides/tools-file-search) for more information.
+  [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more information.
 
 
   ## Fields
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The unique ID of the file search tool call.
 
-  * `:queries` - **required** - `[String.t()]`  
+  * `:queries` - **required** - `list(String.t())`
     The queries used to search for files.
 
-  * `:results` - **optional** - `[{:%{}, [], [{{:optional, [], [:attributes]}, {{:., [], [ExOpenAI.Components.VectorStoreFileAttributes, :t]}, [], []}}, {{:optional, [], [:file_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:filename]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:score]}, {:number, [], []}}, {{:optional, [], [:text]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}] | any()`
+  * `:results` - **optional** - `list(%{ optional(:attributes) => ExOpenAI.Components.VectorStoreFileAttributes.t(), optional(:file_id) => String.t(), optional(:filename) => String.t(), optional(:score) => number(), optional(:text) => String.t() }) | nil`
 
-  * `:status` - **required** - `:in_progress | :searching | :completed | :incomplete | :failed`  
+  * `:status` - **required** - `:in_progress | :searching | :completed | :incomplete | :failed`
     The status of the file search tool call. One of `in_progress`,
-  `searching`, `incomplete` or `failed`,  
+  `searching`, `incomplete` or `failed`,
     Allowed values: `"in_progress"`, `"searching"`, `"completed"`, `"incomplete"`, `"failed"`
 
-  * `:type` - **required** - `:file_search_call`  
-    The type of the file search tool call. Always `file_search_call`.  
+  * `:type` - **required** - `:file_search_call`
+    The type of the file search tool call. Always `file_search_call`.
     Allowed values: `"file_search_call"`
   """
   @type t() :: %{
@@ -37,10 +37,30 @@ defmodule ExOpenAI.Components.FileSearchToolCall do
                optional(:score) => number(),
                optional(:text) => String.t()
              })
-             | any())
+             | nil)
             | nil,
           status: (((:in_progress | :searching) | :completed) | :incomplete) | :failed,
           type: :file_search_call
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:id) => String.t(),
+              required(:queries) => list(String.t()),
+              optional(:results) =>
+                list(%{
+                  optional(:attributes) => ExOpenAI.Components.VectorStoreFileAttributes.input(),
+                  optional(:file_id) => String.t(),
+                  optional(:filename) => String.t(),
+                  optional(:score) => number(),
+                  optional(:text) => String.t()
+                })
+                | nil,
+              required(:status) =>
+                ((((:in_progress | :searching) | :completed) | :incomplete) | :failed)
+                | String.t(),
+              required(:type) => :file_search_call | String.t()
+            }
   defstruct [:id, :queries, :results, :status, :type]
 end

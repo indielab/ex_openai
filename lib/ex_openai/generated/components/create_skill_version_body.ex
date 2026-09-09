@@ -6,15 +6,23 @@ defmodule ExOpenAI.Components.CreateSkillVersionBody do
 
   ## Fields
 
-  * `:default` - **optional** - `boolean()`  
+  * `:default` - **optional** - `boolean()`
     Whether to set this version as the default.
 
-  * `:files` - **required** - `[binary()] | binary()`
+  * `:files` - **required** - `list(binary()) | binary()`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           default: boolean() | nil,
           files: list(binary()) | binary()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:default) => boolean(),
+              required(:files) =>
+                list(binary() | {String.t(), binary()}) | binary() | {String.t(), binary()}
+            }
   defstruct [:default, :files]
 end

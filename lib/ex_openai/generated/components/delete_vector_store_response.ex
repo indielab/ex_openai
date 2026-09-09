@@ -10,7 +10,7 @@ defmodule ExOpenAI.Components.DeleteVectorStoreResponse do
 
   * `:id` - **required** - `String.t()`
 
-  * `:object` - **required** - `:"vector_store.deleted"`  
+  * `:object` - **required** - `:"vector_store.deleted"`
     Allowed values: `"vector_store.deleted"`
   """
   @type t() :: %{
@@ -19,5 +19,13 @@ defmodule ExOpenAI.Components.DeleteVectorStoreResponse do
           id: String.t(),
           object: :"vector_store.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"vector_store.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

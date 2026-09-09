@@ -6,11 +6,11 @@ defmodule ExOpenAI.Components.AssistantToolsFileSearch do
 
   ## Fields
 
-  * `:file_search` - **optional** - `{:%{}, [], [{{:optional, [], [:max_num_results]}, {:integer, [], []}}, {{:optional, [], [:ranking_options]}, {{:., [], [ExOpenAI.Components.FileSearchRankingOptions, :t]}, [], []}}]}`  
+  * `:file_search` - **optional** - `%{ optional(:max_num_results) => integer(), optional(:ranking_options) => ExOpenAI.Components.FileSearchRankingOptions.t() }`
     Overrides for the file search tool.
 
-  * `:type` - **required** - `:file_search`  
-    The type of tool being defined: `file_search`  
+  * `:type` - **required** - `:file_search`
+    The type of tool being defined: `file_search`
     Allowed values: `"file_search"`
   """
   @type t() :: %{
@@ -23,5 +23,15 @@ defmodule ExOpenAI.Components.AssistantToolsFileSearch do
             | nil,
           type: :file_search
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:file_search) => %{
+                optional(:max_num_results) => integer(),
+                optional(:ranking_options) => ExOpenAI.Components.FileSearchRankingOptions.input()
+              },
+              required(:type) => :file_search | String.t()
+            }
   defstruct [:file_search, :type]
 end

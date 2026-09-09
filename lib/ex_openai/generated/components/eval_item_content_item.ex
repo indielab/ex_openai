@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.EvalItemContentItem do
-  use ExOpenAI.Jason
-
   @moduledoc """
   A single content item: input text, output text, input image, or input audio.
 
@@ -15,4 +13,10 @@ defmodule ExOpenAI.Components.EvalItemContentItem do
             | ExOpenAI.Components.EvalItemContentOutputText.t())
            | ExOpenAI.Components.EvalItemInputImage.t())
           | ExOpenAI.Components.InputAudio.t()
+  @type input() ::
+          (((ExOpenAI.Components.EvalItemContentText.input()
+             | ExOpenAI.Components.InputTextContent.input())
+            | ExOpenAI.Components.EvalItemContentOutputText.input())
+           | ExOpenAI.Components.EvalItemInputImage.input())
+          | ExOpenAI.Components.InputAudio.input()
 end

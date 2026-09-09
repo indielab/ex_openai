@@ -6,13 +6,13 @@ defmodule ExOpenAI.Components.RunStepDeltaStepDetailsToolCallsCodeOutputImageObj
 
   ## Fields
 
-  * `:image` - **optional** - `{:%{}, [], [{{:optional, [], [:file_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:image` - **optional** - `%{optional(:file_id) => String.t()}`
 
-  * `:index` - **required** - `integer()`  
+  * `:index` - **required** - `integer()`
     The index of the output in the outputs array.
 
-  * `:type` - **required** - `:image`  
-    Always `image`.  
+  * `:type` - **required** - `:image`
+    Always `image`.
     Allowed values: `"image"`
   """
   @type t() :: %{
@@ -21,5 +21,13 @@ defmodule ExOpenAI.Components.RunStepDeltaStepDetailsToolCallsCodeOutputImageObj
           index: integer(),
           type: :image
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:image) => %{optional(:file_id) => String.t()},
+              required(:index) => integer(),
+              required(:type) => :image | String.t()
+            }
   defstruct [:image, :index, :type]
 end

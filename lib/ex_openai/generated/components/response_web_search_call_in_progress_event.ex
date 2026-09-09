@@ -6,17 +6,17 @@ defmodule ExOpenAI.Components.ResponseWebSearchCallInProgressEvent do
 
   ## Fields
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     Unique ID for the output item associated with the web search call.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item that the web search call is associated with.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of the web search call being processed.
 
-  * `:type` - **required** - `:"response.web_search_call.in_progress"`  
-    The type of the event. Always `response.web_search_call.in_progress`.  
+  * `:type` - **required** - `:"response.web_search_call.in_progress"`
+    The type of the event. Always `response.web_search_call.in_progress`.
     Allowed values: `"response.web_search_call.in_progress"`
   """
   @type t() :: %{
@@ -26,5 +26,14 @@ defmodule ExOpenAI.Components.ResponseWebSearchCallInProgressEvent do
           sequence_number: integer(),
           type: :"response.web_search_call.in_progress"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.web_search_call.in_progress" | String.t()
+            }
   defstruct [:item_id, :output_index, :sequence_number, :type]
 end

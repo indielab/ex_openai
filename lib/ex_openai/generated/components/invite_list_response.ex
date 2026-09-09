@@ -6,28 +6,38 @@ defmodule ExOpenAI.Components.InviteListResponse do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.Invite.t()]`
+  * `:data` - **required** - `list(ExOpenAI.Components.Invite.t())`
 
-  * `:first_id` - **optional** - `String.t()`  
+  * `:first_id` - **optional** - `String.t() | nil`
     The first `invite_id` in the retrieved `list`
 
-  * `:has_more` - **optional** - `boolean()`  
+  * `:has_more` - **required** - `boolean()`
     The `has_more` property is used for pagination to indicate there are additional results.
 
-  * `:last_id` - **optional** - `String.t()`  
+  * `:last_id` - **optional** - `String.t() | nil`
     The last `invite_id` in the retrieved `list`
 
-  * `:object` - **required** - `:list`  
-    The object type, which is always `list`  
+  * `:object` - **required** - `:list`
+    The object type, which is always `list`
     Allowed values: `"list"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           data: list(ExOpenAI.Components.Invite.t()),
-          first_id: String.t() | nil,
-          has_more: boolean() | nil,
-          last_id: String.t() | nil,
+          first_id: (String.t() | nil) | nil,
+          has_more: boolean(),
+          last_id: (String.t() | nil) | nil,
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.Invite.input()),
+              optional(:first_id) => String.t() | nil,
+              required(:has_more) => boolean(),
+              optional(:last_id) => String.t() | nil,
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

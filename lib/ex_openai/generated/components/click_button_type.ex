@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ClickButtonType do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ClickButtonType.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ClickButtonType do
   `"left"`, `"right"`, `"wheel"`, `"back"`, `"forward"`
   """
   @type t() :: (((:left | :right) | :wheel) | :back) | :forward
+  @type input() :: ((((:left | :right) | :wheel) | :back) | :forward) | String.t()
 end

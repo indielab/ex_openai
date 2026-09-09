@@ -1,9 +1,9 @@
 defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
   use ExUnit.Case
-  
+
+  alias ExOpenAI.Codegen.DocsParser.{Operation, Path, RequestBody, Schema}
   alias ExOpenAI.Codegen.PathModuleGenerator
-  alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody}
-  
+
   describe "generate_modules/2" do
     test "generates module for simple path with single operation" do
       paths = [
@@ -18,14 +18,14 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "defmodule ExOpenAI.Chat do"
       assert module_string =~ "def create_chat_completion(opts \\\\ []) do"
     end
-    
+
     test "generates module with multiple operations" do
       paths = [
         %Path{
@@ -44,15 +44,15 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "defmodule ExOpenAI.Assistants do"
       assert module_string =~ "def list_assistants(opts \\\\ []) do"
       assert module_string =~ "def create_assistant(opts \\\\ []) do"
     end
-    
+
     test "groups multiple paths with same prefix into one module" do
       paths = [
         %Path{
@@ -86,20 +86,20 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       # Should generate only one module with all functions
       modules = PathModuleGenerator.generate_modules(paths)
       assert length(modules) == 1
-      
+
       [ast] = modules
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "defmodule ExOpenAI.Images do"
       assert module_string =~ "def create_image(opts \\\\ []) do"
       assert module_string =~ "def create_image_edit(opts \\\\ []) do"
       assert module_string =~ "def create_image_variation(opts \\\\ []) do"
     end
-    
+
     test "handles paths grouped by prefix regardless of tags" do
       paths = [
         %Path{
@@ -118,16 +118,16 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       # Should derive module name from path prefix
       assert module_string =~ "defmodule ExOpenAI.Containers do"
       assert module_string =~ "def list_containers(opts \\\\ []) do"
       assert module_string =~ "def create_container(opts \\\\ []) do"
     end
-    
+
     test "handles operation with no operation_id" do
       paths = [
         %Path{
@@ -146,16 +146,16 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       # Should only generate function for operation with operation_id
       assert module_string =~ "defmodule ExOpenAI.Test do"
       assert module_string =~ "def create_test(opts \\\\ []) do"
       refute module_string =~ "def nil"
     end
-    
+
     test "converts various operationId formats to snake_case" do
       paths = [
         %Path{
@@ -179,15 +179,15 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "def get_api_key(opts \\\\ []) do"
       assert module_string =~ "def create_html_report(opts \\\\ []) do"
       assert module_string =~ "def update_xml_config(opts \\\\ []) do"
     end
-    
+
     test "paths with same prefix go into same module regardless of tags" do
       paths = [
         %Path{
@@ -211,33 +211,33 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       modules = PathModuleGenerator.generate_modules(paths)
-      
+
       # Should generate only one module based on prefix
       assert length(modules) == 1
-      
+
       [ast] = modules
       module_string = Macro.to_string(ast)
-      
+
       # Both operations should be in the Multi module
       assert module_string =~ "defmodule ExOpenAI.Multi do"
       assert module_string =~ "def list_items(opts \\\\ []) do"
       assert module_string =~ "def create_product(opts \\\\ []) do"
     end
-    
+
     test "real example with chat completions" do
       path = chat_completions_path_fixture()
 
       # Without schemas, should generate with opts only
       [ast] = PathModuleGenerator.generate_modules([path])
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "defmodule ExOpenAI.Chat do"
       assert module_string =~ "def list_chat_completions(opts \\\\ []) do"
       assert module_string =~ "def create_chat_completion(opts \\\\ []) do"
     end
-    
+
     test "real example with chat completions and schemas" do
       path = chat_completions_path_fixture()
 
@@ -246,7 +246,7 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
         "CreateChatCompletionRequest" => %Schema{
           all_of: [
             %Schema{
-              type: "object", 
+              type: "object",
               properties: %{
                 "messages" => %Schema{type: "array"},
                 "model" => %Schema{type: "string"}
@@ -256,28 +256,28 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           ]
         }
       }
-      
+
       [ast] = PathModuleGenerator.generate_modules([path], schemas)
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "defmodule ExOpenAI.Chat do"
       assert module_string =~ "def list_chat_completions(opts \\\\ []) do"
       # Should have messages and model as required args (alphabetical order)
       assert module_string =~ "def create_chat_completion(messages, model, opts \\\\ []) do"
     end
-    
+
     test "real example with assistants" do
       path = assistants_path_fixture()
 
       [ast] = PathModuleGenerator.generate_modules([path])
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "defmodule ExOpenAI.Assistants do"
       assert module_string =~ "def list_assistants(opts \\\\ []) do"
       assert module_string =~ "def create_assistant(opts \\\\ []) do"
     end
   end
-  
+
   describe "generate_module/3" do
     test "generates module with custom tag" do
       paths = [
@@ -292,15 +292,15 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       ast = PathModuleGenerator.generate_module("Custom", paths)
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "defmodule ExOpenAI.Custom do"
       assert module_string =~ "def get_test(opts \\\\ []) do"
     end
   end
-  
+
   describe "argument parsing" do
     test "generates function with required arguments from request body" do
       paths = [
@@ -325,7 +325,7 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       schemas = %{
         "CreateChatCompletionRequest" => %Schema{
           type: "object",
@@ -337,14 +337,14 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           required: ["messages", "model"]
         }
       }
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths, schemas)
       module_string = Macro.to_string(ast)
-      
+
       # Arguments are sorted alphabetically
       assert module_string =~ "def create_chat_completion(messages, model, opts \\\\ []) do"
     end
-    
+
     test "generates function with opts only when no required fields" do
       paths = [
         %Path{
@@ -370,13 +370,13 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "def list_chat_completions(opts \\\\ []) do"
     end
-    
+
     test "handles allOf schema resolution" do
       paths = [
         %Path{
@@ -400,7 +400,7 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       schemas = %{
         "CreateTestRequest" => %Schema{
           all_of: [
@@ -423,14 +423,14 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           required: ["base_field"]
         }
       }
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths, schemas)
       module_string = Macro.to_string(ast)
-      
+
       # Should include both required fields from allOf schemas
       assert module_string =~ "def create_test(base_field, specific_field, opts \\\\ []) do"
     end
-    
+
     test "handles path parameters" do
       paths = [
         %Path{
@@ -453,13 +453,13 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       assert module_string =~ "def delete_chat_completion(completion_id, opts \\\\ []) do"
     end
-    
+
     test "handles path parameters with request body" do
       paths = [
         %Path{
@@ -490,7 +490,7 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       schemas = %{
         "UpdateItemRequest" => %Schema{
           type: "object",
@@ -502,14 +502,14 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           required: ["name", "price"]
         }
       }
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths, schemas)
       module_string = Macro.to_string(ast)
-      
+
       # Should have path param and required body fields sorted alphabetically
       assert module_string =~ "def update_item(item_id, name, price, opts \\\\ []) do"
     end
-    
+
     test "handles operation IDs with hyphens like admin-api-keys-delete" do
       paths = [
         %Path{
@@ -542,17 +542,17 @@ defmodule ExOpenAI.Codegen.PathModuleGeneratorTest do
           }
         }
       ]
-      
+
       [ast] = PathModuleGenerator.generate_modules(paths)
       module_string = Macro.to_string(ast)
-      
+
       # Module name should be based on path prefix
       assert module_string =~ "defmodule ExOpenAI.Organization do"
-      
+
       # Function names should have hyphens converted to underscores
       assert module_string =~ "def admin_api_keys_get(key_id, opts \\\\ []) do"
       assert module_string =~ "def admin_api_keys_delete(key_id, opts \\\\ []) do"
-      
+
       # Should not have hyphens in function names
       refute module_string =~ "admin-api-keys"
     end

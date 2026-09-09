@@ -6,9 +6,11 @@ defmodule ExOpenAI.Components.WorkflowTracingParam do
 
   ## Fields
 
-  * `:enabled` - **optional** - `boolean()`  
+  * `:enabled` - **optional** - `boolean()`
     Whether tracing is enabled during the session. Defaults to true.
   """
   @type t() :: %{__struct__: __MODULE__, enabled: boolean() | nil}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{optional(:enabled) => boolean()}
   defstruct [:enabled]
 end

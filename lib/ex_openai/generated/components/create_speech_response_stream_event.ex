@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.CreateSpeechResponseStreamEvent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema CreateSpeechResponseStreamEvent.
 
@@ -11,4 +9,7 @@ defmodule ExOpenAI.Components.CreateSpeechResponseStreamEvent do
   @type t() ::
           ExOpenAI.Components.SpeechAudioDeltaEvent.t()
           | ExOpenAI.Components.SpeechAudioDoneEvent.t()
+  @type input() ::
+          ExOpenAI.Components.SpeechAudioDeltaEvent.input()
+          | ExOpenAI.Components.SpeechAudioDoneEvent.input()
 end

@@ -7,17 +7,18 @@ defmodule ExOpenAI.Components.UploadPart do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) for when the Part was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The upload Part unique identifier, which can be referenced in API endpoints.
 
-  * `:object` - **required** - `:"upload.part"`  
-    The object type, which is always `upload.part`.  
+  * `:object` - **required** - `:"upload.part"`
+    The object type, which is always `upload.part`.
     Allowed values: `"upload.part"`
 
-  * `:upload_id` - **required** - `String.t()`  
+  * `:upload_id` - **required** - `String.t()`
     The ID of the Upload object that this Part was added to.
   """
   @type t() :: %{
@@ -27,5 +28,14 @@ defmodule ExOpenAI.Components.UploadPart do
           object: :"upload.part",
           upload_id: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:object) => :"upload.part" | String.t(),
+              required(:upload_id) => String.t()
+            }
   defstruct [:created_at, :id, :object, :upload_id]
 end

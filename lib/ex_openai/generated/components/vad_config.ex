@@ -6,25 +6,25 @@ defmodule ExOpenAI.Components.VadConfig do
 
   ## Fields
 
-  * `:prefix_padding_ms` - **optional** - `integer()`  
-    Amount of audio to include before the VAD detected speech (in 
-  milliseconds).  
+  * `:prefix_padding_ms` - **optional** - `integer()`
+    Amount of audio to include before the VAD detected speech (in
+  milliseconds).
     Default: `300`
 
-  * `:silence_duration_ms` - **optional** - `integer()`  
+  * `:silence_duration_ms` - **optional** - `integer()`
     Duration of silence to detect speech stop (in milliseconds).
-  With shorter values the model will respond more quickly, 
-  but may jump in on short pauses from the user.  
+  With shorter values the model will respond more quickly,
+  but may jump in on short pauses from the user.
     Default: `200`
 
-  * `:threshold` - **optional** - `number()`  
-    Sensitivity threshold (0.0 to 1.0) for voice activity detection. A 
-  higher threshold will require louder audio to activate the model, and 
-  thus might perform better in noisy environments.  
+  * `:threshold` - **optional** - `number()`
+    Sensitivity threshold (0.0 to 1.0) for voice activity detection. A
+  higher threshold will require louder audio to activate the model, and
+  thus might perform better in noisy environments.
     Default: `0.5`
 
-  * `:type` - **required** - `:server_vad`  
-    Must be set to `server_vad` to enable manual chunking using server side VAD.  
+  * `:type` - **required** - `:server_vad`
+    Must be set to `server_vad` to enable manual chunking using server side VAD.
     Allowed values: `"server_vad"`
   """
   @type t() :: %{
@@ -34,5 +34,14 @@ defmodule ExOpenAI.Components.VadConfig do
           threshold: number() | nil,
           type: :server_vad
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:prefix_padding_ms) => integer(),
+              optional(:silence_duration_ms) => integer(),
+              optional(:threshold) => number(),
+              required(:type) => :server_vad | String.t()
+            }
   defstruct [:prefix_padding_ms, :silence_duration_ms, :threshold, :type]
 end

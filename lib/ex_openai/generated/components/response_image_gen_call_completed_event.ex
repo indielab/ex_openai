@@ -7,17 +7,17 @@ defmodule ExOpenAI.Components.ResponseImageGenCallCompletedEvent do
 
   ## Fields
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The unique identifier of the image generation item being processed.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item in the response's output array.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.image_generation_call.completed"`  
-    The type of the event. Always 'response.image_generation_call.completed'.  
+  * `:type` - **required** - `:"response.image_generation_call.completed"`
+    The type of the event. Always 'response.image_generation_call.completed'.
     Allowed values: `"response.image_generation_call.completed"`
   """
   @type t() :: %{
@@ -27,5 +27,14 @@ defmodule ExOpenAI.Components.ResponseImageGenCallCompletedEvent do
           sequence_number: integer(),
           type: :"response.image_generation_call.completed"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.image_generation_call.completed" | String.t()
+            }
   defstruct [:item_id, :output_index, :sequence_number, :type]
 end

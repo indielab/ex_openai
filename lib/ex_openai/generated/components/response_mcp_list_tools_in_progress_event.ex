@@ -7,17 +7,17 @@ defmodule ExOpenAI.Components.ResponseMCPListToolsInProgressEvent do
 
   ## Fields
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The ID of the MCP tool call item that is being processed.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item that is being processed.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.mcp_list_tools.in_progress"`  
-    The type of the event. Always 'response.mcp_list_tools.in_progress'.  
+  * `:type` - **required** - `:"response.mcp_list_tools.in_progress"`
+    The type of the event. Always 'response.mcp_list_tools.in_progress'.
     Allowed values: `"response.mcp_list_tools.in_progress"`
   """
   @type t() :: %{
@@ -27,5 +27,14 @@ defmodule ExOpenAI.Components.ResponseMCPListToolsInProgressEvent do
           sequence_number: integer(),
           type: :"response.mcp_list_tools.in_progress"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.mcp_list_tools.in_progress" | String.t()
+            }
   defstruct [:item_id, :output_index, :sequence_number, :type]
 end

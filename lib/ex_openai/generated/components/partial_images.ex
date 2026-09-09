@@ -1,12 +1,11 @@
 defmodule ExOpenAI.Components.PartialImages do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema PartialImages.
 
   ## Type
 
-  `integer() | any()`
+  `integer() | nil`
   """
-  @type t() :: integer() | any()
+  @type t() :: integer() | nil
+  @type input() :: integer() | nil
 end

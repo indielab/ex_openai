@@ -6,24 +6,34 @@ defmodule ExOpenAI.Components.VoiceConsentListResource do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.VoiceConsentResource.t()]`
+  * `:data` - **required** - `list(ExOpenAI.Components.VoiceConsentResource.t())`
 
-  * `:first_id` - **optional** - `String.t() | any()`
+  * `:first_id` - **optional** - `String.t() | nil`
 
   * `:has_more` - **required** - `boolean()`
 
-  * `:last_id` - **optional** - `String.t() | any()`
+  * `:last_id` - **optional** - `String.t() | nil`
 
-  * `:object` - **required** - `:list`  
+  * `:object` - **required** - `:list`
     Allowed values: `"list"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           data: list(ExOpenAI.Components.VoiceConsentResource.t()),
-          first_id: (String.t() | any()) | nil,
+          first_id: (String.t() | nil) | nil,
           has_more: boolean(),
-          last_id: (String.t() | any()) | nil,
+          last_id: (String.t() | nil) | nil,
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.VoiceConsentResource.input()),
+              optional(:first_id) => String.t() | nil,
+              required(:has_more) => boolean(),
+              optional(:last_id) => String.t() | nil,
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

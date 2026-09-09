@@ -2,17 +2,17 @@ defmodule ExOpenAI.Components.RealtimeBetaClientEventInputAudioBufferClear do
   use ExOpenAI.Jason
 
   @moduledoc """
-  Send this event to clear the audio bytes in the buffer. The server will 
+  Send this event to clear the audio bytes in the buffer. The server will
   respond with an `input_audio_buffer.cleared` event.
 
 
   ## Fields
 
-  * `:event_id` - **optional** - `String.t()`  
+  * `:event_id` - **optional** - `String.t()`
     Optional client-generated ID used to identify this event.
 
-  * `:type` - **required** - `:"input_audio_buffer.clear"`  
-    The event type, must be `input_audio_buffer.clear`.  
+  * `:type` - **required** - `:"input_audio_buffer.clear"`
+    The event type, must be `input_audio_buffer.clear`.
     Allowed values: `"input_audio_buffer.clear"`
   """
   @type t() :: %{
@@ -20,5 +20,12 @@ defmodule ExOpenAI.Components.RealtimeBetaClientEventInputAudioBufferClear do
           event_id: String.t() | nil,
           type: :"input_audio_buffer.clear"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:event_id) => String.t(),
+              required(:type) => :"input_audio_buffer.clear" | String.t()
+            }
   defstruct [:event_id, :type]
 end

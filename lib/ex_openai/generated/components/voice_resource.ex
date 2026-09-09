@@ -6,17 +6,18 @@ defmodule ExOpenAI.Components.VoiceResource do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) for when the voice was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The voice identifier, which can be referenced in API endpoints.
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the voice.
 
-  * `:object` - **required** - `:"audio.voice"`  
-    The object type, which is always `audio.voice`.  
+  * `:object` - **required** - `:"audio.voice"`
+    The object type, which is always `audio.voice`.
     Allowed values: `"audio.voice"`
   """
   @type t() :: %{
@@ -26,5 +27,14 @@ defmodule ExOpenAI.Components.VoiceResource do
           name: String.t(),
           object: :"audio.voice"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:name) => String.t(),
+              required(:object) => :"audio.voice" | String.t()
+            }
   defstruct [:created_at, :id, :name, :object]
 end

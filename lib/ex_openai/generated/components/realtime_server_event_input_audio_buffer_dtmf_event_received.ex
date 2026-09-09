@@ -10,14 +10,14 @@ defmodule ExOpenAI.Components.RealtimeServerEventInputAudioBufferDtmfEventReceiv
 
   ## Fields
 
-  * `:event` - **required** - `String.t()`  
+  * `:event` - **required** - `String.t()`
     The telephone keypad that was pressed by the user.
 
-  * `:received_at` - **required** - `integer()`  
+  * `:received_at` - **required** - `integer()`
     UTC Unix Timestamp when DTMF Event was received by server.
 
-  * `:type` - **required** - `:"input_audio_buffer.dtmf_event_received"`  
-    The event type, must be `input_audio_buffer.dtmf_event_received`.  
+  * `:type` - **required** - `:"input_audio_buffer.dtmf_event_received"`
+    The event type, must be `input_audio_buffer.dtmf_event_received`.
     Allowed values: `"input_audio_buffer.dtmf_event_received"`
   """
   @type t() :: %{
@@ -26,5 +26,13 @@ defmodule ExOpenAI.Components.RealtimeServerEventInputAudioBufferDtmfEventReceiv
           received_at: integer(),
           type: :"input_audio_buffer.dtmf_event_received"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:event) => String.t(),
+              required(:received_at) => integer(),
+              required(:type) => :"input_audio_buffer.dtmf_event_received" | String.t()
+            }
   defstruct [:event, :received_at, :type]
 end

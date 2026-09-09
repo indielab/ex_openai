@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.TaskType do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema TaskType.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.TaskType do
   `"custom"`, `"thought"`
   """
   @type t() :: :custom | :thought
+  @type input() :: (:custom | :thought) | String.t()
 end

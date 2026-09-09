@@ -1,34 +1,37 @@
 defmodule ExOpenAI.Chatkit do
-  @moduledoc false
+  @moduledoc """
+  Functions for the OpenAI chatkit API.
+  """
   (
     @doc """
     Create a ChatKit session.
 
-    ## Parameters
-
-    * `user` - **required** - `String.t()`  
-      A free-form string that identifies your end user; ensures this Session can access other objects that have the same `user` scope.  
-      Constraints: minLength: 1
-
-    * `workflow` - **required** - `any()`  
-      Workflow that powers the session.
-
     ## Options
 
-    * `chatkit_configuration` - **optional** - `any()`  
+    * `chatkit_configuration` - **optional** - `ExOpenAI.Components.ChatkitConfigurationParam.input()`
       Optional overrides for ChatKit runtime configuration features
 
-    * `expires_after` - **optional** - `any()`  
+    * `expires_after` - **optional** - `ExOpenAI.Components.ExpiresAfterParam.input()`
       Optional override for session expiration timing in seconds from creation. Defaults to 10 minutes.
 
-    * `rate_limits` - **optional** - `any()`  
+    * `rate_limits` - **optional** - `ExOpenAI.Components.RateLimitsParam.input()`
       Optional override for per-minute request limits. When omitted, defaults to 10.
+
+    * `user` - **optional** - `String.t()`
+      A free-form string that identifies your end user; ensures this Session can access other objects that have the same `user` scope.
+      Constraints: minLength: 1
+
+    * `workflow` - **optional** - `ExOpenAI.Components.WorkflowParam.input()`
+      Workflow that powers the session.
     """
     (
       @type create_chat_session_method_opt() ::
-              ({:chatkit_configuration, ExOpenAI.Components.ChatkitConfigurationParam.t()}
-               | {:expires_after, ExOpenAI.Components.ExpiresAfterParam.t()})
-              | {:rate_limits, ExOpenAI.Components.RateLimitsParam.t()}
+              (((({:chatkit_configuration, ExOpenAI.Components.ChatkitConfigurationParam.input()}
+                  | {:expires_after, ExOpenAI.Components.ExpiresAfterParam.input()})
+                 | {:rate_limits, ExOpenAI.Components.RateLimitsParam.input()})
+                | {:user, String.t()})
+               | {:workflow, ExOpenAI.Components.WorkflowParam.input()})
+              | ExOpenAI.request_option()
       @spec create_chat_session_method(opts :: [create_chat_session_method_opt()]) ::
               {:ok, ExOpenAI.Components.ChatSessionResource.t()} | {:error, any()}
     )
@@ -36,24 +39,23 @@ defmodule ExOpenAI.Chatkit do
     def create_chat_session_method(opts \\ []) do
       url = "/chatkit/sessions"
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
 
       optional_body_params =
-        Keyword.take(opts, [:chatkit_configuration, :expires_after, :rate_limits])
+        Keyword.take(opts, [
+          :chatkit_configuration,
+          :expires_after,
+          :rate_limits,
+          :user,
+          :workflow
+        ])
 
       body_params = body_params ++ optional_body_params
 
       optional_params_to_drop =
-        [:chatkit_configuration, :expires_after, :rate_limits] |> Enum.reject(&(&1 == :stream))
+        [:chatkit_configuration, :expires_after, :rate_limits, :user, :workflow]
+        |> Enum.reject(&(&1 == :stream))
 
       opts = Keyword.drop(opts, optional_params_to_drop)
 
@@ -63,6 +65,8 @@ defmodule ExOpenAI.Chatkit do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ChatSessionResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -83,29 +87,22 @@ defmodule ExOpenAI.Chatkit do
 
     ## Parameters
 
-    * `:session_id` - **required** - `String.t()`  
+    * `:session_id` - **required** - `String.t()`
       Unique identifier for the ChatKit session to cancel.
     """
     (
-      nil
-
-      @spec cancel_chat_session_method(session_id :: String.t(), opts :: keyword()) ::
-              {:ok, ExOpenAI.Components.ChatSessionResource.t()} | {:error, any()}
+      @type cancel_chat_session_method_opt() :: ExOpenAI.request_option()
+      @spec cancel_chat_session_method(
+              session_id :: String.t(),
+              opts :: [cancel_chat_session_method_opt()]
+            ) :: {:ok, ExOpenAI.Components.ChatSessionResource.t()} | {:error, any()}
     )
 
     def cancel_chat_session_method(session_id, opts \\ []) do
       url = "/chatkit/sessions/{session_id}/cancel"
       url = String.replace(url, "{session_id}", to_string(session_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -118,6 +115,8 @@ defmodule ExOpenAI.Chatkit do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ChatSessionResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :post,
@@ -136,28 +135,30 @@ defmodule ExOpenAI.Chatkit do
 
     ## Options
 
-    * `:limit` - **optional** - `integer()`  
-      Maximum number of thread items to return. Defaults to 20.  
+    * `:limit` - **optional** - `integer()`
+      Maximum number of thread items to return. Defaults to 20.
       Constraints: minimum: 0, maximum: 100
 
-    * `:order` - **optional** - `any()`  
+    * `:order` - **optional** - `ExOpenAI.Components.OrderEnum.input()`
       Sort order for results by creation time. Defaults to `desc`.
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       List items created after this thread item ID. Defaults to null for the first page.
 
-    * `:before` - **optional** - `String.t()`  
+    * `:before` - **optional** - `String.t()`
       List items created before this thread item ID. Defaults to null for the newest results.
 
-    * `:user` - **optional** - `String.t()`  
-      Filter threads that belong to this user identifier. Defaults to null to return all users.  
+    * `:user` - **optional** - `String.t()`
+      Filter threads that belong to this user identifier. Defaults to null to return all users.
       Constraints: minLength: 1, maxLength: 512
     """
     (
       @type list_threads_method_opt() ::
-              ((({:limit, integer()} | {:order, any()}) | {:after, String.t()})
-               | {:before, String.t()})
-              | {:user, String.t()}
+              (((({:limit, integer()} | {:order, ExOpenAI.Components.OrderEnum.input()})
+                 | {:after, String.t()})
+                | {:before, String.t()})
+               | {:user, String.t()})
+              | ExOpenAI.request_option()
       @spec list_threads_method(opts :: [list_threads_method_opt()]) ::
               {:ok, ExOpenAI.Components.ThreadListResource.t()} | {:error, any()}
     )
@@ -165,17 +166,9 @@ defmodule ExOpenAI.Chatkit do
     def list_threads_method(opts \\ []) do
       url = "/chatkit/threads"
       query_params = Keyword.take(opts, [:limit, :order, :after, :before, :user])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :before, :limit, :order, :user])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
 
       optional_params_to_drop =
@@ -189,6 +182,8 @@ defmodule ExOpenAI.Chatkit do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ThreadListResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -207,13 +202,12 @@ defmodule ExOpenAI.Chatkit do
 
     ## Parameters
 
-    * `:thread_id` - **required** - `String.t()`  
+    * `:thread_id` - **required** - `String.t()`
       Identifier of the ChatKit thread to delete.
     """
     (
-      nil
-
-      @spec delete_thread_method(thread_id :: String.t(), opts :: keyword()) ::
+      @type delete_thread_method_opt() :: ExOpenAI.request_option()
+      @spec delete_thread_method(thread_id :: String.t(), opts :: [delete_thread_method_opt()]) ::
               {:ok, ExOpenAI.Components.DeletedThreadResource.t()} | {:error, any()}
     )
 
@@ -221,15 +215,7 @@ defmodule ExOpenAI.Chatkit do
       url = "/chatkit/threads/{thread_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -242,6 +228,8 @@ defmodule ExOpenAI.Chatkit do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/DeletedThreadResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -260,13 +248,12 @@ defmodule ExOpenAI.Chatkit do
 
     ## Parameters
 
-    * `:thread_id` - **required** - `String.t()`  
+    * `:thread_id` - **required** - `String.t()`
       Identifier of the ChatKit thread to retrieve.
     """
     (
-      nil
-
-      @spec get_thread_method(thread_id :: String.t(), opts :: keyword()) ::
+      @type get_thread_method_opt() :: ExOpenAI.request_option()
+      @spec get_thread_method(thread_id :: String.t(), opts :: [get_thread_method_opt()]) ::
               {:ok, ExOpenAI.Components.ThreadResource.t()} | {:error, any()}
     )
 
@@ -274,15 +261,7 @@ defmodule ExOpenAI.Chatkit do
       url = "/chatkit/threads/{thread_id}"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -295,6 +274,8 @@ defmodule ExOpenAI.Chatkit do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ThreadResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -313,28 +294,30 @@ defmodule ExOpenAI.Chatkit do
 
     ## Parameters
 
-    * `:thread_id` - **required** - `String.t()`  
+    * `:thread_id` - **required** - `String.t()`
       Identifier of the ChatKit thread whose items are requested.
 
     ## Options
 
-    * `:limit` - **optional** - `integer()`  
-      Maximum number of thread items to return. Defaults to 20.  
+    * `:limit` - **optional** - `integer()`
+      Maximum number of thread items to return. Defaults to 20.
       Constraints: minimum: 0, maximum: 100
 
-    * `:order` - **optional** - `any()`  
+    * `:order` - **optional** - `ExOpenAI.Components.OrderEnum.input()`
       Sort order for results by creation time. Defaults to `desc`.
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       List items created after this thread item ID. Defaults to null for the first page.
 
-    * `:before` - **optional** - `String.t()`  
+    * `:before` - **optional** - `String.t()`
       List items created before this thread item ID. Defaults to null for the newest results.
     """
     (
       @type list_thread_items_method_opt() ::
-              (({:limit, integer()} | {:order, any()}) | {:after, String.t()})
-              | {:before, String.t()}
+              ((({:limit, integer()} | {:order, ExOpenAI.Components.OrderEnum.input()})
+                | {:after, String.t()})
+               | {:before, String.t()})
+              | ExOpenAI.request_option()
       @spec list_thread_items_method(
               thread_id :: String.t(),
               opts :: [list_thread_items_method_opt()]
@@ -345,17 +328,9 @@ defmodule ExOpenAI.Chatkit do
       url = "/chatkit/threads/{thread_id}/items"
       url = String.replace(url, "{thread_id}", to_string(thread_id))
       query_params = Keyword.take(opts, [:limit, :order, :after, :before])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :before, :limit, :order])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
       optional_params_to_drop = [:after, :before, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
@@ -366,6 +341,8 @@ defmodule ExOpenAI.Chatkit do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ThreadItemListResource"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,

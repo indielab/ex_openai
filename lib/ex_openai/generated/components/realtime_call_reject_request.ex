@@ -6,10 +6,12 @@ defmodule ExOpenAI.Components.RealtimeCallRejectRequest do
 
   ## Fields
 
-  * `:status_code` - **optional** - `integer()`  
+  * `:status_code` - **optional** - `integer()`
     SIP response code to send back to the caller. Defaults to `603` (Decline)
   when omitted.
   """
   @type t() :: %{__struct__: __MODULE__, status_code: integer() | nil}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{optional(:status_code) => integer()}
   defstruct [:status_code]
 end

@@ -10,7 +10,7 @@ defmodule ExOpenAI.Components.DeleteMessageResponse do
 
   * `:id` - **required** - `String.t()`
 
-  * `:object` - **required** - `:"thread.message.deleted"`  
+  * `:object` - **required** - `:"thread.message.deleted"`
     Allowed values: `"thread.message.deleted"`
   """
   @type t() :: %{
@@ -19,5 +19,13 @@ defmodule ExOpenAI.Components.DeleteMessageResponse do
           id: String.t(),
           object: :"thread.message.deleted"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"thread.message.deleted" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

@@ -6,8 +6,15 @@ defmodule ExOpenAI.Components.CreateSkillBody do
 
   ## Fields
 
-  * `:files` - **required** - `[binary()] | binary()`
+  * `:files` - **required** - `list(binary()) | binary()`
   """
   @type t() :: %{__struct__: __MODULE__, files: list(binary()) | binary()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:files) =>
+                list(binary() | {String.t(), binary()}) | binary() | {String.t(), binary()}
+            }
   defstruct [:files]
 end

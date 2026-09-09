@@ -6,20 +6,20 @@ defmodule ExOpenAI.Components.ResponseCodeInterpreterCallCodeDeltaEvent do
 
   ## Fields
 
-  * `:delta` - **required** - `String.t()`  
+  * `:delta` - **required** - `String.t()`
     The partial code snippet being streamed by the code interpreter.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The unique identifier of the code interpreter tool call item.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item in the response for which the code is being streamed.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event, used to order streaming events.
 
-  * `:type` - **required** - `:"response.code_interpreter_call_code.delta"`  
-    The type of the event. Always `response.code_interpreter_call_code.delta`.  
+  * `:type` - **required** - `:"response.code_interpreter_call_code.delta"`
+    The type of the event. Always `response.code_interpreter_call_code.delta`.
     Allowed values: `"response.code_interpreter_call_code.delta"`
   """
   @type t() :: %{
@@ -30,5 +30,15 @@ defmodule ExOpenAI.Components.ResponseCodeInterpreterCallCodeDeltaEvent do
           sequence_number: integer(),
           type: :"response.code_interpreter_call_code.delta"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:delta) => String.t(),
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.code_interpreter_call_code.delta" | String.t()
+            }
   defstruct [:delta, :item_id, :output_index, :sequence_number, :type]
 end

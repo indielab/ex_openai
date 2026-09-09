@@ -6,26 +6,36 @@ defmodule ExOpenAI.Components.ApproximateLocation do
 
   ## Fields
 
-  * `:city` - **optional** - `String.t() | any()`
+  * `:city` - **optional** - `String.t() | nil`
 
-  * `:country` - **optional** - `String.t() | any()`
+  * `:country` - **optional** - `String.t() | nil`
 
-  * `:region` - **optional** - `String.t() | any()`
+  * `:region` - **optional** - `String.t() | nil`
 
-  * `:timezone` - **optional** - `String.t() | any()`
+  * `:timezone` - **optional** - `String.t() | nil`
 
-  * `:type` - **required** - `:approximate`  
-    The type of location approximation. Always `approximate`.  
-    Allowed values: `"approximate"`  
+  * `:type` - **required** - `:approximate`
+    The type of location approximation. Always `approximate`.
+    Allowed values: `"approximate"`
     Default: `"approximate"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          city: (String.t() | any()) | nil,
-          country: (String.t() | any()) | nil,
-          region: (String.t() | any()) | nil,
-          timezone: (String.t() | any()) | nil,
+          city: (String.t() | nil) | nil,
+          country: (String.t() | nil) | nil,
+          region: (String.t() | nil) | nil,
+          timezone: (String.t() | nil) | nil,
           type: :approximate
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:city) => String.t() | nil,
+              optional(:country) => String.t() | nil,
+              optional(:region) => String.t() | nil,
+              optional(:timezone) => String.t() | nil,
+              required(:type) => :approximate | String.t()
+            }
   defstruct [:city, :country, :region, :timezone, :type]
 end

@@ -7,23 +7,23 @@ defmodule ExOpenAI.Components.ResponseImageGenCallPartialImageEvent do
 
   ## Fields
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The unique identifier of the image generation item being processed.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item in the response's output array.
 
-  * `:partial_image_b64` - **required** - `String.t()`  
+  * `:partial_image_b64` - **required** - `String.t()`
     Base64-encoded partial image data, suitable for rendering as an image.
 
-  * `:partial_image_index` - **required** - `integer()`  
+  * `:partial_image_index` - **required** - `integer()`
     0-based index for the partial image (backend is 1-based, but this is 0-based for the user).
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of the image generation item being processed.
 
-  * `:type` - **required** - `:"response.image_generation_call.partial_image"`  
-    The type of the event. Always 'response.image_generation_call.partial_image'.  
+  * `:type` - **required** - `:"response.image_generation_call.partial_image"`
+    The type of the event. Always 'response.image_generation_call.partial_image'.
     Allowed values: `"response.image_generation_call.partial_image"`
   """
   @type t() :: %{
@@ -35,6 +35,17 @@ defmodule ExOpenAI.Components.ResponseImageGenCallPartialImageEvent do
           sequence_number: integer(),
           type: :"response.image_generation_call.partial_image"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:partial_image_b64) => String.t(),
+              required(:partial_image_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.image_generation_call.partial_image" | String.t()
+            }
   defstruct [
     :item_id,
     :output_index,

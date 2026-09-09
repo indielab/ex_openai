@@ -6,33 +6,33 @@ defmodule ExOpenAI.Components.FineTuneReinforcementHyperparameters do
 
   ## Fields
 
-  * `:batch_size` - **optional** - `:auto | integer()`  
-    Number of examples in each batch. A larger batch size means that model parameters are updated less frequently, but with lower variance.  
+  * `:batch_size` - **optional** - `:auto | integer()`
+    Number of examples in each batch. A larger batch size means that model parameters are updated less frequently, but with lower variance.
     Default: `"auto"`
 
-  * `:compute_multiplier` - **optional** - `:auto | number()`  
-    Multiplier on amount of compute used for exploring search space during training.  
+  * `:compute_multiplier` - **optional** - `:auto | number()`
+    Multiplier on amount of compute used for exploring search space during training.
     Default: `"auto"`
 
-  * `:eval_interval` - **optional** - `:auto | integer()`  
-    The number of training steps between evaluation runs.  
+  * `:eval_interval` - **optional** - `:auto | integer()`
+    The number of training steps between evaluation runs.
     Default: `"auto"`
 
-  * `:eval_samples` - **optional** - `:auto | integer()`  
-    Number of evaluation samples to generate per training step.  
+  * `:eval_samples` - **optional** - `:auto | integer()`
+    Number of evaluation samples to generate per training step.
     Default: `"auto"`
 
-  * `:learning_rate_multiplier` - **optional** - `:auto | number()`  
-    Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.  
+  * `:learning_rate_multiplier` - **optional** - `:auto | number()`
+    Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.
     Default: `"auto"`
 
-  * `:n_epochs` - **optional** - `:auto | integer()`  
-    The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.  
+  * `:n_epochs` - **optional** - `:auto | integer()`
+    The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.
     Default: `"auto"`
 
-  * `:reasoning_effort` - **optional** - `:default | :low | :medium | :high`  
-    Level of reasoning effort.  
-    Allowed values: `"default"`, `"low"`, `"medium"`, `"high"`  
+  * `:reasoning_effort` - **optional** - `:default | :low | :medium | :high`
+    Level of reasoning effort.
+    Allowed values: `"default"`, `"low"`, `"medium"`, `"high"`
     Default: `"default"`
   """
   @type t() :: %{
@@ -45,6 +45,18 @@ defmodule ExOpenAI.Components.FineTuneReinforcementHyperparameters do
           n_epochs: (:auto | integer()) | nil,
           reasoning_effort: (((:default | :low) | :medium) | :high) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:batch_size) => (:auto | String.t()) | integer(),
+              optional(:compute_multiplier) => (:auto | String.t()) | number(),
+              optional(:eval_interval) => (:auto | String.t()) | integer(),
+              optional(:eval_samples) => (:auto | String.t()) | integer(),
+              optional(:learning_rate_multiplier) => (:auto | String.t()) | number(),
+              optional(:n_epochs) => (:auto | String.t()) | integer(),
+              optional(:reasoning_effort) => (((:default | :low) | :medium) | :high) | String.t()
+            }
   defstruct [
     :batch_size,
     :compute_multiplier,

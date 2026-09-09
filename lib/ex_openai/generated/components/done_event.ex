@@ -6,12 +6,16 @@ defmodule ExOpenAI.Components.DoneEvent do
 
   ## Fields
 
-  * `:data` - **required** - `:"[DONE]"`  
+  * `:data` - **required** - `:"[DONE]"`
     Allowed values: `"[DONE]"`
 
-  * `:event` - **required** - `:done`  
+  * `:event` - **required** - `:done`
     Allowed values: `"done"`
   """
   @type t() :: %{__struct__: __MODULE__, data: :"[DONE]", event: :done}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{required(:data) => :"[DONE]" | String.t(), required(:event) => :done | String.t()}
   defstruct [:data, :event]
 end

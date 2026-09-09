@@ -6,7 +6,7 @@ defmodule ExOpenAI.Components.TopLogProb do
 
   ## Fields
 
-  * `:bytes` - **required** - `[integer()]`
+  * `:bytes` - **required** - `list(integer())`
 
   * `:logprob` - **required** - `number()`
 
@@ -18,5 +18,13 @@ defmodule ExOpenAI.Components.TopLogProb do
           logprob: number(),
           token: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:bytes) => list(integer()),
+              required(:logprob) => number(),
+              required(:token) => String.t()
+            }
   defstruct [:bytes, :logprob, :token]
 end

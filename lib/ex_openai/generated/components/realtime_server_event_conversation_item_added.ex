@@ -12,23 +12,32 @@ defmodule ExOpenAI.Components.RealtimeServerEventConversationItemAdded do
 
   ## Fields
 
-  * `:event_id` - **required** - `String.t()`  
+  * `:event_id` - **required** - `String.t()`
     The unique ID of the server event.
 
   * `:item` - **required** - `ExOpenAI.Components.RealtimeConversationItem.t()`
 
-  * `:previous_item_id` - **optional** - `String.t() | any()`
+  * `:previous_item_id` - **optional** - `String.t() | nil`
 
-  * `:type` - **required** - `:"conversation.item.added"`  
-    The event type, must be `conversation.item.added`.  
+  * `:type` - **required** - `:"conversation.item.added"`
+    The event type, must be `conversation.item.added`.
     Allowed values: `"conversation.item.added"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           event_id: String.t(),
           item: ExOpenAI.Components.RealtimeConversationItem.t(),
-          previous_item_id: (String.t() | any()) | nil,
+          previous_item_id: (String.t() | nil) | nil,
           type: :"conversation.item.added"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:event_id) => String.t(),
+              required(:item) => ExOpenAI.Components.RealtimeConversationItem.input(),
+              optional(:previous_item_id) => String.t() | nil,
+              required(:type) => :"conversation.item.added" | String.t()
+            }
   defstruct [:event_id, :item, :previous_item_id, :type]
 end

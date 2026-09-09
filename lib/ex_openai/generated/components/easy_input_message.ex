@@ -11,27 +11,37 @@ defmodule ExOpenAI.Components.EasyInputMessage do
 
   ## Fields
 
-  * `:content` - **required** - `String.t() | ExOpenAI.Components.InputMessageContentList.t()`  
+  * `:content` - **required** - `String.t() | ExOpenAI.Components.InputMessageContentList.t()`
     Text, image, or audio input to the model, used to generate a response.
   Can also contain previous assistant responses.
 
-  * `:phase` - **optional** - `ExOpenAI.Components.MessagePhase.t() | any()`
+  * `:phase` - **optional** - `ExOpenAI.Components.MessagePhase.t() | nil`
 
-  * `:role` - **required** - `:user | :assistant | :system | :developer`  
+  * `:role` - **required** - `:user | :assistant | :system | :developer`
     The role of the message input. One of `user`, `assistant`, `system`, or
-  `developer`.  
+  `developer`.
     Allowed values: `"user"`, `"assistant"`, `"system"`, `"developer"`
 
-  * `:type` - **optional** - `:message`  
-    The type of the message input. Always `message`.  
+  * `:type` - **optional** - `:message`
+    The type of the message input. Always `message`.
     Allowed values: `"message"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           content: String.t() | ExOpenAI.Components.InputMessageContentList.t(),
-          phase: (ExOpenAI.Components.MessagePhase.t() | any()) | nil,
+          phase: (ExOpenAI.Components.MessagePhase.t() | nil) | nil,
           role: ((:user | :assistant) | :system) | :developer,
           type: :message | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content) =>
+                String.t() | ExOpenAI.Components.InputMessageContentList.input(),
+              optional(:phase) => ExOpenAI.Components.MessagePhase.input() | nil,
+              required(:role) => (((:user | :assistant) | :system) | :developer) | String.t(),
+              optional(:type) => :message | String.t()
+            }
   defstruct [:content, :phase, :role, :type]
 end

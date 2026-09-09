@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.AttachmentType do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema AttachmentType.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.AttachmentType do
   `"image"`, `"file"`
   """
   @type t() :: :image | :file
+  @type input() :: (:image | :file) | String.t()
 end

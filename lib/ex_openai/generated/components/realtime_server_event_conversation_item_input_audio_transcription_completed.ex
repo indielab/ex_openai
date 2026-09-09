@@ -16,26 +16,29 @@ defmodule ExOpenAI.Components.RealtimeServerEventConversationItemInputAudioTrans
 
   ## Fields
 
-  * `:content_index` - **required** - `integer()`  
+  * `:content_index` - **required** - `integer()`
     The index of the content part containing the audio.
 
-  * `:event_id` - **required** - `String.t()`  
+  * `:event_id` - **required** - `String.t()`
     The unique ID of the server event.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The ID of the item containing the audio that is being transcribed.
 
-  * `:logprobs` - **optional** - `[ExOpenAI.Components.LogProbProperties.t()] | any()`
+  * `:languages` - **optional** - `list(ExOpenAI.Components.TranscriptionLanguage.t())`
+    The languages detected in the audio. Returned by `gpt-transcribe`. An empty array indicates that no language could be reliably detected.
 
-  * `:transcript` - **required** - `String.t()`  
+  * `:logprobs` - **optional** - `list(ExOpenAI.Components.LogProbProperties.t()) | nil`
+
+  * `:transcript` - **required** - `String.t()`
     The transcribed text.
 
-  * `:type` - **required** - `:"conversation.item.input_audio_transcription.completed"`  
+  * `:type` - **required** - `:"conversation.item.input_audio_transcription.completed"`
     The event type, must be
-  `conversation.item.input_audio_transcription.completed`.  
+  `conversation.item.input_audio_transcription.completed`.
     Allowed values: `"conversation.item.input_audio_transcription.completed"`
 
-  * `:usage` - **required** - `map()`  
+  * `:usage` - **required** - `map()`
     Usage statistics for the transcription, this is billed according to the ASR model's pricing rather than the realtime model's pricing.
   """
   @type t() :: %{
@@ -43,10 +46,36 @@ defmodule ExOpenAI.Components.RealtimeServerEventConversationItemInputAudioTrans
           content_index: integer(),
           event_id: String.t(),
           item_id: String.t(),
-          logprobs: (list(ExOpenAI.Components.LogProbProperties.t()) | any()) | nil,
+          languages: list(ExOpenAI.Components.TranscriptionLanguage.t()) | nil,
+          logprobs: (list(ExOpenAI.Components.LogProbProperties.t()) | nil) | nil,
           transcript: String.t(),
           type: :"conversation.item.input_audio_transcription.completed",
           usage: map()
         }
-  defstruct [:content_index, :event_id, :item_id, :logprobs, :transcript, :type, :usage]
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content_index) => integer(),
+              required(:event_id) => String.t(),
+              required(:item_id) => String.t(),
+              optional(:languages) => list(ExOpenAI.Components.TranscriptionLanguage.input()),
+              optional(:logprobs) => list(ExOpenAI.Components.LogProbProperties.input()) | nil,
+              required(:transcript) => String.t(),
+              required(:type) =>
+                :"conversation.item.input_audio_transcription.completed" | String.t(),
+              required(:usage) =>
+                ExOpenAI.Components.TranscriptTextUsageTokens.input()
+                | ExOpenAI.Components.TranscriptTextUsageDuration.input()
+            }
+  defstruct [
+    :content_index,
+    :event_id,
+    :item_id,
+    :languages,
+    :logprobs,
+    :transcript,
+    :type,
+    :usage
+  ]
 end

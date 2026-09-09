@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ChatCompletionRequestUserMessageContentPart do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ChatCompletionRequestUserMessageContentPart.
 
@@ -13,4 +11,9 @@ defmodule ExOpenAI.Components.ChatCompletionRequestUserMessageContentPart do
             | ExOpenAI.Components.ChatCompletionRequestMessageContentPartImage.t())
            | ExOpenAI.Components.ChatCompletionRequestMessageContentPartAudio.t())
           | ExOpenAI.Components.ChatCompletionRequestMessageContentPartFile.t()
+  @type input() ::
+          ((ExOpenAI.Components.ChatCompletionRequestMessageContentPartText.input()
+            | ExOpenAI.Components.ChatCompletionRequestMessageContentPartImage.input())
+           | ExOpenAI.Components.ChatCompletionRequestMessageContentPartAudio.input())
+          | ExOpenAI.Components.ChatCompletionRequestMessageContentPartFile.input()
 end

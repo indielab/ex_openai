@@ -1,8 +1,8 @@
 defmodule ExOpenAI.Codegen.PathModuleGeneratorResponseSchemaTest do
   use ExUnit.Case
 
-  alias ExOpenAI.Codegen.PathModuleGenerator
   alias ExOpenAI.Codegen.DocsParser.{Operation, Schema}
+  alias ExOpenAI.Codegen.PathModuleGenerator
 
   test "get_response_schema handles simple $ref" do
     responses = %{

@@ -6,8 +6,8 @@ defmodule ExOpenAI.Components.UserRoleAssignment do
 
   ## Fields
 
-  * `:object` - **required** - `:"user.role"`  
-    Always `user.role`.  
+  * `:object` - **required** - `:"user.role"`
+    Always `user.role`.
     Allowed values: `"user.role"`
 
   * `:role` - **required** - `ExOpenAI.Components.Role.t()`
@@ -20,5 +20,13 @@ defmodule ExOpenAI.Components.UserRoleAssignment do
           role: ExOpenAI.Components.Role.t(),
           user: ExOpenAI.Components.User.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:object) => :"user.role" | String.t(),
+              required(:role) => ExOpenAI.Components.Role.input(),
+              required(:user) => ExOpenAI.Components.User.input()
+            }
   defstruct [:object, :role, :user]
 end

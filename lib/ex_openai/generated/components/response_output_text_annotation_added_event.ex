@@ -7,26 +7,26 @@ defmodule ExOpenAI.Components.ResponseOutputTextAnnotationAddedEvent do
 
   ## Fields
 
-  * `:annotation` - **required** - `map()`  
+  * `:annotation` - **required** - `map()`
     The annotation object being added. (See annotation schema for details.)
 
-  * `:annotation_index` - **required** - `integer()`  
+  * `:annotation_index` - **required** - `integer()`
     The index of the annotation within the content part.
 
-  * `:content_index` - **required** - `integer()`  
+  * `:content_index` - **required** - `integer()`
     The index of the content part within the output item.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The unique identifier of the item to which the annotation is being added.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item in the response's output array.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.output_text.annotation.added"`  
-    The type of the event. Always 'response.output_text.annotation.added'.  
+  * `:type` - **required** - `:"response.output_text.annotation.added"`
+    The type of the event. Always 'response.output_text.annotation.added'.
     Allowed values: `"response.output_text.annotation.added"`
   """
   @type t() :: %{
@@ -39,6 +39,18 @@ defmodule ExOpenAI.Components.ResponseOutputTextAnnotationAddedEvent do
           sequence_number: integer(),
           type: :"response.output_text.annotation.added"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:annotation) => map(),
+              required(:annotation_index) => integer(),
+              required(:content_index) => integer(),
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.output_text.annotation.added" | String.t()
+            }
   defstruct [
     :annotation,
     :annotation_index,

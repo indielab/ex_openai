@@ -6,11 +6,11 @@ defmodule ExOpenAI.Components.SpeechAudioDoneEvent do
 
   ## Fields
 
-  * `:type` - **required** - `:"speech.audio.done"`  
-    The type of the event. Always `speech.audio.done`.  
+  * `:type` - **required** - `:"speech.audio.done"`
+    The type of the event. Always `speech.audio.done`.
     Allowed values: `"speech.audio.done"`
 
-  * `:usage` - **required** - `{:%{}, [], [{{:required, [], [:input_tokens]}, {:integer, [], []}}, {{:required, [], [:output_tokens]}, {:integer, [], []}}, {{:required, [], [:total_tokens]}, {:integer, [], []}}]}`  
+  * `:usage` - **required** - `%{ required(:input_tokens) => integer(), required(:output_tokens) => integer(), required(:total_tokens) => integer() }`
     Token usage statistics for the request.
   """
   @type t() :: %{
@@ -22,5 +22,16 @@ defmodule ExOpenAI.Components.SpeechAudioDoneEvent do
             required(:total_tokens) => integer()
           }
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:type) => :"speech.audio.done" | String.t(),
+              required(:usage) => %{
+                required(:input_tokens) => integer(),
+                required(:output_tokens) => integer(),
+                required(:total_tokens) => integer()
+              }
+            }
   defstruct [:type, :usage]
 end

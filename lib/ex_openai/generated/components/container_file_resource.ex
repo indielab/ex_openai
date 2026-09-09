@@ -6,25 +6,26 @@ defmodule ExOpenAI.Components.ContainerFileResource do
 
   ## Fields
 
-  * `:bytes` - **required** - `integer()`  
+  * `:bytes` - **required** - `integer()`
     Size of the file in bytes.
 
-  * `:container_id` - **required** - `String.t()`  
+  * `:container_id` - **required** - `String.t()`
     The container this file belongs to.
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     Unix timestamp (in seconds) when the file was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Unique identifier for the file.
 
-  * `:object` - **required** - `String.t()`  
+  * `:object` - **required** - `String.t()`
     The type of this object (`container.file`).
 
-  * `:path` - **required** - `String.t()`  
+  * `:path` - **required** - `String.t()`
     Path of the file in the container.
 
-  * `:source` - **required** - `String.t()`  
+  * `:source` - **required** - `String.t()`
     Source of the file (e.g., `user`, `assistant`).
   """
   @type t() :: %{
@@ -37,5 +38,17 @@ defmodule ExOpenAI.Components.ContainerFileResource do
           path: String.t(),
           source: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:bytes) => integer(),
+              required(:container_id) => String.t(),
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:object) => String.t(),
+              required(:path) => String.t(),
+              required(:source) => String.t()
+            }
   defstruct [:bytes, :container_id, :created_at, :id, :object, :path, :source]
 end

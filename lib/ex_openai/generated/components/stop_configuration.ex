@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.StopConfiguration do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Not supported with latest reasoning models `o3` and `o4-mini`.
 
@@ -10,7 +8,8 @@ defmodule ExOpenAI.Components.StopConfiguration do
 
   ## Type
 
-  `String.t() | nil | [String.t()] | nil`
+  `String.t() | nil | list(String.t()) | nil`
   """
   @type t() :: ((String.t() | nil) | list(String.t())) | nil
+  @type input() :: ((String.t() | nil) | list(String.t())) | nil
 end

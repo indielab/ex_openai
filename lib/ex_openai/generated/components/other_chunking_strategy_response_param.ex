@@ -6,10 +6,12 @@ defmodule ExOpenAI.Components.OtherChunkingStrategyResponseParam do
 
   ## Fields
 
-  * `:type` - **required** - `:other`  
-    Always `other`.  
+  * `:type` - **required** - `:other`
+    Always `other`.
     Allowed values: `"other"`
   """
   @type t() :: %{__struct__: __MODULE__, type: :other}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:type) => :other | String.t()}
   defstruct [:type]
 end

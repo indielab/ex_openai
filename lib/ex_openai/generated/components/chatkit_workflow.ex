@@ -6,22 +6,31 @@ defmodule ExOpenAI.Components.ChatkitWorkflow do
 
   ## Fields
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier of the workflow backing the session.
 
-  * `:state_variables` - **required** - `map() | any()`
+  * `:state_variables` - **required** - `map() | nil`
 
-  * `:tracing` - **required** - `ExOpenAI.Components.ChatkitWorkflowTracing.t()`  
+  * `:tracing` - **required** - `ExOpenAI.Components.ChatkitWorkflowTracing.t()`
     Tracing settings applied to the workflow.
 
-  * `:version` - **required** - `String.t() | any()`
+  * `:version` - **required** - `String.t() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           id: String.t(),
-          state_variables: map() | any(),
+          state_variables: map() | nil,
           tracing: ExOpenAI.Components.ChatkitWorkflowTracing.t(),
-          version: String.t() | any()
+          version: String.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:id) => String.t(),
+              required(:state_variables) => map() | nil,
+              required(:tracing) => ExOpenAI.Components.ChatkitWorkflowTracing.input(),
+              required(:version) => String.t() | nil
+            }
   defstruct [:id, :state_variables, :tracing, :version]
 end

@@ -6,39 +6,53 @@ defmodule ExOpenAI.Components.UsageImagesResult do
 
   ## Fields
 
-  * `:api_key_id` - **optional** - `String.t() | any()`
+  * `:api_key_id` - **optional** - `String.t() | nil`
 
-  * `:images` - **required** - `integer()`  
+  * `:images` - **required** - `integer()`
     The number of images processed.
 
-  * `:model` - **optional** - `String.t() | any()`
+  * `:model` - **optional** - `String.t() | nil`
 
-  * `:num_model_requests` - **required** - `integer()`  
+  * `:num_model_requests` - **required** - `integer()`
     The count of requests made to the model.
 
-  * `:object` - **required** - `:"organization.usage.images.result"`  
+  * `:object` - **required** - `:"organization.usage.images.result"`
     Allowed values: `"organization.usage.images.result"`
 
-  * `:project_id` - **optional** - `String.t() | any()`
+  * `:project_id` - **optional** - `String.t() | nil`
 
-  * `:size` - **optional** - `String.t() | any()`
+  * `:size` - **optional** - `String.t() | nil`
 
-  * `:source` - **optional** - `String.t() | any()`
+  * `:source` - **optional** - `String.t() | nil`
 
-  * `:user_id` - **optional** - `String.t() | any()`
+  * `:user_id` - **optional** - `String.t() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          api_key_id: (String.t() | any()) | nil,
+          api_key_id: (String.t() | nil) | nil,
           images: integer(),
-          model: (String.t() | any()) | nil,
+          model: (String.t() | nil) | nil,
           num_model_requests: integer(),
           object: :"organization.usage.images.result",
-          project_id: (String.t() | any()) | nil,
-          size: (String.t() | any()) | nil,
-          source: (String.t() | any()) | nil,
-          user_id: (String.t() | any()) | nil
+          project_id: (String.t() | nil) | nil,
+          size: (String.t() | nil) | nil,
+          source: (String.t() | nil) | nil,
+          user_id: (String.t() | nil) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:api_key_id) => String.t() | nil,
+              required(:images) => integer(),
+              optional(:model) => String.t() | nil,
+              required(:num_model_requests) => integer(),
+              required(:object) => :"organization.usage.images.result" | String.t(),
+              optional(:project_id) => String.t() | nil,
+              optional(:size) => String.t() | nil,
+              optional(:source) => String.t() | nil,
+              optional(:user_id) => String.t() | nil
+            }
   defstruct [
     :api_key_id,
     :images,

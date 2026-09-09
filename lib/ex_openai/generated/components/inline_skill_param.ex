@@ -6,18 +6,18 @@ defmodule ExOpenAI.Components.InlineSkillParam do
 
   ## Fields
 
-  * `:description` - **required** - `String.t()`  
+  * `:description` - **required** - `String.t()`
     The description of the skill.
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     The name of the skill.
 
-  * `:source` - **required** - `ExOpenAI.Components.InlineSkillSourceParam.t()`  
+  * `:source` - **required** - `ExOpenAI.Components.InlineSkillSourceParam.t()`
     Inline skill payload
 
-  * `:type` - **required** - `:inline`  
-    Defines an inline skill for this request.  
-    Allowed values: `"inline"`  
+  * `:type` - **required** - `:inline`
+    Defines an inline skill for this request.
+    Allowed values: `"inline"`
     Default: `"inline"`
   """
   @type t() :: %{
@@ -27,5 +27,14 @@ defmodule ExOpenAI.Components.InlineSkillParam do
           source: ExOpenAI.Components.InlineSkillSourceParam.t(),
           type: :inline
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:description) => String.t(),
+              required(:name) => String.t(),
+              required(:source) => ExOpenAI.Components.InlineSkillSourceParam.input(),
+              required(:type) => :inline | String.t()
+            }
   defstruct [:description, :name, :source, :type]
 end

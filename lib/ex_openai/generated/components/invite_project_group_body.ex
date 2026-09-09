@@ -6,12 +6,14 @@ defmodule ExOpenAI.Components.InviteProjectGroupBody do
 
   ## Fields
 
-  * `:group_id` - **required** - `String.t()`  
+  * `:group_id` - **required** - `String.t()`
     Identifier of the group to add to the project.
 
-  * `:role` - **required** - `String.t()`  
+  * `:role` - **required** - `String.t()`
     Identifier of the project role to grant to the group.
   """
   @type t() :: %{__struct__: __MODULE__, group_id: String.t(), role: String.t()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:group_id) => String.t(), required(:role) => String.t()}
   defstruct [:group_id, :role]
 end

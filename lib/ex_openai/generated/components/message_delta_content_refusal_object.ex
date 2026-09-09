@@ -6,13 +6,13 @@ defmodule ExOpenAI.Components.MessageDeltaContentRefusalObject do
 
   ## Fields
 
-  * `:index` - **required** - `integer()`  
+  * `:index` - **required** - `integer()`
     The index of the refusal part in the message.
 
   * `:refusal` - **optional** - `String.t()`
 
-  * `:type` - **required** - `:refusal`  
-    Always `refusal`.  
+  * `:type` - **required** - `:refusal`
+    Always `refusal`.
     Allowed values: `"refusal"`
   """
   @type t() :: %{
@@ -21,5 +21,13 @@ defmodule ExOpenAI.Components.MessageDeltaContentRefusalObject do
           refusal: String.t() | nil,
           type: :refusal
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:index) => integer(),
+              optional(:refusal) => String.t(),
+              required(:type) => :refusal | String.t()
+            }
   defstruct [:index, :refusal, :type]
 end

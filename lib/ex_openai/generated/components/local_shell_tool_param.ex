@@ -6,11 +6,13 @@ defmodule ExOpenAI.Components.LocalShellToolParam do
 
   ## Fields
 
-  * `:type` - **required** - `:local_shell`  
-    The type of the local shell tool. Always `local_shell`.  
-    Allowed values: `"local_shell"`  
+  * `:type` - **required** - `:local_shell`
+    The type of the local shell tool. Always `local_shell`.
+    Allowed values: `"local_shell"`
     Default: `"local_shell"`
   """
   @type t() :: %{__struct__: __MODULE__, type: :local_shell}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:type) => :local_shell | String.t()}
   defstruct [:type]
 end

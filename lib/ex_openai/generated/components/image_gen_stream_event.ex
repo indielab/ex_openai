@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ImageGenStreamEvent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ImageGenStreamEvent.
 
@@ -11,4 +9,7 @@ defmodule ExOpenAI.Components.ImageGenStreamEvent do
   @type t() ::
           ExOpenAI.Components.ImageGenPartialImageEvent.t()
           | ExOpenAI.Components.ImageGenCompletedEvent.t()
+  @type input() ::
+          ExOpenAI.Components.ImageGenPartialImageEvent.input()
+          | ExOpenAI.Components.ImageGenCompletedEvent.input()
 end

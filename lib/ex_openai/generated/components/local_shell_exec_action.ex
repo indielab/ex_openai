@@ -6,31 +6,42 @@ defmodule ExOpenAI.Components.LocalShellExecAction do
 
   ## Fields
 
-  * `:command` - **required** - `[String.t()]`  
+  * `:command` - **required** - `list(String.t())`
     The command to run.
 
-  * `:env` - **required** - `map()`  
+  * `:env` - **required** - `map()`
     Environment variables to set for the command.
 
-  * `:timeout_ms` - **optional** - `integer() | any()`
+  * `:timeout_ms` - **optional** - `integer() | nil`
 
-  * `:type` - **required** - `:exec`  
-    The type of the local shell action. Always `exec`.  
-    Allowed values: `"exec"`  
+  * `:type` - **required** - `:exec`
+    The type of the local shell action. Always `exec`.
+    Allowed values: `"exec"`
     Default: `"exec"`
 
-  * `:user` - **optional** - `String.t() | any()`
+  * `:user` - **optional** - `String.t() | nil`
 
-  * `:working_directory` - **optional** - `String.t() | any()`
+  * `:working_directory` - **optional** - `String.t() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           command: list(String.t()),
           env: map(),
-          timeout_ms: (integer() | any()) | nil,
+          timeout_ms: (integer() | nil) | nil,
           type: :exec,
-          user: (String.t() | any()) | nil,
-          working_directory: (String.t() | any()) | nil
+          user: (String.t() | nil) | nil,
+          working_directory: (String.t() | nil) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:command) => list(String.t()),
+              required(:env) => map(),
+              optional(:timeout_ms) => integer() | nil,
+              required(:type) => :exec | String.t(),
+              optional(:user) => String.t() | nil,
+              optional(:working_directory) => String.t() | nil
+            }
   defstruct [:command, :env, :timeout_ms, :type, :user, :working_directory]
 end

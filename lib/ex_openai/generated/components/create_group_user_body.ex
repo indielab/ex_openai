@@ -6,9 +6,11 @@ defmodule ExOpenAI.Components.CreateGroupUserBody do
 
   ## Fields
 
-  * `:user_id` - **required** - `String.t()`  
+  * `:user_id` - **required** - `String.t()`
     Identifier of the user to add to the group.
   """
   @type t() :: %{__struct__: __MODULE__, user_id: String.t()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{required(:user_id) => String.t()}
   defstruct [:user_id]
 end

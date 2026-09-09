@@ -8,10 +8,10 @@ defmodule ExOpenAI.Components.VoiceConsentDeletedResource do
 
   * `:deleted` - **required** - `boolean()`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The consent recording identifier.
 
-  * `:object` - **required** - `:"audio.voice_consent"`  
+  * `:object` - **required** - `:"audio.voice_consent"`
     Allowed values: `"audio.voice_consent"`
   """
   @type t() :: %{
@@ -20,5 +20,13 @@ defmodule ExOpenAI.Components.VoiceConsentDeletedResource do
           id: String.t(),
           object: :"audio.voice_consent"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:deleted) => boolean(),
+              required(:id) => String.t(),
+              required(:object) => :"audio.voice_consent" | String.t()
+            }
   defstruct [:deleted, :id, :object]
 end

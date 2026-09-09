@@ -4,7 +4,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   """
 
   alias ExOpenAI.Codegen.DocsParser.{Operation, Schema}
-  alias ExOpenAI.Codegen.{TypespecGenerator, SchemaResolver}
+  alias ExOpenAI.Codegen.{SchemaResolver, TypespecGenerator}
 
   @doc """
   Generates @doc attribute for an operation.
@@ -149,43 +149,28 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     positional_specs ++ [opts_spec]
   end
 
-  # Build a local `@type ..._opt()` alias plus the `opts :: [...]` parameter
-  # spec used in generated module specs.
-  #
-  # Example output:
-  #
-  #   @type create_chat_completion_opt() ::
-  #     {:stream, boolean() | nil} | {:user, String.t()}
-  #
-  #   opts :: [create_chat_completion_opt()]
-  #
-  # We only emit the alias when the endpoint has known option tuples; generic
-  # `keyword()` fallbacks stay inline.
+  # Name endpoint options so generated function specs remain readable.
   @spec build_named_opts_spec(Operation.t(), atom(), Schema.t() | nil, %{
           optional(String.t()) => Schema.t()
         }) :: {Macro.t(), Macro.t() | nil}
   defp build_named_opts_spec(operation, function_name, body_schema, schemas) do
     opt_types = build_option_tuple_types(operation, body_schema, schemas)
 
-    if opt_types == [] do
-      {quote(do: opts :: keyword()), nil}
-    else
-      opts_union = build_option_union_ast(opt_types)
-      type_name = String.to_atom("#{function_name}_opt")
-      local_type_ref = {type_name, [], []}
+    opts_union = build_option_union_ast(opt_types)
+    type_name = String.to_atom("#{function_name}_opt")
+    local_type_ref = {type_name, [], []}
 
-      opts_param_spec =
-        quote do
-          opts :: [unquote(local_type_ref)]
-        end
+    opts_param_spec =
+      quote do
+        opts :: [unquote(local_type_ref)]
+      end
 
-      opts_type_ast =
-        quote do
-          @type unquote(type_name)() :: unquote(opts_union)
-        end
+    opts_type_ast =
+      quote do
+        @type unquote(type_name)() :: unquote(opts_union)
+      end
 
-      {opts_param_spec, opts_type_ast}
-    end
+    {opts_param_spec, opts_type_ast}
   end
 
   @doc """
@@ -253,7 +238,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
       body_schema != nil && body_schema.properties != nil ->
         case Map.get(body_schema.properties, Atom.to_string(arg_name)) do
           %Schema{} = prop_schema ->
-            TypespecGenerator.schema_to_typespec(prop_schema, schemas)
+            TypespecGenerator.schema_to_input_typespec(prop_schema, schemas)
 
           _ ->
             quote do: any()
@@ -276,11 +261,11 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   # Derive type from parameter schema
   defp derive_type_from_parameter(param) do
     case param.schema do
-      %{"type" => "string"} -> quote do: String.t()
-      %{"type" => "integer"} -> quote do: integer()
-      %{"type" => "number"} -> quote do: number()
-      %{"type" => "boolean"} -> quote do: boolean()
-      _ -> quote do: any()
+      schema when is_map(schema) ->
+        param.name |> Schema.parse_schema(schema) |> TypespecGenerator.schema_to_input_typespec()
+
+      _ ->
+        quote(do: term())
     end
   end
 
@@ -288,18 +273,10 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   defp build_opts_spec(operation, body_schema, schemas) do
     opt_types = build_option_tuple_types(operation, body_schema, schemas)
 
-    # If we have specific optional parameters, build a union type
-    if length(opt_types) > 0 do
-      opts_union = build_option_union_ast(opt_types)
+    opts_union = build_option_union_ast(opt_types)
 
-      quote do
-        opts :: [unquote(opts_union)]
-      end
-    else
-      # Fallback to generic keyword list
-      quote do
-        opts :: keyword()
-      end
+    quote do
+      opts :: [unquote(opts_union)]
     end
   end
 
@@ -309,9 +286,11 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   @spec build_option_tuple_types(Operation.t(), Schema.t() | nil, %{
           optional(String.t()) => Schema.t()
         }) :: [Macro.t()]
-  defp build_option_tuple_types(operation, body_schema, schemas) do
+  defp build_option_tuple_types(operation, _body_schema, schemas) do
     query_params = get_query_parameters(operation)
-    optional_body_params = get_optional_body_parameters(body_schema)
+
+    optional_body_params =
+      SchemaResolver.optional_body_properties(operation.request_body, schemas)
 
     query_option_types =
       Enum.map(query_params, fn param ->
@@ -326,14 +305,14 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     body_option_types =
       Enum.map(optional_body_params, fn {name, schema} ->
         param_name = String.to_atom(name)
-        param_type = TypespecGenerator.schema_to_typespec(schema, schemas)
+        param_type = TypespecGenerator.schema_to_input_typespec(schema, schemas)
 
         quote do
           {unquote(param_name), unquote(param_type)}
         end
       end)
 
-    query_option_types ++ body_option_types
+    query_option_types ++ body_option_types ++ [quote(do: ExOpenAI.request_option())]
   end
 
   # Fold a list of option tuple AST nodes into the union used by both
@@ -354,18 +333,6 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
   defp get_query_parameters(%Operation{parameters: params}) do
     Enum.filter(params, fn p -> p.in == "query" end)
-  end
-
-  # Get optional body parameters (those not in required list)
-  defp get_optional_body_parameters(nil), do: []
-  defp get_optional_body_parameters(%Schema{properties: nil}), do: []
-
-  defp get_optional_body_parameters(%Schema{properties: props, required: required}) do
-    required_list = required || []
-
-    props
-    |> Enum.filter(fn {name, _schema} -> name not in required_list end)
-    |> Enum.into([])
   end
 
   @doc """
@@ -422,13 +389,13 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   # is absent.
   @spec build_non_stream_ok_type(Operation.t(), %{String.t() => Schema.t()}) :: Macro.t()
   defp build_non_stream_ok_type(%Operation{} = operation, schemas) do
-    case get_response_schema(operation, "200", schemas) do
+    case SchemaResolver.response_schema(operation) do
       %Schema{} = response_schema ->
         TypespecGenerator.schema_to_typespec(response_schema, schemas)
 
       nil ->
         quote do
-          map()
+          term()
         end
     end
   end
@@ -438,27 +405,13 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   # The generated runtime branch is driven by the presence of `:stream` in the
   # optional parameter list, so the spec generator needs the same check.
   defp supports_streaming_option?(%Operation{} = operation, schemas) do
-    body_schema = SchemaResolver.get_request_body_schema(operation.request_body, schemas)
-
     query_params = get_query_parameters(operation)
-    optional_body_params = get_optional_body_parameters(body_schema)
+
+    optional_body_params =
+      SchemaResolver.optional_body_properties(operation.request_body, schemas)
 
     Enum.any?(query_params, &(&1.name == "stream")) or
       Enum.any?(optional_body_params, fn {name, _schema} -> name == "stream" end)
-  end
-
-  # Extract and resolve the response schema for a given status code
-  defp get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
-
-  defp get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
-    case Map.get(responses, status_code) do
-      %{content: %{"application/json" => %{"schema" => %{"$ref" => ref}}}} ->
-        # Return a schema with the ref so TypespecGenerator can create proper component reference
-        %Schema{ref: ref}
-
-      _ ->
-        nil
-    end
   end
 
   # Builds comprehensive parameter documentation for both positional and optional parameters.
@@ -492,7 +445,8 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
     # Document required body parameters
     required_body_docs =
-      if body_schema && body_schema.properties && body_schema.required do
+      if operation.request_body && operation.request_body.required && body_schema &&
+           body_schema.properties && body_schema.required do
         body_schema.required
         |> Enum.sort()
         |> Enum.map(fn prop_name ->
@@ -515,7 +469,7 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
 
   @spec build_optional_parameter_docs(Operation.t(), Schema.t() | nil, %{String.t() => Schema.t()}) ::
           String.t()
-  defp build_optional_parameter_docs(%Operation{} = operation, body_schema, schemas) do
+  defp build_optional_parameter_docs(%Operation{} = operation, _body_schema, schemas) do
     docs = []
 
     # Document query parameters
@@ -529,7 +483,8 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     docs = docs ++ query_docs
 
     # Document optional body parameters
-    optional_body_params = get_optional_body_parameters(body_schema)
+    optional_body_params =
+      SchemaResolver.optional_body_properties(operation.request_body, schemas)
 
     optional_body_docs =
       Enum.map(optional_body_params, fn {name, schema} ->
@@ -572,7 +527,6 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     description =
       case param_or_schema do
         %{description: desc} when is_binary(desc) -> String.trim(desc)
-        %Schema{description: desc} when is_binary(desc) -> String.trim(desc)
         _ -> nil
       end
 
@@ -586,14 +540,14 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     # Add enum values
     enum_values =
       case param_or_schema do
-        %Schema{enum: enum} when is_list(enum) and length(enum) > 0 -> enum
-        %{schema: %{"enum" => enum}} when is_list(enum) and length(enum) > 0 -> enum
+        %Schema{enum: enum} when is_list(enum) and enum != [] -> enum
+        %{schema: %{"enum" => enum}} when is_list(enum) and enum != [] -> enum
         _ -> nil
       end
 
     parts =
       if enum_values do
-        values_str = Enum.map(enum_values, &"`#{inspect(&1)}`") |> Enum.join(", ")
+        values_str = Enum.map_join(enum_values, ", ", &"`#{inspect(&1)}`")
         parts ++ ["  \n  Allowed values: #{values_str}"]
       else
         parts
@@ -644,7 +598,6 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
     example =
       case param_or_schema do
         %{example: ex} when not is_nil(ex) -> ex
-        %Schema{example: ex} when not is_nil(ex) -> ex
         _ -> nil
       end
 
@@ -659,80 +612,14 @@ defmodule ExOpenAI.Codegen.FunctionDocGenerator do
   end
 
   defp derive_type_string_from_parameter(param) do
-    case param.schema do
-      %{"type" => "string"} -> "String.t()"
-      %{"type" => "integer"} -> "integer()"
-      %{"type" => "number"} -> "number()"
-      %{"type" => "boolean"} -> "boolean()"
-      %{"type" => "array", "items" => %{"type" => item_type}} -> "[#{type_to_elixir(item_type)}]"
-      _ -> "any()"
-    end
+    param |> derive_type_from_parameter() |> TypespecGenerator.type_to_string()
   end
 
-  defp derive_type_string_from_schema(schema, _schemas) do
-    try do
-      typespec_ast = TypespecGenerator.schema_to_typespec(schema)
-      ast_to_type_string(typespec_ast)
-    rescue
-      _ -> basic_schema_type_string(schema)
-    end
+  defp derive_type_string_from_schema(schema, schemas) do
+    schema
+    |> TypespecGenerator.schema_to_input_typespec(schemas)
+    |> TypespecGenerator.type_to_string()
   end
-
-  defp ast_to_type_string({:|, _, types}) do
-    types
-    |> Enum.map(&ast_to_type_string/1)
-    |> Enum.join(" | ")
-  end
-
-  defp ast_to_type_string({:__aliases__, _, parts}) do
-    "#{Enum.join(parts, ".")}.t()"
-  end
-
-  defp ast_to_type_string({{:., _, [{:__aliases__, _, mod_parts}, :t]}, _, []}) do
-    "#{Enum.join(mod_parts, ".")}.t()"
-  end
-
-  defp ast_to_type_string({:., _, [{:__aliases__, _, mod_parts}, :t]}) do
-    "#{Enum.join(mod_parts, ".")}.t()"
-  end
-
-  defp ast_to_type_string({fun, _, []}) when is_atom(fun) do
-    "#{fun}()"
-  end
-
-  defp ast_to_type_string({:list, _, [type]}) do
-    "[#{ast_to_type_string(type)}]"
-  end
-
-  defp ast_to_type_string(nil) do
-    "nil"
-  end
-
-  defp ast_to_type_string(atom) when is_atom(atom) do
-    inspect(atom)
-  end
-
-  defp ast_to_type_string(_other) do
-    "any()"
-  end
-
-  defp basic_schema_type_string(%Schema{ref: "#/components/schemas/" <> name}) do
-    "ExOpenAI.Components.#{name}.t()"
-  end
-
-  defp basic_schema_type_string(%Schema{type: type}) when is_binary(type) do
-    "#{type}()"
-  end
-
-  defp basic_schema_type_string(_) do
-    "any()"
-  end
-
-  defp type_to_elixir("string"), do: "String.t()"
-  defp type_to_elixir("integer"), do: "integer()"
-  defp type_to_elixir("number"), do: "number()"
-  defp type_to_elixir("boolean"), do: "boolean()"
-  defp type_to_elixir(_), do: "any()"
 
   defp extract_parameter_constraints(param_or_schema) do
     constraints = []

@@ -7,44 +7,60 @@ defmodule ExOpenAI.Components.EvalResponsesSource do
 
   ## Fields
 
-  * `:created_after` - **optional** - `integer() | any()`
+  * `:created_after` - **optional** - `integer() | nil`
 
-  * `:created_before` - **optional** - `integer() | any()`
+  * `:created_before` - **optional** - `integer() | nil`
 
-  * `:instructions_search` - **optional** - `String.t() | any()`
+  * `:instructions_search` - **optional** - `String.t() | nil`
 
-  * `:metadata` - **optional** - `map() | any()`
+  * `:metadata` - **optional** - `map() | nil`
 
-  * `:model` - **optional** - `String.t() | any()`
+  * `:model` - **optional** - `String.t() | nil`
 
-  * `:reasoning_effort` - **optional** - `ExOpenAI.Components.ReasoningEffort.t() | any()`
+  * `:reasoning_effort` - **optional** - `ExOpenAI.Components.ReasoningEffort.t() | nil`
 
-  * `:temperature` - **optional** - `number() | any()`
+  * `:temperature` - **optional** - `number() | nil`
 
-  * `:tools` - **optional** - `[String.t()] | any()`
+  * `:tools` - **optional** - `list(String.t()) | nil`
 
-  * `:top_p` - **optional** - `number() | any()`
+  * `:top_p` - **optional** - `number() | nil`
 
-  * `:type` - **required** - `:responses`  
-    The type of run data source. Always `responses`.  
+  * `:type` - **required** - `:responses`
+    The type of run data source. Always `responses`.
     Allowed values: `"responses"`
 
-  * `:users` - **optional** - `[String.t()] | any()`
+  * `:users` - **optional** - `list(String.t()) | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          created_after: (integer() | any()) | nil,
-          created_before: (integer() | any()) | nil,
-          instructions_search: (String.t() | any()) | nil,
-          metadata: (map() | any()) | nil,
-          model: (String.t() | any()) | nil,
-          reasoning_effort: (ExOpenAI.Components.ReasoningEffort.t() | any()) | nil,
-          temperature: (number() | any()) | nil,
-          tools: (list(String.t()) | any()) | nil,
-          top_p: (number() | any()) | nil,
+          created_after: (integer() | nil) | nil,
+          created_before: (integer() | nil) | nil,
+          instructions_search: (String.t() | nil) | nil,
+          metadata: (map() | nil) | nil,
+          model: (String.t() | nil) | nil,
+          reasoning_effort: (ExOpenAI.Components.ReasoningEffort.t() | nil) | nil,
+          temperature: (number() | nil) | nil,
+          tools: (list(String.t()) | nil) | nil,
+          top_p: (number() | nil) | nil,
           type: :responses,
-          users: (list(String.t()) | any()) | nil
+          users: (list(String.t()) | nil) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:created_after) => integer() | nil,
+              optional(:created_before) => integer() | nil,
+              optional(:instructions_search) => String.t() | nil,
+              optional(:metadata) => map() | nil,
+              optional(:model) => String.t() | nil,
+              optional(:reasoning_effort) => ExOpenAI.Components.ReasoningEffort.input() | nil,
+              optional(:temperature) => number() | nil,
+              optional(:tools) => list(String.t()) | nil,
+              optional(:top_p) => number() | nil,
+              required(:type) => :responses | String.t(),
+              optional(:users) => list(String.t()) | nil
+            }
   defstruct [
     :created_after,
     :created_before,

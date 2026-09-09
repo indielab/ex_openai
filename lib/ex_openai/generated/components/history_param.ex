@@ -6,11 +6,11 @@ defmodule ExOpenAI.Components.HistoryParam do
 
   ## Fields
 
-  * `:enabled` - **optional** - `boolean()`  
+  * `:enabled` - **optional** - `boolean()`
     Enables chat users to access previous ChatKit threads. Defaults to true.
 
-  * `:recent_threads` - **optional** - `integer()`  
-    Number of recent ChatKit threads users have access to. Defaults to unlimited when unset.  
+  * `:recent_threads` - **optional** - `integer()`
+    Number of recent ChatKit threads users have access to. Defaults to unlimited when unset.
     Constraints: minimum: 1
   """
   @type t() :: %{
@@ -18,5 +18,8 @@ defmodule ExOpenAI.Components.HistoryParam do
           enabled: boolean() | nil,
           recent_threads: integer() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t() | %{optional(:enabled) => boolean(), optional(:recent_threads) => integer()}
   defstruct [:enabled, :recent_threads]
 end

@@ -6,14 +6,14 @@ defmodule ExOpenAI.Components.ResponseAudioTranscriptDeltaEvent do
 
   ## Fields
 
-  * `:delta` - **required** - `String.t()`  
+  * `:delta` - **required** - `String.t()`
     The partial transcript of the audio response.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.audio.transcript.delta"`  
-    The type of the event. Always `response.audio.transcript.delta`.  
+  * `:type` - **required** - `:"response.audio.transcript.delta"`
+    The type of the event. Always `response.audio.transcript.delta`.
     Allowed values: `"response.audio.transcript.delta"`
   """
   @type t() :: %{
@@ -22,5 +22,13 @@ defmodule ExOpenAI.Components.ResponseAudioTranscriptDeltaEvent do
           sequence_number: integer(),
           type: :"response.audio.transcript.delta"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:delta) => String.t(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.audio.transcript.delta" | String.t()
+            }
   defstruct [:delta, :sequence_number, :type]
 end

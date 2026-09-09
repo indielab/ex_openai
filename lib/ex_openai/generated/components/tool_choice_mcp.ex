@@ -7,20 +7,28 @@ defmodule ExOpenAI.Components.ToolChoiceMCP do
 
   ## Fields
 
-  * `:name` - **optional** - `String.t() | any()`
+  * `:name` - **optional** - `String.t() | nil`
 
-  * `:server_label` - **required** - `String.t()`  
+  * `:server_label` - **required** - `String.t()`
     The label of the MCP server to use.
 
-  * `:type` - **required** - `:mcp`  
-    For MCP tools, the type is always `mcp`.  
+  * `:type` - **required** - `:mcp`
+    For MCP tools, the type is always `mcp`.
     Allowed values: `"mcp"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          name: (String.t() | any()) | nil,
+          name: (String.t() | nil) | nil,
           server_label: String.t(),
           type: :mcp
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:name) => String.t() | nil,
+              required(:server_label) => String.t(),
+              required(:type) => :mcp | String.t()
+            }
   defstruct [:name, :server_label, :type]
 end

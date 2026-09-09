@@ -1,223 +1,105 @@
 defmodule ExOpenAI.Codegen.ResponseConverter do
   @moduledoc """
-  Converts raw JSON API responses into Elixir structs based on the OpenAPI
-  response schema and the generated component modules.
+  Converts API responses using generated component types and schema discriminators.
 
-  At a high level this module:
-
-  * Takes the decoded JSON response (string-keyed maps/lists from `Jason`)
-  * Uses the response `Schema` to find the top-level response component
-  * Uses the generated typespecs (`@type t() :: ...`) to understand field types
-  * Builds the top-level response struct (e.g. `Response`, `CreateChatCompletionResponse`)
-  * Recursively converts nested maps into component structs where the schema
-    and typespecs provide enough information (including `anyOf`/`oneOf` unions)
-  * Deep-atomizes keys for remaining nested maps/lists to keep ergonomics high
-
-  This keeps the runtime behavior in sync with the generated typespecs under
-  `ExOpenAI.Components.*`, including complex unions like `OutputItem.t/0`.
+  Known fields use atom keys and typed structs. Dynamic objects, including metadata
+  and JSON Schema properties, retain their original keys.
   """
 
   alias ExOpenAI.Codegen.DocsParser.Schema
-  alias ExOpenAI.Codegen.TypespecGenerator
 
-  @doc """
-  Converts an API response into the expected struct type based on the response schema.
-
-  Takes the response and the expected response schema, and converts the response
-  into the expected top-level struct type if they match. Nested maps and lists
-  are not converted into their own component structs; instead, their keys are
-  recursively converted to atoms for easier access.
-
-  ## Parameters
-
-    * `response` - The API response tuple `{:ok, map}` or `{:error, any}`
-    * `response_schema` - The Schema struct describing the expected response type
-
-  ## Behavior Details
-
-  * Handles responses with different patterns, including those with "response" and "type" keys
-  * Processes reference values directly (when `is_reference(ref)` is true)
-  * Converts responses to top-level component structs when the response schema is known
-  * For `oneOf` and `anyOf` response schemas, selects the best matching component based on key overlap
-  * Nested maps and lists are recursively converted to atom-keyed maps/lists, but are not wrapped
-    into their own component structs
-  * Returns the original response when no conversion is needed or possible
-  * Preserves error tuples, passing them through unchanged
-
-  ## Return Values
-
-  * `{:ok, converted_value}` for successful conversions
-  * Original error tuples are passed through unchanged
-  """
+  @doc "Converts successful responses and preserves error tuples and async references."
   @spec convert_response({:ok, any()} | {:error, any()}, Schema.t() | nil) ::
           {:ok, any()} | {:error, any()}
-  def convert_response({:ok, %{"response" => res, "type" => _t}}, response_schema) do
-    convert_response({:ok, res}, response_schema)
-  end
-
   def convert_response(response, nil), do: response
+  def convert_response({:error, _} = response, _schema), do: response
+  def convert_response({:ok, ref} = response, _schema) when is_reference(ref), do: response
 
-  def convert_response(response, %Schema{} = response_schema) do
-    response_type = TypespecGenerator.schema_to_typespec(response_schema)
+  def convert_response({:ok, value}, %Schema{ref: "#/components/schemas/" <> name}) do
+    module = ref_to_module(name)
 
-    # Try to extract the top-level typespec for the response struct
-    return_type_spec =
-      case response_type do
-        {:__aliases__, _, module_parts} ->
-          # Convert AST module reference to actual module atom
-          module_name = Module.concat(module_parts)
+    cond do
+      module_exists?(module) and is_map(value) ->
+        keys = get_struct_keys(module)
+        types = fetch_types(module)
 
-          if module_exists?(module_name) do
-            fetch_types(module_name)
-          else
-            []
-          end
+        if keys == [] or count_matching_keys(value, keys) > 0 do
+          fields =
+            for key <- keys,
+                {:ok, raw} <- [fetch_field(value, key)] do
+              {key, parse_remote_type(get_field_type_from_ast(types, key), raw)}
+            end
 
-        {{:., [], [module, :t]}, [], []} ->
-          # Handle typespec format like {{:., [], [ExOpenAI.Components.Response, :t]}, [], []}
-          if module_exists?(module) do
-            fetch_types(module)
-          else
-            []
-          end
-
-        module when is_atom(module) ->
-          if module_exists?(module) do
-            fetch_types(module)
-          else
-            []
-          end
-
-        _ ->
-          []
-      end
-
-    case response do
-      {:ok, ref} when is_reference(ref) ->
-        {:ok, ref}
-
-      {:ok, res} when is_map(res) ->
-        # Check if we have a valid schema that would result in a struct
-        has_valid_schema =
-          case response_schema do
-            %Schema{ref: "#/components/schemas/" <> component_name} ->
-              module = ref_to_module(component_name)
-
-              module_exists?(module) and
-                count_matching_keys(res, get_struct_keys(module)) > 0
-
-            %Schema{one_of: schemas, discriminator: discriminator}
-            when is_list(schemas) and schemas != [] ->
-              find_matching_schema(res, schemas, discriminator) != nil
-
-            %Schema{any_of: schemas, discriminator: discriminator}
-            when is_list(schemas) and schemas != [] ->
-              find_matching_schema(res, schemas, discriminator) != nil
-
-            _ ->
-              false
-          end
-
-        if has_valid_schema and is_list(return_type_spec) do
-          # Convert top-level fields using their typespecs. Nested maps/lists
-          # may be further converted into component structs based on their
-          # remote types and unions, or have their keys atomized when no more
-          # specific information is available.
-          converted_map =
-            res
-            |> Enum.map(fn {key, value} ->
-              # Convert string key to atom for lookup
-              atom_key =
-                if is_binary(key) do
-                  try do
-                    String.to_existing_atom(key)
-                  rescue
-                    ArgumentError -> String.to_atom(key)
-                  end
-                else
-                  key
-                end
-
-              # Extract type for this field from the typespec
-              field_type = get_field_type_from_ast(return_type_spec, atom_key)
-
-              # Convert the value based on its type. When we have no type
-              # information but the value is a map/list, atomize keys.
-              converted_value =
-                cond do
-                  is_nil(field_type) and (is_map(value) or is_list(value)) ->
-                    deep_atomize_keys(value)
-
-                  true ->
-                    parse_remote_type(field_type, value)
-                end
-
-              {atom_key, converted_value}
-            end)
-            |> Enum.into(%{})
-
-          # Now create the struct for the top-level response
-          case response_schema do
-            %Schema{ref: "#/components/schemas/" <> component_name} ->
-              module = ref_to_module(component_name)
-              {:ok, struct(module, converted_map)}
-
-            %Schema{} ->
-              convert_map_response(converted_map, response_schema)
-          end
+          {:ok, struct(module, fields)}
         else
-          # No valid schema match or typespec, return original
-          {:ok, res}
+          {:ok, value}
         end
 
-      e ->
-        e
+      component_alias?(module) ->
+        {:ok, parse_remote_type(component_type(module), value)}
+
+      true ->
+        {:ok, value}
     end
   end
 
-  # Convert a map response based on the schema type
-  defp convert_map_response(res, %Schema{ref: "#/components/schemas/" <> component_name}) do
-    # Direct component reference
-    module = ref_to_module(component_name)
+  def convert_response({:ok, value}, %Schema{one_of: schemas, discriminator: discriminator})
+      when is_list(schemas) and schemas != [] and is_map(value) do
+    convert_map_union_response(value, schemas, discriminator)
+  end
 
-    if module_exists?(module) do
-      keys = get_struct_keys(module)
-      matching_keys = count_matching_keys(res, keys)
+  def convert_response({:ok, value}, %Schema{any_of: schemas, discriminator: discriminator})
+      when is_list(schemas) and schemas != [] and is_map(value) do
+    convert_map_union_response(value, schemas, discriminator)
+  end
 
-      if matching_keys > 0 do
-        # Values are already converted, just create the struct
-        {:ok, struct(module, res)}
-      else
-        {:ok, res}
-      end
-    else
-      {:ok, res}
+  def convert_response({:ok, values}, %Schema{type: "array", items: %Schema{} = schema})
+      when is_list(values) do
+    {:ok,
+     Enum.map(values, fn value ->
+       {:ok, converted} = convert_response({:ok, value}, schema)
+       converted
+     end)}
+  end
+
+  def convert_response({:ok, value}, %Schema{properties: properties})
+      when is_map(value) and is_map(properties) do
+    converted =
+      Enum.reduce(properties, value, fn {name, schema}, acc ->
+        key = String.to_atom(name)
+
+        case fetch_field(value, key) do
+          {:ok, raw} ->
+            {:ok, parsed} = convert_response({:ok, raw}, schema)
+            acc |> Map.delete(name) |> Map.put(key, parsed)
+
+          :error ->
+            acc
+        end
+      end)
+
+    {:ok, converted}
+  end
+
+  def convert_response({:ok, value}, %Schema{enum: values}) when is_list(values) do
+    parsed = if is_binary(value) and value in values, do: String.to_atom(value), else: value
+    {:ok, parsed}
+  end
+
+  def convert_response(response, %Schema{}), do: response
+
+  defp fetch_field(value, key) do
+    case Map.fetch(value, key) do
+      :error -> Map.fetch(value, Atom.to_string(key))
+      found -> found
     end
   end
 
-  defp convert_map_response(res, %Schema{one_of: schemas, discriminator: discriminator})
-       when is_list(schemas) and schemas != [] do
-    convert_map_union_response(res, schemas, discriminator)
-  end
-
-  defp convert_map_response(res, %Schema{one_of: schemas})
-       when is_list(schemas) and schemas != [] do
-    convert_map_union_response(res, schemas, nil)
-  end
-
-  defp convert_map_response(res, %Schema{any_of: schemas, discriminator: discriminator})
-       when is_list(schemas) and schemas != [] do
-    convert_map_union_response(res, schemas, discriminator)
-  end
-
-  defp convert_map_response(res, %Schema{any_of: schemas})
-       when is_list(schemas) and schemas != [] do
-    convert_map_union_response(res, schemas, nil)
-  end
-
-  defp convert_map_response(res, _schema) do
-    # For other schema types, return as-is
-    {:ok, res}
+  defp component_type(module) do
+    Enum.find_value(fetch_types(module), fn
+      {:type, {:t, type, []}} -> type
+      _ -> nil
+    end)
   end
 
   # Convert a `oneOf`/`anyOf` payload by first looking for the schema's
@@ -235,9 +117,8 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     best_match = find_matching_schema(res, schemas, discriminator)
 
     case best_match do
-      {module, _count, _component_name} ->
-        # Values are already converted, just create the struct
-        {:ok, struct(module, res)}
+      {_module, _count, component_name} ->
+        convert_response({:ok, res}, %Schema{ref: "#/components/schemas/" <> component_name})
 
       nil ->
         {:ok, res}
@@ -269,8 +150,10 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
       _ ->
         nil
     end)
-    |> Enum.filter(&(&1 != nil))
-    |> Enum.filter(fn {_module, count, _name} -> count > 0 end)
+    |> Enum.filter(fn
+      {_module, count, _name} -> count > 0
+      nil -> false
+    end)
     |> Enum.sort_by(fn {_module, count, _name} -> count end, :desc)
     |> List.first()
   end
@@ -299,8 +182,6 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
       _ -> nil
     end
   end
-
-  defp find_discriminator_matching_schema(_res, _schemas, _discriminator), do: nil
 
   # Read the name of the union tag field from normalized discriminator
   # metadata, e.g. `"type"` or `"object"`.
@@ -407,7 +288,9 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
 
   # Convert a component name to its module atom
   defp ref_to_module(component_name) do
-    String.to_atom("Elixir.ExOpenAI.Components.#{component_name}")
+    String.to_existing_atom("Elixir.ExOpenAI.Components.#{component_name}")
+  rescue
+    ArgumentError -> nil
   end
 
   # Check if a module exists and has a struct
@@ -466,7 +349,7 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
         try do
           {String.to_existing_atom(key), value}
         rescue
-          ArgumentError -> {String.to_atom(key), value}
+          ArgumentError -> {key, value}
         end
 
       {key, value} ->
@@ -483,8 +366,8 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   Handles primitive and enum-like fields, as well as remote component types and
   unions. For component modules, it can recursively convert nested maps to the
   appropriate structs based on the component's typespec and the shape of the
-  data. Nested maps and lists are atomized recursively when no more specific
-  type information is available.
+  data. Dynamic maps retain their original keys when no more specific type
+  information is available.
 
   ## Parameters
 
@@ -520,7 +403,7 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   def parse_remote_type({:type, _, :map, fields}, value) when is_map(value) do
     cond do
       is_list(fields) and fields == [] ->
-        deep_atomize_keys(value)
+        value
 
       is_list(fields) ->
         base =
@@ -534,32 +417,29 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
 
             {:type, _, map_field_kind, [{:atom, _, key}, field_type]}, acc
             when map_field_kind in [:map_field_exact, :map_field_assoc] ->
-              raw_val =
+              found =
                 case Map.fetch(value, key) do
-                  {:ok, v} ->
-                    v
-
-                  :error ->
-                    case Map.fetch(value, Atom.to_string(key)) do
-                      {:ok, v} -> v
-                      :error -> nil
-                    end
+                  :error -> Map.fetch(value, Atom.to_string(key))
+                  result -> result
                 end
 
-              Map.put(acc, key, parse_remote_type(field_type, raw_val))
+              case found do
+                {:ok, raw} -> Map.put(acc, key, parse_remote_type(field_type, raw))
+                :error -> acc
+              end
 
             _, acc ->
               acc
           end)
 
         # Merge any remaining keys (atomized) without overriding parsed ones
-        deep_atomize_keys(value)
-        |> Enum.reduce(base, fn {k, v}, acc ->
-          Map.put_new(acc, k, v)
+        Enum.reduce(value, base, fn {key, raw}, acc ->
+          known = Enum.find(Map.keys(base), &(key == &1 or key == Atom.to_string(&1)))
+          if known, do: acc, else: Map.put(acc, key, raw)
         end)
 
       true ->
-        deep_atomize_keys(value)
+        value
     end
   end
 
@@ -568,7 +448,7 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   # Atom literals - only convert if the atom matches expected values
   def parse_remote_type({:atom, _, atom_value}, value) when is_binary(value) do
     # Only convert strings that match the expected atom
-    if String.to_atom(value) == atom_value do
+    if value == Atom.to_string(atom_value) do
       atom_value
     else
       value
@@ -588,21 +468,8 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
       module == String ->
         value
 
-      # Alias modules (like OutputItem) – expand their t() typespec and recurse
-      component_module?(module) and component_alias?(module) and (is_map(value) or is_list(value)) ->
-        case Code.Typespec.fetch_types(module) do
-          {:ok, specs} ->
-            case Keyword.get(specs, :type) do
-              {:t, inner_type, []} ->
-                parse_remote_type(inner_type, value)
-
-              _ ->
-                deep_atomize_keys(value)
-            end
-
-          :error ->
-            deep_atomize_keys(value)
-        end
+      component_module?(module) and component_alias?(module) ->
+        parse_remote_type(component_type(module), value)
 
       # Struct component modules – convert nested maps to component structs
       component_module?(module) and module_exists?(module) and is_map(value) ->
@@ -627,23 +494,30 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
 
   # Union types – choose the best matching variant when possible.
   def parse_remote_type({:type, _, :union, types}, value) do
-    flat_types = flatten_union_types(types)
+    types = expand_union_aliases(types, MapSet.new())
 
-    cond do
-      value == nil and Enum.any?(flat_types, &match?({:atom, _, nil}, &1)) ->
-        nil
+    if is_map(value) or is_list(value) do
+      pick_union_type(types, value)
+    else
+      matching =
+        Enum.find(types, fn
+          {:atom, _, literal} ->
+            value == literal or (is_binary(value) and value == Atom.to_string(literal))
 
-      is_map(value) or is_list(value) ->
-        pick_union_type(flat_types, value)
+          _ ->
+            false
+        end)
 
-      true ->
-        non_nil_type =
-          Enum.find(flat_types, fn
-            {:atom, _, nil} -> false
-            _ -> true
-          end)
+      accepts_string? =
+        Enum.any?(types, fn
+          {:remote_type, _, [{:atom, _, String}, {:atom, _, :t}, []]} -> true
+          {:type, _, :binary, _} -> true
+          _ -> false
+        end)
 
-        if non_nil_type, do: parse_remote_type(non_nil_type, value), else: value
+      if not is_nil(matching) and not accepts_string?,
+        do: parse_remote_type(matching, value),
+        else: value
     end
   end
 
@@ -666,7 +540,7 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
           try do
             String.to_existing_atom(key)
           rescue
-            ArgumentError -> String.to_atom(key)
+            ArgumentError -> key
           end
 
         {atom_key, atomize_keys(value)}
@@ -721,14 +595,13 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
 
     case scored do
       [{0, _} | _] ->
-        # No good match; at least atomize keys to keep caller ergonomics
-        deep_atomize_keys(value)
+        value
 
       [{_score, best_type} | _] ->
         parse_remote_type(best_type, value)
 
       _ ->
-        deep_atomize_keys(value)
+        value
     end
   end
 
@@ -794,11 +667,21 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
     end
   end
 
-  # Flatten nested union types emitted by the compiler/typespec generator.
-  defp flatten_union_types(types) when is_list(types) do
+  defp expand_union_aliases(types, seen) do
     Enum.flat_map(types, fn
-      {:type, _, :union, inner} -> flatten_union_types(inner)
-      other -> [other]
+      {:type, _, :union, inner} ->
+        expand_union_aliases(inner, seen)
+
+      {:remote_type, _, [{:atom, _, module}, {:atom, _, :t}, []]} = type ->
+        if component_module?(module) and component_alias?(module) and
+             not MapSet.member?(seen, module) do
+          expand_union_aliases([component_type(module)], MapSet.put(seen, module))
+        else
+          [type]
+        end
+
+      other ->
+        [other]
     end)
   end
 
@@ -828,8 +711,8 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
   @spec get_field_type_from_ast(list(), atom()) :: any() | nil
   def get_field_type_from_ast(typespec_ast, field_name) when is_list(typespec_ast) do
     # Look for the :t type definition in the AST
-    case Keyword.get(typespec_ast, :type) do
-      {:t, type_def, []} ->
+    case Enum.find(typespec_ast, &match?({:type, {:t, _, []}}, &1)) do
+      {:type, {:t, type_def, []}} ->
         extract_field_from_type_def(type_def, field_name)
 
       _ ->

@@ -6,17 +6,17 @@ defmodule ExOpenAI.Components.GroupResourceWithSuccess do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
-    Unix timestamp (in seconds) when the group was created.  
-    Format: `int64`
+  * `:created_at` - **required** - `integer()`
+    Unix timestamp (in seconds) when the group was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     Identifier for the group.
 
-  * `:is_scim_managed` - **required** - `boolean()`  
+  * `:is_scim_managed` - **required** - `boolean()`
     Whether the group is managed through SCIM and controlled by your identity provider.
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t()`
     Updated display name for the group.
   """
   @type t() :: %{
@@ -26,5 +26,14 @@ defmodule ExOpenAI.Components.GroupResourceWithSuccess do
           is_scim_managed: boolean(),
           name: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:is_scim_managed) => boolean(),
+              required(:name) => String.t()
+            }
   defstruct [:created_at, :id, :is_scim_managed, :name]
 end

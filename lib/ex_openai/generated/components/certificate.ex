@@ -6,26 +6,27 @@ defmodule ExOpenAI.Components.Certificate do
 
   ## Fields
 
-  * `:active` - **optional** - `boolean()`  
+  * `:active` - **optional** - `boolean()`
     Whether the certificate is currently active at the specified scope. Not returned when getting details for a specific certificate.
 
-  * `:certificate_details` - **required** - `{:%{}, [], [{{:optional, [], [:content]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:expires_at]}, {:integer, [], []}}, {{:optional, [], [:valid_at]}, {:integer, [], []}}]}`
+  * `:certificate_details` - **required** - `%{ optional(:content) => String.t(), optional(:expires_at) => integer(), optional(:valid_at) => integer() }`
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) of when the certificate was uploaded.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The identifier, which can be referenced in API endpoints
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **required** - `String.t() | nil`
     The name of the certificate.
 
-  * `:object` - **required** - `:certificate | :"organization.certificate" | :"organization.project.certificate"`  
+  * `:object` - **required** - `:certificate | :"organization.certificate" | :"organization.project.certificate"`
     The object type.
 
   - If creating, updating, or getting a specific certificate, the object type is `certificate`.
   - If listing, activating, or deactivating certificates for the organization, the object type is `organization.certificate`.
-  - If listing, activating, or deactivating certificates for a project, the object type is `organization.project.certificate`.  
+  - If listing, activating, or deactivating certificates for a project, the object type is `organization.project.certificate`.
     Allowed values: `"certificate"`, `"organization.certificate"`, `"organization.project.certificate"`
   """
   @type t() :: %{
@@ -38,9 +39,27 @@ defmodule ExOpenAI.Components.Certificate do
           },
           created_at: integer(),
           id: String.t(),
-          name: String.t(),
+          name: String.t() | nil,
           object:
             (:certificate | :"organization.certificate") | :"organization.project.certificate"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:active) => boolean(),
+              required(:certificate_details) => %{
+                optional(:content) => String.t(),
+                optional(:expires_at) => integer(),
+                optional(:valid_at) => integer()
+              },
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:name) => String.t() | nil,
+              required(:object) =>
+                ((:certificate | :"organization.certificate")
+                 | :"organization.project.certificate")
+                | String.t()
+            }
   defstruct [:active, :certificate_details, :created_at, :id, :name, :object]
 end

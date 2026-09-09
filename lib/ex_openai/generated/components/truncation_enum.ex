@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.TruncationEnum do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema TruncationEnum.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.TruncationEnum do
   `"auto"`, `"disabled"`
   """
   @type t() :: :auto | :disabled
+  @type input() :: (:auto | :disabled) | String.t()
 end

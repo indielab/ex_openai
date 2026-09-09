@@ -6,7 +6,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
   for each operation.
   """
 
-  alias ExOpenAI.Codegen.DocsParser.{Path, Operation, Schema, RequestBody}
+  alias ExOpenAI.Codegen.DocsParser.{Operation, Path, RequestBody, Schema}
   alias ExOpenAI.Codegen.{FunctionBodyGenerator, FunctionDocGenerator, SchemaResolver}
 
   @doc """
@@ -31,7 +31,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
     quote do
       defmodule unquote(module_name) do
-        @moduledoc false
+        @moduledoc unquote("Functions for the OpenAI #{prefix || "root"} API.")
 
         unquote_splicing(functions)
       end
@@ -45,7 +45,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
       # Extract the first segment of the path
       # e.g., "/chat/completions" -> "chat"
       # e.g., "/organization/admin_api_keys" -> "organization"
-      case String.split(path.path, "/", trim: true) do
+      case String.split(URI.parse(path.path).path || "/", "/", trim: true) do
         [] -> nil
         [first | _] -> first
       end
@@ -62,8 +62,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
       prefix
       |> String.replace("_", " ")
       |> String.split(" ")
-      |> Enum.map(&String.capitalize/1)
-      |> Enum.join("")
+      |> Enum.map_join("", &String.capitalize/1)
 
     String.to_atom("Elixir.ExOpenAI.#{module_part}")
   end
@@ -78,7 +77,8 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     paths
     |> Enum.flat_map(fn path ->
       path.operations
-      |> Map.values()
+      |> Enum.sort_by(&elem(&1, 0))
+      |> Enum.map(&elem(&1, 1))
       |> Enum.map(&generate_function(&1, schemas, path.path))
       |> Enum.reject(&is_nil/1)
     end)
@@ -92,8 +92,8 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     {args, arg_names, optional_param_names} = build_function_args(operation, schemas)
 
     # Get the response schema reference for this operation
-    response_schema_ref = get_response_schema(operation, "200", schemas)
-    stream_response_schema_ref = get_stream_response_schema(operation, "200", schemas)
+    response_schema_ref = get_response_schema(operation, :success, schemas)
+    stream_response_schema_ref = get_stream_response_schema(operation, :success, schemas)
 
     # Generate documentation and spec
     doc_ast = FunctionDocGenerator.generate_doc(operation, schemas)
@@ -154,6 +154,18 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     path_param_names = Enum.map(path_params, fn p -> String.to_atom(p.name) end)
     query_param_names = Enum.map(query_params, fn p -> String.to_atom(p.name) end)
 
+    optional_body_names =
+      SchemaResolver.optional_body_properties(operation.request_body, schemas)
+      |> Enum.map(fn {name, _} -> String.to_atom(name) end)
+
+    multipart_fields = SchemaResolver.multipart_file_fields(operation.request_body, schemas)
+
+    multipart_encoding =
+      get_in(
+        (operation.request_body && operation.request_body.content) || %{},
+        ["multipart/form-data", "encoding"]
+      ) || %{}
+
     body_arg_names =
       arg_names
       |> Enum.filter(fn name ->
@@ -191,15 +203,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         # Build query string from opts
         query_params = Keyword.take(opts, unquote(query_param_names))
 
-        query_string =
-          if length(query_params) > 0 do
-            "?" <> URI.encode_query(query_params)
-          else
-            ""
-          end
-
-        # Append query string
-        url = url <> query_string
+        url = ExOpenAI.Query.append(url, query_params)
 
         # Build body parameters
         body_params = [
@@ -214,7 +218,7 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
         ]
 
         # Add optional parameters from opts to body_params
-        optional_body_params = Keyword.take(opts, unquote(optional_param_names))
+        optional_body_params = Keyword.take(opts, unquote(optional_body_names))
         body_params = body_params ++ optional_body_params
 
         # Keep :stream in opts for streaming client while still sending it in body
@@ -237,7 +241,19 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
             )
           )
 
-        # Make the HTTP call
+        unquote(
+          if content_type == :"multipart/form-data" do
+            quote do
+              body_params =
+                ExOpenAI.Client.prepare_multipart(
+                  body_params,
+                  unquote(multipart_fields),
+                  unquote(Macro.escape(multipart_encoding))
+                )
+            end
+          end
+        )
+
         ExOpenAI.Config.http_client().api_call(
           unquote(http_method),
           url,
@@ -409,28 +425,9 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
 
   # Extract required arguments from request body content
   defp extract_required_args(content, schemas) do
-    # Get the schema reference from the content (supports both JSON and multipart)
-    schema_ref =
-      case content do
-        %{"application/json" => %{"schema" => %{"$ref" => ref}}} -> ref
-        %{"multipart/form-data" => %{"schema" => %{"$ref" => ref}}} -> ref
-        _ -> nil
-      end
-
-    case schema_ref do
-      "#/components/schemas/" <> schema_name ->
-        # Resolve the schema and extract required fields
-        case Map.get(schemas, schema_name) do
-          %Schema{} = schema ->
-            resolved_schema = SchemaResolver.resolve_schema(schema, schemas)
-            extract_required_fields(resolved_schema)
-
-          _ ->
-            []
-        end
-
-      _ ->
-        []
+    case SchemaResolver.get_request_body_schema(%RequestBody{content: content}, schemas) do
+      %Schema{} = schema -> extract_required_fields(schema)
+      nil -> []
     end
   end
 
@@ -468,45 +465,9 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     |> Enum.map(fn param -> String.to_atom(param.name) end)
   end
 
-  # Extract optional body parameters (properties not in required list)
-  defp extract_optional_body_parameters(nil, _schemas), do: []
-
-  defp extract_optional_body_parameters(%RequestBody{content: content}, schemas) do
-    # Get the schema reference from the content
-    schema_ref =
-      case content do
-        %{"application/json" => %{"schema" => %{"$ref" => ref}}} -> ref
-        %{"multipart/form-data" => %{"schema" => %{"$ref" => ref}}} -> ref
-        _ -> nil
-      end
-
-    case schema_ref do
-      "#/components/schemas/" <> schema_name ->
-        # Resolve the schema
-        case Map.get(schemas, schema_name) do
-          %Schema{} = schema ->
-            resolved_schema = SchemaResolver.resolve_schema(schema, schemas)
-            extract_optional_field_names(resolved_schema)
-
-          _ ->
-            []
-        end
-
-      _ ->
-        []
-    end
-  end
-
-  # Extract optional field names from a schema (those not in required list)
-  defp extract_optional_field_names(%Schema{properties: nil}), do: []
-
-  defp extract_optional_field_names(%Schema{properties: props, required: required}) do
-    required_list = required || []
-
-    props
-    |> Map.keys()
-    |> Enum.filter(fn name -> name not in required_list end)
-    |> Enum.map(&String.to_atom/1)
+  defp extract_optional_body_parameters(request_body, schemas) do
+    SchemaResolver.optional_body_properties(request_body, schemas)
+    |> Enum.map(fn {name, _schema} -> String.to_atom(name) end)
   end
 
   # Convert operationId from camelCase to snake_case
@@ -522,61 +483,11 @@ defmodule ExOpenAI.Codegen.PathModuleGenerator do
     |> String.to_atom()
   end
 
-  # Extract and resolve the response schema for a given status code
-  def get_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
-
-  def get_response_schema(%Operation{responses: responses}, status_code, _schemas) do
-    responses
-    |> Map.get(status_code)
-    |> content_schema("application/json")
+  def get_response_schema(operation, status_code, _schemas) do
+    SchemaResolver.response_schema(operation, status_code)
   end
 
-  def get_stream_response_schema(%Operation{responses: nil}, _status_code, _schemas), do: nil
-
-  def get_stream_response_schema(%Operation{responses: responses}, status_code, _schemas) do
-    responses
-    |> Map.get(status_code)
-    |> content_schema("text/event-stream")
-  end
-
-  defp content_schema(nil, _content_type), do: nil
-  defp content_schema(%{content: nil}, _content_type), do: nil
-
-  defp content_schema(%{content: content}, content_type) when is_map(content) do
-    case Map.get(content, content_type) do
-      %{"schema" => %{"$ref" => ref}} ->
-        %Schema{ref: ref}
-
-      %{"schema" => %{"oneOf" => one_of}} when is_list(one_of) ->
-        %Schema{
-          one_of:
-            one_of
-            |> Enum.with_index()
-            |> Enum.map(fn {schema_entry, index} ->
-              case schema_entry do
-                %{"$ref" => ref} -> %Schema{ref: ref}
-                %{"type" => _} = schema_map -> Schema.parse_schema("one_of_#{index}", schema_map)
-                _ -> %Schema{}
-              end
-            end)
-        }
-
-      %{"schema" => %{"anyOf" => any_of}} when is_list(any_of) ->
-        %Schema{
-          any_of:
-            any_of
-            |> Enum.with_index()
-            |> Enum.map(fn {schema_entry, index} ->
-              case schema_entry do
-                %{"$ref" => ref} -> %Schema{ref: ref}
-                %{"type" => _} = schema_map -> Schema.parse_schema("any_of_#{index}", schema_map)
-                _ -> %Schema{}
-              end
-            end)
-        }
-
-      _ ->
-        nil
-    end
+  def get_stream_response_schema(operation, status_code, _schemas) do
+    SchemaResolver.response_schema(operation, status_code, "text/event-stream")
   end
 end

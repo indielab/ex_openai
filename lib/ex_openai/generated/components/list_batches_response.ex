@@ -6,7 +6,7 @@ defmodule ExOpenAI.Components.ListBatchesResponse do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.Batch.t()]`
+  * `:data` - **required** - `list(ExOpenAI.Components.Batch.t())`
 
   * `:first_id` - **optional** - `String.t()`
 
@@ -14,7 +14,7 @@ defmodule ExOpenAI.Components.ListBatchesResponse do
 
   * `:last_id` - **optional** - `String.t()`
 
-  * `:object` - **required** - `:list`  
+  * `:object` - **required** - `:list`
     Allowed values: `"list"`
   """
   @type t() :: %{
@@ -25,5 +25,15 @@ defmodule ExOpenAI.Components.ListBatchesResponse do
           last_id: String.t() | nil,
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.Batch.input()),
+              optional(:first_id) => String.t(),
+              required(:has_more) => boolean(),
+              optional(:last_id) => String.t(),
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

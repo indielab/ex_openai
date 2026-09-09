@@ -6,13 +6,13 @@ defmodule ExOpenAI.Components.LocalEnvironmentParam do
 
   ## Fields
 
-  * `:skills` - **optional** - `[ExOpenAI.Components.LocalSkillParam.t()]`  
-    An optional list of skills.  
+  * `:skills` - **optional** - `list(ExOpenAI.Components.LocalSkillParam.t())`
+    An optional list of skills.
     Constraints: maxItems: 200
 
-  * `:type` - **required** - `:local`  
-    Use a local computer environment.  
-    Allowed values: `"local"`  
+  * `:type` - **required** - `:local`
+    Use a local computer environment.
+    Allowed values: `"local"`
     Default: `"local"`
   """
   @type t() :: %{
@@ -20,5 +20,12 @@ defmodule ExOpenAI.Components.LocalEnvironmentParam do
           skills: list(ExOpenAI.Components.LocalSkillParam.t()) | nil,
           type: :local
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:skills) => list(ExOpenAI.Components.LocalSkillParam.input()),
+              required(:type) => :local | String.t()
+            }
   defstruct [:skills, :type]
 end

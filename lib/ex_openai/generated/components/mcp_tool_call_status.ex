@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.MCPToolCallStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema MCPToolCallStatus.
 
@@ -13,4 +11,6 @@ defmodule ExOpenAI.Components.MCPToolCallStatus do
   `"in_progress"`, `"completed"`, `"incomplete"`, `"calling"`, `"failed"`
   """
   @type t() :: (((:in_progress | :completed) | :incomplete) | :calling) | :failed
+  @type input() ::
+          ((((:in_progress | :completed) | :incomplete) | :calling) | :failed) | String.t()
 end

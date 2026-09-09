@@ -1,12 +1,11 @@
 defmodule ExOpenAI.Components.VectorStoreFileAttributes do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema VectorStoreFileAttributes.
 
   ## Type
 
-  `map() | any()`
+  `map() | nil`
   """
-  @type t() :: map() | any()
+  @type t() :: map() | nil
+  @type input() :: map() | nil
 end

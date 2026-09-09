@@ -6,18 +6,26 @@ defmodule ExOpenAI.Components.ComputerCallSafetyCheckParam do
 
   ## Fields
 
-  * `:code` - **optional** - `String.t() | any()`
+  * `:code` - **optional** - `String.t() | nil`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The ID of the pending safety check.
 
-  * `:message` - **optional** - `String.t() | any()`
+  * `:message` - **optional** - `String.t() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          code: (String.t() | any()) | nil,
+          code: (String.t() | nil) | nil,
           id: String.t(),
-          message: (String.t() | any()) | nil
+          message: (String.t() | nil) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:code) => String.t() | nil,
+              required(:id) => String.t(),
+              optional(:message) => String.t() | nil
+            }
   defstruct [:code, :id, :message]
 end

@@ -6,75 +6,113 @@ defmodule ExOpenAI.Components.CreateTranscriptionRequest do
 
   ## Fields
 
-  * `:chunking_strategy` - **optional** - `:auto | ExOpenAI.Components.VadConfig.t() | any()`
+  * `:chunking_strategy` - **optional** - `:auto | ExOpenAI.Components.VadConfig.t() | nil`
 
-  * `:file` - **required** - `binary()`  
-    The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.  
+  * `:file` - **required** - `binary()`
+    The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
     Format: `binary`
 
-  * `:include` - **optional** - `[ExOpenAI.Components.TranscriptionInclude.t()]`  
+  * `:include` - **optional** - `list(ExOpenAI.Components.TranscriptionInclude.t())`
     Additional information to include in the transcription response.
   `logprobs` will return the log probabilities of the tokens in the
   response to understand the model's confidence in the transcription.
   `logprobs` only works with response_format set to `json` and only with
   the models `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and `gpt-4o-mini-transcribe-2025-12-15`. This field is not supported when using `gpt-4o-transcribe-diarize`.
 
-  * `:known_speaker_names` - **optional** - `[String.t()]`  
-    Optional list of speaker names that correspond to the audio samples provided in `known_speaker_references[]`. Each entry should be a short identifier (for example `customer` or `agent`). Up to 4 speakers are supported.  
+  * `:keywords` - **optional** - `list(String.t())`
+    Words or phrases to guide transcription of the input audio. Supported by `gpt-transcribe`.
+
+  * `:known_speaker_names` - **optional** - `list(String.t())`
+    Optional list of speaker names that correspond to the audio samples provided in `known_speaker_references[]`. Each entry should be a short identifier (for example `customer` or `agent`). Up to 4 speakers are supported.
     Constraints: maxItems: 4
 
-  * `:known_speaker_references` - **optional** - `[String.t()]`  
-    Optional list of audio samples (as [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs)) that contain known speaker references matching `known_speaker_names[]`. Each sample must be between 2 and 10 seconds, and can use any of the same input audio formats supported by `file`.  
+  * `:known_speaker_references` - **optional** - `list(String.t())`
+    Optional list of audio samples (as [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs)) that contain known speaker references matching `known_speaker_names[]`. Each sample must be between 2 and 10 seconds, and can use any of the same input audio formats supported by `file`.
     Constraints: maxItems: 4
 
-  * `:language` - **optional** - `String.t()`  
+  * `:language` - **optional** - `String.t()`
     The language of the input audio. Supplying the input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format will improve accuracy and latency.
 
-  * `:model` - **required** - `String.t() | :"whisper-1" | :"gpt-4o-transcribe" | :"gpt-4o-mini-transcribe" | :"gpt-4o-mini-transcribe-2025-12-15" | :"gpt-4o-transcribe-diarize"`  
-    ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
+  * `:languages` - **optional** - `list(String.t())`
+    Possible languages of the input audio, in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by `gpt-transcribe`.
+    Constraints: minItems: 1
 
-  * `:prompt` - **optional** - `String.t()`  
-    An optional text to guide the model's style or continue a previous audio segment. The [prompt](/docs/guides/speech-to-text#prompting) should match the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+  * `:model` - **required** - `String.t() | :"whisper-1" | :"gpt-transcribe" | :"gpt-4o-transcribe" | :"gpt-4o-mini-transcribe" | :"gpt-4o-mini-transcribe-2025-12-15" | :"gpt-4o-transcribe-diarize"`
+    ID of the model to use. The options are `gpt-transcribe`, `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
+
+  * `:prompt` - **optional** - `String.t()`
+    An optional text to guide the model's style or continue a previous audio segment. The [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
 
   * `:response_format` - **optional** - `ExOpenAI.Components.AudioResponseFormat.t()`
 
-  * `:stream` - **optional** - `boolean() | any()`
+  * `:stream` - **optional** - `boolean() | nil`
 
-  * `:temperature` - **optional** - `number()`  
-    The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.  
+  * `:temperature` - **optional** - `number()`
+    The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.
     Default: `0`
 
-  * `:timestamp_granularities` - **optional** - `[:word | :segment]`  
+  * `:timestamp_granularities` - **optional** - `list(:word | :segment)`
     The timestamp granularities to populate for this transcription. `response_format` must be set `verbose_json` to use timestamp granularities. Either or both of these options are supported: `word`, or `segment`. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
-  This option is not available for `gpt-4o-transcribe-diarize`.  
+  This option is not available for `gpt-4o-transcribe-diarize`.
     Default: `["segment"]`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          chunking_strategy: ((:auto | ExOpenAI.Components.VadConfig.t()) | any()) | nil,
+          chunking_strategy: ((:auto | ExOpenAI.Components.VadConfig.t()) | nil) | nil,
           file: binary(),
           include: list(ExOpenAI.Components.TranscriptionInclude.t()) | nil,
+          keywords: list(String.t()) | nil,
           known_speaker_names: list(String.t()) | nil,
           known_speaker_references: list(String.t()) | nil,
           language: String.t() | nil,
+          languages: list(String.t()) | nil,
           model:
             String.t()
-            | (((:"whisper-1" | :"gpt-4o-transcribe") | :"gpt-4o-mini-transcribe")
+            | ((((:"whisper-1" | :"gpt-transcribe") | :"gpt-4o-transcribe")
+                | :"gpt-4o-mini-transcribe")
                | :"gpt-4o-mini-transcribe-2025-12-15")
             | :"gpt-4o-transcribe-diarize",
           prompt: String.t() | nil,
           response_format: ExOpenAI.Components.AudioResponseFormat.t() | nil,
-          stream: (boolean() | any()) | nil,
+          stream: (boolean() | nil) | nil,
           temperature: number() | nil,
           timestamp_granularities: list(:word | :segment) | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:chunking_strategy) =>
+                ((:auto | String.t()) | ExOpenAI.Components.VadConfig.input()) | nil,
+              required(:file) => binary() | {String.t(), binary()},
+              optional(:include) => list(ExOpenAI.Components.TranscriptionInclude.input()),
+              optional(:keywords) => list(String.t()),
+              optional(:known_speaker_names) => list(String.t()),
+              optional(:known_speaker_references) => list(String.t()),
+              optional(:language) => String.t(),
+              optional(:languages) => list(String.t()),
+              required(:model) =>
+                String.t()
+                | (((((:"whisper-1" | :"gpt-transcribe") | :"gpt-4o-transcribe")
+                     | :"gpt-4o-mini-transcribe")
+                    | :"gpt-4o-mini-transcribe-2025-12-15")
+                   | :"gpt-4o-transcribe-diarize")
+                | String.t(),
+              optional(:prompt) => String.t(),
+              optional(:response_format) => ExOpenAI.Components.AudioResponseFormat.input(),
+              optional(:stream) => boolean() | nil,
+              optional(:temperature) => number(),
+              optional(:timestamp_granularities) => list((:word | :segment) | String.t())
+            }
   defstruct [
     :chunking_strategy,
     :file,
     :include,
+    :keywords,
     :known_speaker_names,
     :known_speaker_references,
     :language,
+    :languages,
     :model,
     :prompt,
     :response_format,

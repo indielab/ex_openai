@@ -6,12 +6,15 @@ defmodule ExOpenAI.Components.ImageGenInputUsageDetails do
 
   ## Fields
 
-  * `:image_tokens` - **required** - `integer()`  
+  * `:image_tokens` - **required** - `integer()`
     The number of image tokens in the input prompt.
 
-  * `:text_tokens` - **required** - `integer()`  
+  * `:text_tokens` - **required** - `integer()`
     The number of text tokens in the input prompt.
   """
   @type t() :: %{__struct__: __MODULE__, image_tokens: integer(), text_tokens: integer()}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t() | %{required(:image_tokens) => integer(), required(:text_tokens) => integer()}
   defstruct [:image_tokens, :text_tokens]
 end

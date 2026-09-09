@@ -6,23 +6,23 @@ defmodule ExOpenAI.Components.ResponseRefusalDeltaEvent do
 
   ## Fields
 
-  * `:content_index` - **required** - `integer()`  
+  * `:content_index` - **required** - `integer()`
     The index of the content part that the refusal text is added to.
 
-  * `:delta` - **required** - `String.t()`  
+  * `:delta` - **required** - `String.t()`
     The refusal text that is added.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The ID of the output item that the refusal text is added to.
 
-  * `:output_index` - **required** - `integer()`  
+  * `:output_index` - **required** - `integer()`
     The index of the output item that the refusal text is added to.
 
-  * `:sequence_number` - **required** - `integer()`  
+  * `:sequence_number` - **required** - `integer()`
     The sequence number of this event.
 
-  * `:type` - **required** - `:"response.refusal.delta"`  
-    The type of the event. Always `response.refusal.delta`.  
+  * `:type` - **required** - `:"response.refusal.delta"`
+    The type of the event. Always `response.refusal.delta`.
     Allowed values: `"response.refusal.delta"`
   """
   @type t() :: %{
@@ -34,5 +34,16 @@ defmodule ExOpenAI.Components.ResponseRefusalDeltaEvent do
           sequence_number: integer(),
           type: :"response.refusal.delta"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content_index) => integer(),
+              required(:delta) => String.t(),
+              required(:item_id) => String.t(),
+              required(:output_index) => integer(),
+              required(:sequence_number) => integer(),
+              required(:type) => :"response.refusal.delta" | String.t()
+            }
   defstruct [:content_index, :delta, :item_id, :output_index, :sequence_number, :type]
 end

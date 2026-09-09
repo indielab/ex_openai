@@ -6,18 +6,26 @@ defmodule ExOpenAI.Components.TaskGroupTask do
 
   ## Fields
 
-  * `:heading` - **required** - `String.t() | any()`
+  * `:heading` - **required** - `String.t() | nil`
 
-  * `:summary` - **required** - `String.t() | any()`
+  * `:summary` - **required** - `String.t() | nil`
 
-  * `:type` - **required** - `ExOpenAI.Components.TaskType.t()`  
+  * `:type` - **required** - `ExOpenAI.Components.TaskType.t()`
     Subtype for the grouped task.
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          heading: String.t() | any(),
-          summary: String.t() | any(),
+          heading: String.t() | nil,
+          summary: String.t() | nil,
           type: ExOpenAI.Components.TaskType.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:heading) => String.t() | nil,
+              required(:summary) => String.t() | nil,
+              required(:type) => ExOpenAI.Components.TaskType.input()
+            }
   defstruct [:heading, :summary, :type]
 end

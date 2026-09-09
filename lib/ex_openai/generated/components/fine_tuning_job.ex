@@ -7,55 +7,56 @@ defmodule ExOpenAI.Components.FineTuningJob do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) for when the fine-tuning job was created.
+    Format: `unixtime`
 
-  * `:error` - **required** - `{:%{}, [], [{{:required, [], [:code]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:message]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:param]}, {:|, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}, {:any, [], []}]}}]} | any()`
+  * `:error` - **required** - `%{ required(:code) => String.t(), required(:message) => String.t(), required(:param) => String.t() | nil } | nil`
 
-  * `:estimated_finish` - **optional** - `integer() | any()`
+  * `:estimated_finish` - **optional** - `integer() | nil`
 
-  * `:fine_tuned_model` - **required** - `String.t() | any()`
+  * `:fine_tuned_model` - **required** - `String.t() | nil`
 
-  * `:finished_at` - **required** - `integer() | any()`
+  * `:finished_at` - **required** - `integer() | nil`
 
-  * `:hyperparameters` - **required** - `{:%{}, [], [{{:optional, [], [:batch_size]}, {:|, [], [{:|, [], [:auto, {:integer, [], []}]}, {:any, [], []}]}}, {{:optional, [], [:learning_rate_multiplier]}, {:|, [], [:auto, {:number, [], []}]}}, {{:optional, [], [:n_epochs]}, {:|, [], [:auto, {:integer, [], []}]}}]}`  
+  * `:hyperparameters` - **required** - `%{ optional(:batch_size) => :auto | integer() | nil, optional(:learning_rate_multiplier) => :auto | number(), optional(:n_epochs) => :auto | integer() }`
     The hyperparameters used for the fine-tuning job. This value will only be returned when running `supervised` jobs.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The object identifier, which can be referenced in the API endpoints.
 
-  * `:integrations` - **optional** - `[ExOpenAI.Components.FineTuningIntegration.t()] | any()`
+  * `:integrations` - **optional** - `list(ExOpenAI.Components.FineTuningIntegration.t()) | nil`
 
   * `:metadata` - **optional** - `ExOpenAI.Components.Metadata.t()`
 
   * `:method` - **optional** - `ExOpenAI.Components.FineTuneMethod.t()`
 
-  * `:model` - **required** - `String.t()`  
+  * `:model` - **required** - `String.t()`
     The base model that is being fine-tuned.
 
-  * `:object` - **required** - `:"fine_tuning.job"`  
-    The object type, which is always "fine_tuning.job".  
+  * `:object` - **required** - `:"fine_tuning.job"`
+    The object type, which is always "fine_tuning.job".
     Allowed values: `"fine_tuning.job"`
 
-  * `:organization_id` - **required** - `String.t()`  
+  * `:organization_id` - **required** - `String.t()`
     The organization that owns the fine-tuning job.
 
-  * `:result_files` - **required** - `[String.t()]`  
-    The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with the [Files API](/docs/api-reference/files/retrieve-contents).
+  * `:result_files` - **required** - `list(String.t())`
+    The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
 
-  * `:seed` - **required** - `integer()`  
+  * `:seed` - **required** - `integer()`
     The seed used for the fine-tuning job.
 
-  * `:status` - **required** - `:validating_files | :queued | :running | :succeeded | :failed | :cancelled`  
-    The current status of the fine-tuning job, which can be either `validating_files`, `queued`, `running`, `succeeded`, `failed`, or `cancelled`.  
+  * `:status` - **required** - `:validating_files | :queued | :running | :succeeded | :failed | :cancelled`
+    The current status of the fine-tuning job, which can be either `validating_files`, `queued`, `running`, `succeeded`, `failed`, or `cancelled`.
     Allowed values: `"validating_files"`, `"queued"`, `"running"`, `"succeeded"`, `"failed"`, `"cancelled"`
 
-  * `:trained_tokens` - **required** - `integer() | any()`
+  * `:trained_tokens` - **required** - `integer() | nil`
 
-  * `:training_file` - **required** - `String.t()`  
-    The file ID used for training. You can retrieve the training data with the [Files API](/docs/api-reference/files/retrieve-contents).
+  * `:training_file` - **required** - `String.t()`
+    The file ID used for training. You can retrieve the training data with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
 
-  * `:validation_file` - **required** - `String.t() | any()`
+  * `:validation_file` - **required** - `String.t() | nil`
   """
   @type t() :: %{
           __struct__: __MODULE__,
@@ -64,19 +65,19 @@ defmodule ExOpenAI.Components.FineTuningJob do
             %{
               required(:code) => String.t(),
               required(:message) => String.t(),
-              required(:param) => String.t() | any()
+              required(:param) => String.t() | nil
             }
-            | any(),
-          estimated_finish: (integer() | any()) | nil,
-          fine_tuned_model: String.t() | any(),
-          finished_at: integer() | any(),
+            | nil,
+          estimated_finish: (integer() | nil) | nil,
+          fine_tuned_model: String.t() | nil,
+          finished_at: integer() | nil,
           hyperparameters: %{
-            optional(:batch_size) => (:auto | integer()) | any(),
+            optional(:batch_size) => (:auto | integer()) | nil,
             optional(:learning_rate_multiplier) => :auto | number(),
             optional(:n_epochs) => :auto | integer()
           },
           id: String.t(),
-          integrations: (list(ExOpenAI.Components.FineTuningIntegration.t()) | any()) | nil,
+          integrations: (list(ExOpenAI.Components.FineTuningIntegration.t()) | nil) | nil,
           metadata: ExOpenAI.Components.Metadata.t() | nil,
           method: ExOpenAI.Components.FineTuneMethod.t() | nil,
           model: String.t(),
@@ -86,10 +87,48 @@ defmodule ExOpenAI.Components.FineTuningJob do
           seed: integer(),
           status:
             ((((:validating_files | :queued) | :running) | :succeeded) | :failed) | :cancelled,
-          trained_tokens: integer() | any(),
+          trained_tokens: integer() | nil,
           training_file: String.t(),
-          validation_file: String.t() | any()
+          validation_file: String.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:error) =>
+                %{
+                  required(:code) => String.t(),
+                  required(:message) => String.t(),
+                  required(:param) => String.t() | nil
+                }
+                | nil,
+              optional(:estimated_finish) => integer() | nil,
+              required(:fine_tuned_model) => String.t() | nil,
+              required(:finished_at) => integer() | nil,
+              required(:hyperparameters) => %{
+                optional(:batch_size) => ((:auto | String.t()) | integer()) | nil,
+                optional(:learning_rate_multiplier) => (:auto | String.t()) | number(),
+                optional(:n_epochs) => (:auto | String.t()) | integer()
+              },
+              required(:id) => String.t(),
+              optional(:integrations) =>
+                list(ExOpenAI.Components.FineTuningIntegration.input()) | nil,
+              optional(:metadata) => ExOpenAI.Components.Metadata.input(),
+              optional(:method) => ExOpenAI.Components.FineTuneMethod.input(),
+              required(:model) => String.t(),
+              required(:object) => :"fine_tuning.job" | String.t(),
+              required(:organization_id) => String.t(),
+              required(:result_files) => list(String.t()),
+              required(:seed) => integer(),
+              required(:status) =>
+                (((((:validating_files | :queued) | :running) | :succeeded) | :failed)
+                 | :cancelled)
+                | String.t(),
+              required(:trained_tokens) => integer() | nil,
+              required(:training_file) => String.t(),
+              required(:validation_file) => String.t() | nil
+            }
   defstruct [
     :created_at,
     :error,

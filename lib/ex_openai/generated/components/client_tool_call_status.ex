@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ClientToolCallStatus do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema ClientToolCallStatus.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.ClientToolCallStatus do
   `"in_progress"`, `"completed"`
   """
   @type t() :: :in_progress | :completed
+  @type input() :: (:in_progress | :completed) | String.t()
 end

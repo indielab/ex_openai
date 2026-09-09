@@ -6,19 +6,27 @@ defmodule ExOpenAI.Components.UsageVectorStoresResult do
 
   ## Fields
 
-  * `:object` - **required** - `:"organization.usage.vector_stores.result"`  
+  * `:object` - **required** - `:"organization.usage.vector_stores.result"`
     Allowed values: `"organization.usage.vector_stores.result"`
 
-  * `:project_id` - **optional** - `String.t() | any()`
+  * `:project_id` - **optional** - `String.t() | nil`
 
-  * `:usage_bytes` - **required** - `integer()`  
+  * `:usage_bytes` - **required** - `integer()`
     The vector stores usage in bytes.
   """
   @type t() :: %{
           __struct__: __MODULE__,
           object: :"organization.usage.vector_stores.result",
-          project_id: (String.t() | any()) | nil,
+          project_id: (String.t() | nil) | nil,
           usage_bytes: integer()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:object) => :"organization.usage.vector_stores.result" | String.t(),
+              optional(:project_id) => String.t() | nil,
+              required(:usage_bytes) => integer()
+            }
   defstruct [:object, :project_id, :usage_bytes]
 end

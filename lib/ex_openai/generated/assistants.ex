@@ -1,30 +1,34 @@
 defmodule ExOpenAI.Assistants do
-  @moduledoc false
+  @moduledoc """
+  Functions for the OpenAI assistants API.
+  """
   (
     @doc """
     Returns a list of assistants.
 
     ## Options
 
-    * `:limit` - **optional** - `integer()`  
-      A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.  
+    * `:limit` - **optional** - `integer()`
+      A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
       Default: `20`
 
-    * `:order` - **optional** - `String.t()`  
-      Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.  
-      Allowed values: `"asc"`, `"desc"`  
+    * `:order` - **optional** - `:asc | :desc | String.t()`
+      Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.
+      Allowed values: `"asc"`, `"desc"`
       Default: `"desc"`
 
-    * `:after` - **optional** - `String.t()`  
+    * `:after` - **optional** - `String.t()`
       A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
 
-    * `:before` - **optional** - `String.t()`  
+    * `:before` - **optional** - `String.t()`
       A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
     """
     (
       @type list_assistants_opt() ::
-              (({:limit, integer()} | {:order, String.t()}) | {:after, String.t()})
-              | {:before, String.t()}
+              ((({:limit, integer()} | {:order, (:asc | :desc) | String.t()})
+                | {:after, String.t()})
+               | {:before, String.t()})
+              | ExOpenAI.request_option()
       @spec list_assistants(opts :: [list_assistants_opt()]) ::
               {:ok, ExOpenAI.Components.ListAssistantsResponse.t()} | {:error, any()}
     )
@@ -32,17 +36,9 @@ defmodule ExOpenAI.Assistants do
     def list_assistants(opts \\ []) do
       url = "/assistants"
       query_params = Keyword.take(opts, [:limit, :order, :after, :before])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
-      optional_body_params = Keyword.take(opts, [:after, :before, :limit, :order])
+      optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
       optional_params_to_drop = [:after, :before, :limit, :order] |> Enum.reject(&(&1 == :stream))
       opts = Keyword.drop(opts, optional_params_to_drop)
@@ -53,6 +49,8 @@ defmodule ExOpenAI.Assistants do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/ListAssistantsResponse"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -71,67 +69,76 @@ defmodule ExOpenAI.Assistants do
 
     ## Parameters
 
-    * `model` - **required** - `String.t() | any()`  
-      ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.  
+    * `model` - **required** - `String.t() | ExOpenAI.Components.AssistantSupportedModels.input()`
+      ID of the model to use. You can use the [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
       Example: `"gpt-4o"`
 
     ## Options
 
-    * `description` - **optional** - `String.t() | any()`
+    * `description` - **optional** - `String.t() | nil`
 
-    * `instructions` - **optional** - `String.t() | any()`
+    * `instructions` - **optional** - `String.t() | nil`
 
-    * `metadata` - **optional** - `any()`
+    * `metadata` - **optional** - `ExOpenAI.Components.Metadata.input()`
 
-    * `name` - **optional** - `String.t() | any()`
+    * `name` - **optional** - `String.t() | nil`
 
-    * `reasoning_effort` - **optional** - `any()`
+    * `reasoning_effort` - **optional** - `ExOpenAI.Components.ReasoningEffort.input()`
 
-    * `response_format` - **optional** - `any() | any()`
+    * `response_format` - **optional** - `ExOpenAI.Components.AssistantsApiResponseFormatOption.input() | nil`
 
-    * `temperature` - **optional** - `number() | any()`
+    * `temperature` - **optional** - `number() | nil`
 
-    * `tool_resources` - **optional** - `any() | any()`
+    * `tool_resources` - **optional** - `%{ optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())}, optional(:file_search) => %{ optional(:vector_store_ids) => list(String.t()), optional(:vector_stores) => list(%{ optional(:chunking_strategy) => %{required(:type) => :auto | String.t()} | %{ required(:static) => %{ required(:chunk_overlap_tokens) => integer(), required(:max_chunk_size_tokens) => integer() }, required(:type) => :static | String.t() }, optional(:file_ids) => list(String.t()), optional(:metadata) => ExOpenAI.Components.Metadata.input() }) } } | nil`
 
-    * `tools` - **optional** - `[any() | any() | any()]`  
-      A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.  
-      Default: `[]`  
+    * `tools` - **optional** - `list( ExOpenAI.Components.AssistantToolsCode.input() | ExOpenAI.Components.AssistantToolsFileSearch.input() | ExOpenAI.Components.AssistantToolsFunction.input() )`
+      A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+      Default: `[]`
       Constraints: maxItems: 128
 
-    * `top_p` - **optional** - `number() | any()`
+    * `top_p` - **optional** - `number() | nil`
     """
     (
       @type create_assistant_opt() ::
-              (((((((({:description, String.t() | any()} | {:instructions, String.t() | any()})
-                     | {:metadata, ExOpenAI.Components.Metadata.t()})
-                    | {:name, String.t() | any()})
-                   | {:reasoning_effort, ExOpenAI.Components.ReasoningEffort.t()})
-                  | {:response_format,
-                     ExOpenAI.Components.AssistantsApiResponseFormatOption.t() | any()})
-                 | {:temperature, number() | any()})
-                | {:tool_resources,
-                   %{
-                     optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())},
-                     optional(:file_search) => %{
-                       optional(:vector_store_ids) => list(String.t()),
-                       optional(:vector_stores) =>
-                         list(%{
-                           optional(:chunking_strategy) => map(),
-                           optional(:file_ids) => list(String.t()),
-                           optional(:metadata) => ExOpenAI.Components.Metadata.t()
-                         })
-                     }
-                   }
-                   | any()})
-               | {:tools,
-                  list(
-                    (ExOpenAI.Components.AssistantToolsCode.t()
-                     | ExOpenAI.Components.AssistantToolsFileSearch.t())
-                    | ExOpenAI.Components.AssistantToolsFunction.t()
-                  )})
-              | {:top_p, number() | any()}
+              ((((((((({:description, String.t() | nil} | {:instructions, String.t() | nil})
+                      | {:metadata, ExOpenAI.Components.Metadata.input()})
+                     | {:name, String.t() | nil})
+                    | {:reasoning_effort, ExOpenAI.Components.ReasoningEffort.input()})
+                   | {:response_format,
+                      ExOpenAI.Components.AssistantsApiResponseFormatOption.input() | nil})
+                  | {:temperature, number() | nil})
+                 | {:tool_resources,
+                    %{
+                      optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())},
+                      optional(:file_search) => %{
+                        optional(:vector_store_ids) => list(String.t()),
+                        optional(:vector_stores) =>
+                          list(%{
+                            optional(:chunking_strategy) =>
+                              %{required(:type) => :auto | String.t()}
+                              | %{
+                                  required(:static) => %{
+                                    required(:chunk_overlap_tokens) => integer(),
+                                    required(:max_chunk_size_tokens) => integer()
+                                  },
+                                  required(:type) => :static | String.t()
+                                },
+                            optional(:file_ids) => list(String.t()),
+                            optional(:metadata) => ExOpenAI.Components.Metadata.input()
+                          })
+                      }
+                    }
+                    | nil})
+                | {:tools,
+                   list(
+                     (ExOpenAI.Components.AssistantToolsCode.input()
+                      | ExOpenAI.Components.AssistantToolsFileSearch.input())
+                     | ExOpenAI.Components.AssistantToolsFunction.input()
+                   )})
+               | {:top_p, number() | nil})
+              | ExOpenAI.request_option()
       @spec create_assistant(
-              model :: String.t() | ExOpenAI.Components.AssistantSupportedModels.t(),
+              model :: String.t() | ExOpenAI.Components.AssistantSupportedModels.input(),
               opts :: [create_assistant_opt()]
             ) :: {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
     )
@@ -139,15 +146,7 @@ defmodule ExOpenAI.Assistants do
     def create_assistant(model, opts \\ []) do
       url = "/assistants"
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = [model: model]
 
       optional_body_params =
@@ -190,6 +189,8 @@ defmodule ExOpenAI.Assistants do
         )
       end
 
+      nil
+
       ExOpenAI.Config.http_client().api_call(
         :post,
         url,
@@ -207,13 +208,12 @@ defmodule ExOpenAI.Assistants do
 
     ## Parameters
 
-    * `:assistant_id` - **required** - `String.t()`  
+    * `:assistant_id` - **required** - `String.t()`
       The ID of the assistant to delete.
     """
     (
-      nil
-
-      @spec delete_assistant(assistant_id :: String.t(), opts :: keyword()) ::
+      @type delete_assistant_opt() :: ExOpenAI.request_option()
+      @spec delete_assistant(assistant_id :: String.t(), opts :: [delete_assistant_opt()]) ::
               {:ok, ExOpenAI.Components.DeleteAssistantResponse.t()} | {:error, any()}
     )
 
@@ -221,15 +221,7 @@ defmodule ExOpenAI.Assistants do
       url = "/assistants/{assistant_id}"
       url = String.replace(url, "{assistant_id}", to_string(assistant_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -242,6 +234,8 @@ defmodule ExOpenAI.Assistants do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/DeleteAssistantResponse"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :delete,
@@ -260,13 +254,12 @@ defmodule ExOpenAI.Assistants do
 
     ## Parameters
 
-    * `:assistant_id` - **required** - `String.t()`  
+    * `:assistant_id` - **required** - `String.t()`
       The ID of the assistant to retrieve.
     """
     (
-      nil
-
-      @spec get_assistant(assistant_id :: String.t(), opts :: keyword()) ::
+      @type get_assistant_opt() :: ExOpenAI.request_option()
+      @spec get_assistant(assistant_id :: String.t(), opts :: [get_assistant_opt()]) ::
               {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
     )
 
@@ -274,15 +267,7 @@ defmodule ExOpenAI.Assistants do
       url = "/assistants/{assistant_id}"
       url = String.replace(url, "{assistant_id}", to_string(assistant_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
       optional_body_params = Keyword.take(opts, [])
       body_params = body_params ++ optional_body_params
@@ -295,6 +280,8 @@ defmodule ExOpenAI.Assistants do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/AssistantObject"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :get,
@@ -313,60 +300,62 @@ defmodule ExOpenAI.Assistants do
 
     ## Parameters
 
-    * `:assistant_id` - **required** - `String.t()`  
+    * `:assistant_id` - **required** - `String.t()`
       The ID of the assistant to modify.
 
     ## Options
 
-    * `description` - **optional** - `String.t() | any()`
+    * `description` - **optional** - `String.t() | nil`
 
-    * `instructions` - **optional** - `String.t() | any()`
+    * `instructions` - **optional** - `String.t() | nil`
 
-    * `metadata` - **optional** - `any()`
+    * `metadata` - **optional** - `ExOpenAI.Components.Metadata.input()`
 
-    * `model` - **optional** - `String.t() | any()`  
-      ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.
+    * `model` - **optional** - `String.t() | ExOpenAI.Components.AssistantSupportedModels.input()`
+      ID of the model to use. You can use the [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
 
-    * `name` - **optional** - `String.t() | any()`
+    * `name` - **optional** - `String.t() | nil`
 
-    * `reasoning_effort` - **optional** - `any()`
+    * `reasoning_effort` - **optional** - `ExOpenAI.Components.ReasoningEffort.input()`
 
-    * `response_format` - **optional** - `any() | any()`
+    * `response_format` - **optional** - `ExOpenAI.Components.AssistantsApiResponseFormatOption.input() | nil`
 
-    * `temperature` - **optional** - `number() | any()`
+    * `temperature` - **optional** - `number() | nil`
 
-    * `tool_resources` - **optional** - `any() | any()`
+    * `tool_resources` - **optional** - `%{ optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())}, optional(:file_search) => %{optional(:vector_store_ids) => list(String.t())} } | nil`
 
-    * `tools` - **optional** - `[any() | any() | any()]`  
-      A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.  
-      Default: `[]`  
+    * `tools` - **optional** - `list( ExOpenAI.Components.AssistantToolsCode.input() | ExOpenAI.Components.AssistantToolsFileSearch.input() | ExOpenAI.Components.AssistantToolsFunction.input() )`
+      A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+      Default: `[]`
       Constraints: maxItems: 128
 
-    * `top_p` - **optional** - `number() | any()`
+    * `top_p` - **optional** - `number() | nil`
     """
     (
       @type modify_assistant_opt() ::
-              ((((((((({:description, String.t() | any()} | {:instructions, String.t() | any()})
-                      | {:metadata, ExOpenAI.Components.Metadata.t()})
-                     | {:model, String.t() | ExOpenAI.Components.AssistantSupportedModels.t()})
-                    | {:name, String.t() | any()})
-                   | {:reasoning_effort, ExOpenAI.Components.ReasoningEffort.t()})
-                  | {:response_format,
-                     ExOpenAI.Components.AssistantsApiResponseFormatOption.t() | any()})
-                 | {:temperature, number() | any()})
-                | {:tool_resources,
-                   %{
-                     optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())},
-                     optional(:file_search) => %{optional(:vector_store_ids) => list(String.t())}
-                   }
-                   | any()})
-               | {:tools,
-                  list(
-                    (ExOpenAI.Components.AssistantToolsCode.t()
-                     | ExOpenAI.Components.AssistantToolsFileSearch.t())
-                    | ExOpenAI.Components.AssistantToolsFunction.t()
-                  )})
-              | {:top_p, number() | any()}
+              (((((((((({:description, String.t() | nil} | {:instructions, String.t() | nil})
+                       | {:metadata, ExOpenAI.Components.Metadata.input()})
+                      | {:model,
+                         String.t() | ExOpenAI.Components.AssistantSupportedModels.input()})
+                     | {:name, String.t() | nil})
+                    | {:reasoning_effort, ExOpenAI.Components.ReasoningEffort.input()})
+                   | {:response_format,
+                      ExOpenAI.Components.AssistantsApiResponseFormatOption.input() | nil})
+                  | {:temperature, number() | nil})
+                 | {:tool_resources,
+                    %{
+                      optional(:code_interpreter) => %{optional(:file_ids) => list(String.t())},
+                      optional(:file_search) => %{optional(:vector_store_ids) => list(String.t())}
+                    }
+                    | nil})
+                | {:tools,
+                   list(
+                     (ExOpenAI.Components.AssistantToolsCode.input()
+                      | ExOpenAI.Components.AssistantToolsFileSearch.input())
+                     | ExOpenAI.Components.AssistantToolsFunction.input()
+                   )})
+               | {:top_p, number() | nil})
+              | ExOpenAI.request_option()
       @spec modify_assistant(assistant_id :: String.t(), opts :: [modify_assistant_opt()]) ::
               {:ok, ExOpenAI.Components.AssistantObject.t()} | {:error, any()}
     )
@@ -375,15 +364,7 @@ defmodule ExOpenAI.Assistants do
       url = "/assistants/{assistant_id}"
       url = String.replace(url, "{assistant_id}", to_string(assistant_id))
       query_params = Keyword.take(opts, [])
-
-      query_string =
-        if length(query_params) > 0 do
-          "?" <> URI.encode_query(query_params)
-        else
-          ""
-        end
-
-      url = url <> query_string
+      url = ExOpenAI.Query.append(url, query_params)
       body_params = []
 
       optional_body_params =
@@ -427,6 +408,8 @@ defmodule ExOpenAI.Assistants do
           %ExOpenAI.Codegen.DocsParser.Schema{ref: "#/components/schemas/AssistantObject"}
         )
       end
+
+      nil
 
       ExOpenAI.Config.http_client().api_call(
         :post,

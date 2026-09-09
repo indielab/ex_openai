@@ -8,13 +8,13 @@ defmodule ExOpenAI.Components.RealtimeBetaServerEventResponseCreated do
 
   ## Fields
 
-  * `:event_id` - **required** - `String.t()`  
+  * `:event_id` - **required** - `String.t()`
     The unique ID of the server event.
 
   * `:response` - **required** - `ExOpenAI.Components.RealtimeBetaResponse.t()`
 
-  * `:type` - **required** - `:"response.created"`  
-    The event type, must be `response.created`.  
+  * `:type` - **required** - `:"response.created"`
+    The event type, must be `response.created`.
     Allowed values: `"response.created"`
   """
   @type t() :: %{
@@ -23,5 +23,13 @@ defmodule ExOpenAI.Components.RealtimeBetaServerEventResponseCreated do
           response: ExOpenAI.Components.RealtimeBetaResponse.t(),
           type: :"response.created"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:event_id) => String.t(),
+              required(:response) => ExOpenAI.Components.RealtimeBetaResponse.input(),
+              required(:type) => :"response.created" | String.t()
+            }
   defstruct [:event_id, :response, :type]
 end

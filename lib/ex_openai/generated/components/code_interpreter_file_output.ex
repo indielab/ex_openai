@@ -7,10 +7,10 @@ defmodule ExOpenAI.Components.CodeInterpreterFileOutput do
 
   ## Fields
 
-  * `:files` - **required** - `[{:%{}, [], [{{:required, [], [:file_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:mime_type]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}]`
+  * `:files` - **required** - `list(%{required(:file_id) => String.t(), required(:mime_type) => String.t()})`
 
-  * `:type` - **required** - `:files`  
-    The type of the code interpreter file output. Always `files`.  
+  * `:type` - **required** - `:files`
+    The type of the code interpreter file output. Always `files`.
     Allowed values: `"files"`
   """
   @type t() :: %{
@@ -18,5 +18,13 @@ defmodule ExOpenAI.Components.CodeInterpreterFileOutput do
           files: list(%{required(:file_id) => String.t(), required(:mime_type) => String.t()}),
           type: :files
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:files) =>
+                list(%{required(:file_id) => String.t(), required(:mime_type) => String.t()}),
+              required(:type) => :files | String.t()
+            }
   defstruct [:files, :type]
 end

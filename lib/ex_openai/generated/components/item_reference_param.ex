@@ -6,11 +6,18 @@ defmodule ExOpenAI.Components.ItemReferenceParam do
 
   ## Fields
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The ID of the item to reference.
 
-  * `:type` - **optional** - `:item_reference | any()`
+  * `:type` - **optional** - `:item_reference | nil`
   """
-  @type t() :: %{__struct__: __MODULE__, id: String.t(), type: (:item_reference | any()) | nil}
+  @type t() :: %{__struct__: __MODULE__, id: String.t(), type: (:item_reference | nil) | nil}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:id) => String.t(),
+              optional(:type) => (:item_reference | String.t()) | nil
+            }
   defstruct [:id, :type]
 end

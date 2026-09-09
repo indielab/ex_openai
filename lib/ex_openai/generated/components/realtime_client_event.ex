@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.RealtimeClientEvent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   A realtime client event.
 
@@ -21,4 +19,16 @@ defmodule ExOpenAI.Components.RealtimeClientEvent do
             | ExOpenAI.Components.RealtimeClientEventResponseCancel.t())
            | ExOpenAI.Components.RealtimeClientEventResponseCreate.t())
           | ExOpenAI.Components.RealtimeClientEventSessionUpdate.t()
+  @type input() ::
+          (((((((((ExOpenAI.Components.RealtimeClientEventConversationItemCreate.input()
+                   | ExOpenAI.Components.RealtimeClientEventConversationItemDelete.input())
+                  | ExOpenAI.Components.RealtimeClientEventConversationItemRetrieve.input())
+                 | ExOpenAI.Components.RealtimeClientEventConversationItemTruncate.input())
+                | ExOpenAI.Components.RealtimeClientEventInputAudioBufferAppend.input())
+               | ExOpenAI.Components.RealtimeClientEventInputAudioBufferClear.input())
+              | ExOpenAI.Components.RealtimeClientEventOutputAudioBufferClear.input())
+             | ExOpenAI.Components.RealtimeClientEventInputAudioBufferCommit.input())
+            | ExOpenAI.Components.RealtimeClientEventResponseCancel.input())
+           | ExOpenAI.Components.RealtimeClientEventResponseCreate.input())
+          | ExOpenAI.Components.RealtimeClientEventSessionUpdate.input()
 end

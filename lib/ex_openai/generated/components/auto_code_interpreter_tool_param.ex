@@ -6,29 +6,40 @@ defmodule ExOpenAI.Components.AutoCodeInterpreterToolParam do
 
   ## Fields
 
-  * `:file_ids` - **optional** - `[String.t()]`  
-    An optional list of uploaded files to make available to your code.  
+  * `:file_ids` - **optional** - `list(String.t())`
+    An optional list of uploaded files to make available to your code.
     Constraints: maxItems: 50
 
-  * `:memory_limit` - **optional** - `ExOpenAI.Components.ContainerMemoryLimit.t() | any()`
+  * `:memory_limit` - **optional** - `ExOpenAI.Components.ContainerMemoryLimit.t() | nil`
 
-  * `:network_policy` - **optional** - `ExOpenAI.Components.ContainerNetworkPolicyDisabledParam.t() | ExOpenAI.Components.ContainerNetworkPolicyAllowlistParam.t()`  
+  * `:network_policy` - **optional** - `ExOpenAI.Components.ContainerNetworkPolicyDisabledParam.t() | ExOpenAI.Components.ContainerNetworkPolicyAllowlistParam.t()`
     Network access policy for the container.
 
-  * `:type` - **required** - `:auto`  
-    Always `auto`.  
-    Allowed values: `"auto"`  
+  * `:type` - **required** - `:auto`
+    Always `auto`.
+    Allowed values: `"auto"`
     Default: `"auto"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           file_ids: list(String.t()) | nil,
-          memory_limit: (ExOpenAI.Components.ContainerMemoryLimit.t() | any()) | nil,
+          memory_limit: (ExOpenAI.Components.ContainerMemoryLimit.t() | nil) | nil,
           network_policy:
             (ExOpenAI.Components.ContainerNetworkPolicyDisabledParam.t()
              | ExOpenAI.Components.ContainerNetworkPolicyAllowlistParam.t())
             | nil,
           type: :auto
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:file_ids) => list(String.t()),
+              optional(:memory_limit) => ExOpenAI.Components.ContainerMemoryLimit.input() | nil,
+              optional(:network_policy) =>
+                ExOpenAI.Components.ContainerNetworkPolicyDisabledParam.input()
+                | ExOpenAI.Components.ContainerNetworkPolicyAllowlistParam.input(),
+              required(:type) => :auto | String.t()
+            }
   defstruct [:file_ids, :memory_limit, :network_policy, :type]
 end

@@ -6,20 +6,20 @@ defmodule ExOpenAI.Components.ContainerFileListResource do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.ContainerFileResource.t()]`  
+  * `:data` - **required** - `list(ExOpenAI.Components.ContainerFileResource.t())`
     A list of container files.
 
-  * `:first_id` - **required** - `String.t()`  
+  * `:first_id` - **required** - `String.t()`
     The ID of the first file in the list.
 
-  * `:has_more` - **required** - `boolean()`  
+  * `:has_more` - **required** - `boolean()`
     Whether there are more files available.
 
-  * `:last_id` - **required** - `String.t()`  
+  * `:last_id` - **required** - `String.t()`
     The ID of the last file in the list.
 
-  * `:object` - **required** - `:list`  
-    The type of object returned, must be 'list'.  
+  * `:object` - **required** - `:list`
+    The type of object returned, must be 'list'.
     Allowed values: `"list"`
   """
   @type t() :: %{
@@ -30,5 +30,15 @@ defmodule ExOpenAI.Components.ContainerFileListResource do
           last_id: String.t(),
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.ContainerFileResource.input()),
+              required(:first_id) => String.t(),
+              required(:has_more) => boolean(),
+              required(:last_id) => String.t(),
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

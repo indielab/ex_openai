@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.ChatCompletionToolChoiceOption do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Controls which (if any) tool is called by the model.
   `none` means the model will not call any tool and instead generates a message.
@@ -20,4 +18,9 @@ defmodule ExOpenAI.Components.ChatCompletionToolChoiceOption do
             | ExOpenAI.Components.ChatCompletionAllowedToolsChoice.t())
            | ExOpenAI.Components.ChatCompletionNamedToolChoice.t())
           | ExOpenAI.Components.ChatCompletionNamedToolChoiceCustom.t()
+  @type input() ::
+          (((((:none | :auto) | :required) | String.t())
+            | ExOpenAI.Components.ChatCompletionAllowedToolsChoice.input())
+           | ExOpenAI.Components.ChatCompletionNamedToolChoice.input())
+          | ExOpenAI.Components.ChatCompletionNamedToolChoiceCustom.input()
 end

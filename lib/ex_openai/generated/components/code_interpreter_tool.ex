@@ -7,19 +7,32 @@ defmodule ExOpenAI.Components.CodeInterpreterTool do
 
   ## Fields
 
-  * `:container` - **required** - `String.t() | ExOpenAI.Components.AutoCodeInterpreterToolParam.t()`  
+  * `:allowed_callers` - **optional** - `list(ExOpenAI.Components.CallableToolAllowedCaller.t()) | nil`
+
+  * `:container` - **required** - `String.t() | ExOpenAI.Components.AutoCodeInterpreterToolParam.t()`
     The code interpreter container. Can be a container ID or an object that
   specifies uploaded file IDs to make available to your code, along with an
   optional `memory_limit` setting.
 
-  * `:type` - **required** - `:code_interpreter`  
-    The type of the code interpreter tool. Always `code_interpreter`.  
+  * `:type` - **required** - `:code_interpreter`
+    The type of the code interpreter tool. Always `code_interpreter`.
     Allowed values: `"code_interpreter"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
+          allowed_callers: (list(ExOpenAI.Components.CallableToolAllowedCaller.t()) | nil) | nil,
           container: String.t() | ExOpenAI.Components.AutoCodeInterpreterToolParam.t(),
           type: :code_interpreter
         }
-  defstruct [:container, :type]
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:allowed_callers) =>
+                list(ExOpenAI.Components.CallableToolAllowedCaller.input()) | nil,
+              required(:container) =>
+                String.t() | ExOpenAI.Components.AutoCodeInterpreterToolParam.input(),
+              required(:type) => :code_interpreter | String.t()
+            }
+  defstruct [:allowed_callers, :container, :type]
 end

@@ -6,16 +6,24 @@ defmodule ExOpenAI.Components.SubmitToolOutputsRunRequest do
 
   ## Fields
 
-  * `:stream` - **optional** - `boolean() | any()`
+  * `:stream` - **optional** - `boolean() | nil`
 
-  * `:tool_outputs` - **required** - `[{:%{}, [], [{{:optional, [], [:output]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:optional, [], [:tool_call_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}]`  
+  * `:tool_outputs` - **required** - `list(%{optional(:output) => String.t(), optional(:tool_call_id) => String.t()})`
     A list of tools for which the outputs are being submitted.
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          stream: (boolean() | any()) | nil,
+          stream: (boolean() | nil) | nil,
           tool_outputs:
             list(%{optional(:output) => String.t(), optional(:tool_call_id) => String.t()})
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:stream) => boolean() | nil,
+              required(:tool_outputs) =>
+                list(%{optional(:output) => String.t(), optional(:tool_call_id) => String.t()})
+            }
   defstruct [:stream, :tool_outputs]
 end

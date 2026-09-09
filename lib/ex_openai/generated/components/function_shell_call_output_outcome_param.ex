@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.FunctionShellCallOutputOutcomeParam do
-  use ExOpenAI.Jason
-
   @moduledoc """
   The exit or timeout outcome associated with this shell call.
 
@@ -11,4 +9,7 @@ defmodule ExOpenAI.Components.FunctionShellCallOutputOutcomeParam do
   @type t() ::
           ExOpenAI.Components.FunctionShellCallOutputTimeoutOutcomeParam.t()
           | ExOpenAI.Components.FunctionShellCallOutputExitOutcomeParam.t()
+  @type input() ::
+          ExOpenAI.Components.FunctionShellCallOutputTimeoutOutcomeParam.input()
+          | ExOpenAI.Components.FunctionShellCallOutputExitOutcomeParam.input()
 end

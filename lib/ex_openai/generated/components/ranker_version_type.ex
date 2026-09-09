@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.RankerVersionType do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema RankerVersionType.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.RankerVersionType do
   `"auto"`, `"default-2024-11-15"`
   """
   @type t() :: :auto | :"default-2024-11-15"
+  @type input() :: (:auto | :"default-2024-11-15") | String.t()
 end

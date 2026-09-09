@@ -6,17 +6,17 @@ defmodule ExOpenAI.Components.OutputTextContent do
 
   ## Fields
 
-  * `:annotations` - **required** - `[ExOpenAI.Components.Annotation.t()]`  
+  * `:annotations` - **required** - `list(ExOpenAI.Components.Annotation.t())`
     The annotations of the text output.
 
-  * `:logprobs` - **required** - `[ExOpenAI.Components.LogProb.t()]`
+  * `:logprobs` - **required** - `list(ExOpenAI.Components.LogProb.t())`
 
-  * `:text` - **required** - `String.t()`  
+  * `:text` - **required** - `String.t()`
     The text output from the model.
 
-  * `:type` - **required** - `:output_text`  
-    The type of the output text. Always `output_text`.  
-    Allowed values: `"output_text"`  
+  * `:type` - **required** - `:output_text`
+    The type of the output text. Always `output_text`.
+    Allowed values: `"output_text"`
     Default: `"output_text"`
   """
   @type t() :: %{
@@ -26,5 +26,14 @@ defmodule ExOpenAI.Components.OutputTextContent do
           text: String.t(),
           type: :output_text
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:annotations) => list(ExOpenAI.Components.Annotation.input()),
+              required(:logprobs) => list(ExOpenAI.Components.LogProb.input()),
+              required(:text) => String.t(),
+              required(:type) => :output_text | String.t()
+            }
   defstruct [:annotations, :logprobs, :text, :type]
 end

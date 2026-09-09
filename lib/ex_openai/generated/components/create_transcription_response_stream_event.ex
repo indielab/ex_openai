@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.CreateTranscriptionResponseStreamEvent do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema CreateTranscriptionResponseStreamEvent.
 
@@ -12,4 +10,8 @@ defmodule ExOpenAI.Components.CreateTranscriptionResponseStreamEvent do
           (ExOpenAI.Components.TranscriptTextSegmentEvent.t()
            | ExOpenAI.Components.TranscriptTextDeltaEvent.t())
           | ExOpenAI.Components.TranscriptTextDoneEvent.t()
+  @type input() ::
+          (ExOpenAI.Components.TranscriptTextSegmentEvent.input()
+           | ExOpenAI.Components.TranscriptTextDeltaEvent.input())
+          | ExOpenAI.Components.TranscriptTextDoneEvent.input()
 end

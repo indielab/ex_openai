@@ -6,9 +6,9 @@ defmodule ExOpenAI.Components.DragParam do
 
   ## Fields
 
-  * `:keys` - **optional** - `[String.t()] | any()`
+  * `:keys` - **optional** - `list(String.t()) | nil`
 
-  * `:path` - **required** - `[ExOpenAI.Components.CoordParam.t()]`  
+  * `:path` - **required** - `list(ExOpenAI.Components.CoordParam.t())`
     An array of coordinates representing the path of the drag action. Coordinates will appear as an array of objects, eg
   ```
   [
@@ -17,16 +17,24 @@ defmodule ExOpenAI.Components.DragParam do
   ]
   ```
 
-  * `:type` - **required** - `:drag`  
-    Specifies the event type. For a drag action, this property is always set to `drag`.  
-    Allowed values: `"drag"`  
+  * `:type` - **required** - `:drag`
+    Specifies the event type. For a drag action, this property is always set to `drag`.
+    Allowed values: `"drag"`
     Default: `"drag"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          keys: (list(String.t()) | any()) | nil,
+          keys: (list(String.t()) | nil) | nil,
           path: list(ExOpenAI.Components.CoordParam.t()),
           type: :drag
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:keys) => list(String.t()) | nil,
+              required(:path) => list(ExOpenAI.Components.CoordParam.input()),
+              required(:type) => :drag | String.t()
+            }
   defstruct [:keys, :path, :type]
 end

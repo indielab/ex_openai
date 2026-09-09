@@ -1,26 +1,27 @@
 defmodule ExOpenAI.Components.ItemResource do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Content item used to generate a response.
 
 
   ## Type
 
-  `ExOpenAI.Components.InputMessageResource.t() | ExOpenAI.Components.OutputMessage.t() | ExOpenAI.Components.FileSearchToolCall.t() | ExOpenAI.Components.ComputerToolCall.t() | ExOpenAI.Components.ComputerToolCallOutputResource.t() | ExOpenAI.Components.WebSearchToolCall.t() | ExOpenAI.Components.FunctionToolCallResource.t() | ExOpenAI.Components.FunctionToolCallOutputResource.t() | ExOpenAI.Components.ToolSearchCall.t() | ExOpenAI.Components.ToolSearchOutput.t() | ExOpenAI.Components.ReasoningItem.t() | ExOpenAI.Components.CompactionBody.t() | ExOpenAI.Components.ImageGenToolCall.t() | ExOpenAI.Components.CodeInterpreterToolCall.t() | ExOpenAI.Components.LocalShellToolCall.t() | ExOpenAI.Components.LocalShellToolCallOutput.t() | ExOpenAI.Components.FunctionShellCall.t() | ExOpenAI.Components.FunctionShellCallOutput.t() | ExOpenAI.Components.ApplyPatchToolCall.t() | ExOpenAI.Components.ApplyPatchToolCallOutput.t() | ExOpenAI.Components.MCPListTools.t() | ExOpenAI.Components.MCPApprovalRequest.t() | ExOpenAI.Components.MCPApprovalResponseResource.t() | ExOpenAI.Components.MCPToolCall.t() | ExOpenAI.Components.CustomToolCallResource.t() | ExOpenAI.Components.CustomToolCallOutputResource.t()`
+  `ExOpenAI.Components.InputMessageResource.t() | ExOpenAI.Components.OutputMessage.t() | ExOpenAI.Components.FileSearchToolCall.t() | ExOpenAI.Components.ComputerToolCall.t() | ExOpenAI.Components.ComputerToolCallOutputResource.t() | ExOpenAI.Components.WebSearchToolCall.t() | ExOpenAI.Components.FunctionToolCallResource.t() | ExOpenAI.Components.FunctionToolCallOutputResource.t() | ExOpenAI.Components.ToolSearchCall.t() | ExOpenAI.Components.ToolSearchOutput.t() | ExOpenAI.Components.AdditionalTools.t() | ExOpenAI.Components.ReasoningItem.t() | ExOpenAI.Components.Program.t() | ExOpenAI.Components.ProgramOutput.t() | ExOpenAI.Components.CompactionBody.t() | ExOpenAI.Components.ImageGenToolCall.t() | ExOpenAI.Components.CodeInterpreterToolCall.t() | ExOpenAI.Components.LocalShellToolCall.t() | ExOpenAI.Components.LocalShellToolCallOutput.t() | ExOpenAI.Components.FunctionShellCall.t() | ExOpenAI.Components.FunctionShellCallOutput.t() | ExOpenAI.Components.ApplyPatchToolCall.t() | ExOpenAI.Components.ApplyPatchToolCallOutput.t() | ExOpenAI.Components.MCPListTools.t() | ExOpenAI.Components.MCPApprovalRequest.t() | ExOpenAI.Components.MCPApprovalResponseResource.t() | ExOpenAI.Components.MCPToolCall.t() | ExOpenAI.Components.CustomToolCallResource.t() | ExOpenAI.Components.CustomToolCallOutputResource.t()`
   """
   @type t() ::
-          ((((((((((((((((((((((((ExOpenAI.Components.InputMessageResource.t()
-                                  | ExOpenAI.Components.OutputMessage.t())
-                                 | ExOpenAI.Components.FileSearchToolCall.t())
-                                | ExOpenAI.Components.ComputerToolCall.t())
-                               | ExOpenAI.Components.ComputerToolCallOutputResource.t())
-                              | ExOpenAI.Components.WebSearchToolCall.t())
-                             | ExOpenAI.Components.FunctionToolCallResource.t())
-                            | ExOpenAI.Components.FunctionToolCallOutputResource.t())
-                           | ExOpenAI.Components.ToolSearchCall.t())
-                          | ExOpenAI.Components.ToolSearchOutput.t())
-                         | ExOpenAI.Components.ReasoningItem.t())
+          (((((((((((((((((((((((((((ExOpenAI.Components.InputMessageResource.t()
+                                     | ExOpenAI.Components.OutputMessage.t())
+                                    | ExOpenAI.Components.FileSearchToolCall.t())
+                                   | ExOpenAI.Components.ComputerToolCall.t())
+                                  | ExOpenAI.Components.ComputerToolCallOutputResource.t())
+                                 | ExOpenAI.Components.WebSearchToolCall.t())
+                                | ExOpenAI.Components.FunctionToolCallResource.t())
+                               | ExOpenAI.Components.FunctionToolCallOutputResource.t())
+                              | ExOpenAI.Components.ToolSearchCall.t())
+                             | ExOpenAI.Components.ToolSearchOutput.t())
+                            | ExOpenAI.Components.AdditionalTools.t())
+                           | ExOpenAI.Components.ReasoningItem.t())
+                          | ExOpenAI.Components.Program.t())
+                         | ExOpenAI.Components.ProgramOutput.t())
                         | ExOpenAI.Components.CompactionBody.t())
                        | ExOpenAI.Components.ImageGenToolCall.t())
                       | ExOpenAI.Components.CodeInterpreterToolCall.t())
@@ -36,4 +37,34 @@ defmodule ExOpenAI.Components.ItemResource do
             | ExOpenAI.Components.MCPToolCall.t())
            | ExOpenAI.Components.CustomToolCallResource.t())
           | ExOpenAI.Components.CustomToolCallOutputResource.t()
+  @type input() ::
+          (((((((((((((((((((((((((((ExOpenAI.Components.InputMessageResource.input()
+                                     | ExOpenAI.Components.OutputMessage.input())
+                                    | ExOpenAI.Components.FileSearchToolCall.input())
+                                   | ExOpenAI.Components.ComputerToolCall.input())
+                                  | ExOpenAI.Components.ComputerToolCallOutputResource.input())
+                                 | ExOpenAI.Components.WebSearchToolCall.input())
+                                | ExOpenAI.Components.FunctionToolCallResource.input())
+                               | ExOpenAI.Components.FunctionToolCallOutputResource.input())
+                              | ExOpenAI.Components.ToolSearchCall.input())
+                             | ExOpenAI.Components.ToolSearchOutput.input())
+                            | ExOpenAI.Components.AdditionalTools.input())
+                           | ExOpenAI.Components.ReasoningItem.input())
+                          | ExOpenAI.Components.Program.input())
+                         | ExOpenAI.Components.ProgramOutput.input())
+                        | ExOpenAI.Components.CompactionBody.input())
+                       | ExOpenAI.Components.ImageGenToolCall.input())
+                      | ExOpenAI.Components.CodeInterpreterToolCall.input())
+                     | ExOpenAI.Components.LocalShellToolCall.input())
+                    | ExOpenAI.Components.LocalShellToolCallOutput.input())
+                   | ExOpenAI.Components.FunctionShellCall.input())
+                  | ExOpenAI.Components.FunctionShellCallOutput.input())
+                 | ExOpenAI.Components.ApplyPatchToolCall.input())
+                | ExOpenAI.Components.ApplyPatchToolCallOutput.input())
+               | ExOpenAI.Components.MCPListTools.input())
+              | ExOpenAI.Components.MCPApprovalRequest.input())
+             | ExOpenAI.Components.MCPApprovalResponseResource.input())
+            | ExOpenAI.Components.MCPToolCall.input())
+           | ExOpenAI.Components.CustomToolCallResource.input())
+          | ExOpenAI.Components.CustomToolCallOutputResource.input()
 end

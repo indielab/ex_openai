@@ -8,8 +8,8 @@ defmodule ExOpenAI.Components.StaticChunkingStrategyRequestParam do
 
   * `:static` - **required** - `ExOpenAI.Components.StaticChunkingStrategy.t()`
 
-  * `:type` - **required** - `:static`  
-    Always `static`.  
+  * `:type` - **required** - `:static`
+    Always `static`.
     Allowed values: `"static"`
   """
   @type t() :: %{
@@ -17,5 +17,12 @@ defmodule ExOpenAI.Components.StaticChunkingStrategyRequestParam do
           static: ExOpenAI.Components.StaticChunkingStrategy.t(),
           type: :static
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:static) => ExOpenAI.Components.StaticChunkingStrategy.input(),
+              required(:type) => :static | String.t()
+            }
   defstruct [:static, :type]
 end

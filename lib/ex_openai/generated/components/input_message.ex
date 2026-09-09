@@ -11,17 +11,17 @@ defmodule ExOpenAI.Components.InputMessage do
 
   * `:content` - **required** - `ExOpenAI.Components.InputMessageContentList.t()`
 
-  * `:role` - **required** - `:user | :system | :developer`  
-    The role of the message input. One of `user`, `system`, or `developer`.  
+  * `:role` - **required** - `:user | :system | :developer`
+    The role of the message input. One of `user`, `system`, or `developer`.
     Allowed values: `"user"`, `"system"`, `"developer"`
 
-  * `:status` - **optional** - `:in_progress | :completed | :incomplete`  
+  * `:status` - **optional** - `:in_progress | :completed | :incomplete`
     The status of item. One of `in_progress`, `completed`, or
-  `incomplete`. Populated when items are returned via API.  
+  `incomplete`. Populated when items are returned via API.
     Allowed values: `"in_progress"`, `"completed"`, `"incomplete"`
 
-  * `:type` - **optional** - `:message`  
-    The type of the message input. Always set to `message`.  
+  * `:type` - **optional** - `:message`
+    The type of the message input. Always set to `message`.
     Allowed values: `"message"`
   """
   @type t() :: %{
@@ -31,5 +31,14 @@ defmodule ExOpenAI.Components.InputMessage do
           status: ((:in_progress | :completed) | :incomplete) | nil,
           type: :message | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:content) => ExOpenAI.Components.InputMessageContentList.input(),
+              required(:role) => ((:user | :system) | :developer) | String.t(),
+              optional(:status) => ((:in_progress | :completed) | :incomplete) | String.t(),
+              optional(:type) => :message | String.t()
+            }
   defstruct [:content, :role, :status, :type]
 end

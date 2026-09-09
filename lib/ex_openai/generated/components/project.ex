@@ -6,33 +6,49 @@ defmodule ExOpenAI.Components.Project do
 
   ## Fields
 
-  * `:archived_at` - **optional** - `integer() | any()`
+  * `:archived_at` - **optional** - `integer() | nil`
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     The Unix timestamp (in seconds) of when the project was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:external_key_id` - **optional** - `String.t() | nil`
+    The external key associated with the project.
+
+  * `:id` - **required** - `String.t()`
     The identifier, which can be referenced in API endpoints
 
-  * `:name` - **required** - `String.t()`  
+  * `:name` - **optional** - `String.t() | nil`
     The name of the project. This appears in reporting.
 
-  * `:object` - **required** - `:"organization.project"`  
-    The object type, which is always `organization.project`  
+  * `:object` - **required** - `:"organization.project"`
+    The object type, which is always `organization.project`
     Allowed values: `"organization.project"`
 
-  * `:status` - **required** - `:active | :archived`  
-    `active` or `archived`  
-    Allowed values: `"active"`, `"archived"`
+  * `:status` - **optional** - `String.t() | nil`
+    `active` or `archived`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          archived_at: (integer() | any()) | nil,
+          archived_at: (integer() | nil) | nil,
           created_at: integer(),
+          external_key_id: (String.t() | nil) | nil,
           id: String.t(),
-          name: String.t(),
+          name: (String.t() | nil) | nil,
           object: :"organization.project",
-          status: :active | :archived
+          status: (String.t() | nil) | nil
         }
-  defstruct [:archived_at, :created_at, :id, :name, :object, :status]
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:archived_at) => integer() | nil,
+              required(:created_at) => integer(),
+              optional(:external_key_id) => String.t() | nil,
+              required(:id) => String.t(),
+              optional(:name) => String.t() | nil,
+              required(:object) => :"organization.project" | String.t(),
+              optional(:status) => String.t() | nil
+            }
+  defstruct [:archived_at, :created_at, :external_key_id, :id, :name, :object, :status]
 end

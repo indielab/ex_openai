@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.AssistantsApiToolChoiceOption do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Controls which (if any) tool is called by the model.
   `none` means the model will not call any tools and instead generates a message.
@@ -14,4 +12,7 @@ defmodule ExOpenAI.Components.AssistantsApiToolChoiceOption do
   `:none | :auto | :required | ExOpenAI.Components.AssistantsNamedToolChoice.t()`
   """
   @type t() :: ((:none | :auto) | :required) | ExOpenAI.Components.AssistantsNamedToolChoice.t()
+  @type input() ::
+          (((:none | :auto) | :required) | String.t())
+          | ExOpenAI.Components.AssistantsNamedToolChoice.input()
 end

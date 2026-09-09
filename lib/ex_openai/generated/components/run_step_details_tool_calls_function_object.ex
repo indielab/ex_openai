@@ -6,14 +6,14 @@ defmodule ExOpenAI.Components.RunStepDetailsToolCallsFunctionObject do
 
   ## Fields
 
-  * `:function` - **required** - `{:%{}, [], [{{:required, [], [:arguments]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}, {{:required, [], [:output]}, {:|, [], [{{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}, {:any, [], []}]}}]}`  
+  * `:function` - **required** - `%{ required(:arguments) => String.t(), required(:name) => String.t(), required(:output) => String.t() | nil }`
     The definition of the function that was called.
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The ID of the tool call object.
 
-  * `:type` - **required** - `:function`  
-    The type of tool call. This is always going to be `function` for this type of tool call.  
+  * `:type` - **required** - `:function`
+    The type of tool call. This is always going to be `function` for this type of tool call.
     Allowed values: `"function"`
   """
   @type t() :: %{
@@ -21,10 +21,22 @@ defmodule ExOpenAI.Components.RunStepDetailsToolCallsFunctionObject do
           function: %{
             required(:arguments) => String.t(),
             required(:name) => String.t(),
-            required(:output) => String.t() | any()
+            required(:output) => String.t() | nil
           },
           id: String.t(),
           type: :function
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:function) => %{
+                required(:arguments) => String.t(),
+                required(:name) => String.t(),
+                required(:output) => String.t() | nil
+              },
+              required(:id) => String.t(),
+              required(:type) => :function | String.t()
+            }
   defstruct [:function, :id, :type]
 end

@@ -6,28 +6,38 @@ defmodule ExOpenAI.Components.ThreadItemListResource do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.ThreadItem.t()]`  
+  * `:data` - **required** - `list(ExOpenAI.Components.ThreadItem.t())`
     A list of items
 
-  * `:first_id` - **required** - `String.t() | any()`
+  * `:first_id` - **required** - `String.t() | nil`
 
-  * `:has_more` - **required** - `boolean()`  
+  * `:has_more` - **required** - `boolean()`
     Whether there are more items available.
 
-  * `:last_id` - **required** - `String.t() | any()`
+  * `:last_id` - **required** - `String.t() | nil`
 
-  * `:object` - **required** - `:list`  
-    The type of object returned, must be `list`.  
-    Allowed values: `"list"`  
+  * `:object` - **required** - `:list`
+    The type of object returned, must be `list`.
+    Allowed values: `"list"`
     Default: `"list"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
           data: list(ExOpenAI.Components.ThreadItem.t()),
-          first_id: String.t() | any(),
+          first_id: String.t() | nil,
           has_more: boolean(),
-          last_id: String.t() | any(),
+          last_id: String.t() | nil,
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.ThreadItem.input()),
+              required(:first_id) => String.t() | nil,
+              required(:has_more) => boolean(),
+              required(:last_id) => String.t() | nil,
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

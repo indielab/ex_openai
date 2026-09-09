@@ -6,12 +6,19 @@ defmodule ExOpenAI.Components.ChatCompletionNamedToolChoiceCustom do
 
   ## Fields
 
-  * `:custom` - **required** - `{:%{}, [], [{{:required, [], [:name]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:custom` - **required** - `%{required(:name) => String.t()}`
 
-  * `:type` - **required** - `:custom`  
-    For custom tool calling, the type is always `custom`.  
+  * `:type` - **required** - `:custom`
+    For custom tool calling, the type is always `custom`.
     Allowed values: `"custom"`
   """
   @type t() :: %{__struct__: __MODULE__, custom: %{required(:name) => String.t()}, type: :custom}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:custom) => %{required(:name) => String.t()},
+              required(:type) => :custom | String.t()
+            }
   defstruct [:custom, :type]
 end

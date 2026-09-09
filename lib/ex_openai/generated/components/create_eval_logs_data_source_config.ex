@@ -8,14 +8,16 @@ defmodule ExOpenAI.Components.CreateEvalLogsDataSourceConfig do
 
   ## Fields
 
-  * `:metadata` - **optional** - `map()`  
+  * `:metadata` - **optional** - `map()`
     Metadata filters for the logs data source.
 
-  * `:type` - **required** - `:logs`  
-    The type of data source. Always `logs`.  
-    Allowed values: `"logs"`  
+  * `:type` - **required** - `:logs`
+    The type of data source. Always `logs`.
+    Allowed values: `"logs"`
     Default: `"logs"`
   """
   @type t() :: %{__struct__: __MODULE__, metadata: map() | nil, type: :logs}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() :: t() | %{optional(:metadata) => map(), required(:type) => :logs | String.t()}
   defstruct [:metadata, :type]
 end

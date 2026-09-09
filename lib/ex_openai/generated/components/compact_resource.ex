@@ -6,21 +6,22 @@ defmodule ExOpenAI.Components.CompactResource do
 
   ## Fields
 
-  * `:created_at` - **required** - `integer()`  
+  * `:created_at` - **required** - `integer()`
     Unix timestamp (in seconds) when the compacted conversation was created.
+    Format: `unixtime`
 
-  * `:id` - **required** - `String.t()`  
+  * `:id` - **required** - `String.t()`
     The unique identifier for the compacted response.
 
-  * `:object` - **required** - `:"response.compaction"`  
-    The object type. Always `response.compaction`.  
-    Allowed values: `"response.compaction"`  
+  * `:object` - **required** - `:"response.compaction"`
+    The object type. Always `response.compaction`.
+    Allowed values: `"response.compaction"`
     Default: `"response.compaction"`
 
-  * `:output` - **required** - `[ExOpenAI.Components.ItemField.t()]`  
+  * `:output` - **required** - `list(ExOpenAI.Components.ItemField.t())`
     The compacted list of output items.
 
-  * `:usage` - **required** - `ExOpenAI.Components.ResponseUsage.t()`  
+  * `:usage` - **required** - `ExOpenAI.Components.ResponseUsage.t()`
     Token accounting for the compaction pass, including cached, reasoning, and total tokens.
   """
   @type t() :: %{
@@ -31,5 +32,15 @@ defmodule ExOpenAI.Components.CompactResource do
           output: list(ExOpenAI.Components.ItemField.t()),
           usage: ExOpenAI.Components.ResponseUsage.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:created_at) => integer(),
+              required(:id) => String.t(),
+              required(:object) => :"response.compaction" | String.t(),
+              required(:output) => list(ExOpenAI.Components.ItemField.input()),
+              required(:usage) => ExOpenAI.Components.ResponseUsage.input()
+            }
   defstruct [:created_at, :id, :object, :output, :usage]
 end

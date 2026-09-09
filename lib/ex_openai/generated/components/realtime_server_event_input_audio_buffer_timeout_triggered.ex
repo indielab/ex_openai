@@ -19,20 +19,20 @@ defmodule ExOpenAI.Components.RealtimeServerEventInputAudioBufferTimeoutTriggere
 
   ## Fields
 
-  * `:audio_end_ms` - **required** - `integer()`  
+  * `:audio_end_ms` - **required** - `integer()`
     Millisecond offset of audio written to the input audio buffer at the time the timeout was triggered.
 
-  * `:audio_start_ms` - **required** - `integer()`  
+  * `:audio_start_ms` - **required** - `integer()`
     Millisecond offset of audio written to the input audio buffer that was after the playback time of the last model response.
 
-  * `:event_id` - **required** - `String.t()`  
+  * `:event_id` - **required** - `String.t()`
     The unique ID of the server event.
 
-  * `:item_id` - **required** - `String.t()`  
+  * `:item_id` - **required** - `String.t()`
     The ID of the item associated with this segment.
 
-  * `:type` - **required** - `:"input_audio_buffer.timeout_triggered"`  
-    The event type, must be `input_audio_buffer.timeout_triggered`.  
+  * `:type` - **required** - `:"input_audio_buffer.timeout_triggered"`
+    The event type, must be `input_audio_buffer.timeout_triggered`.
     Allowed values: `"input_audio_buffer.timeout_triggered"`
   """
   @type t() :: %{
@@ -43,5 +43,15 @@ defmodule ExOpenAI.Components.RealtimeServerEventInputAudioBufferTimeoutTriggere
           item_id: String.t(),
           type: :"input_audio_buffer.timeout_triggered"
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:audio_end_ms) => integer(),
+              required(:audio_start_ms) => integer(),
+              required(:event_id) => String.t(),
+              required(:item_id) => String.t(),
+              required(:type) => :"input_audio_buffer.timeout_triggered" | String.t()
+            }
   defstruct [:audio_end_ms, :audio_start_ms, :event_id, :item_id, :type]
 end

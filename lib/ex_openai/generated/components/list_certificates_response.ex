@@ -6,24 +6,34 @@ defmodule ExOpenAI.Components.ListCertificatesResponse do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.Certificate.t()]`
+  * `:data` - **required** - `list(ExOpenAI.Components.OrganizationCertificate.t())`
 
-  * `:first_id` - **optional** - `String.t()`
+  * `:first_id` - **required** - `String.t() | nil`
 
   * `:has_more` - **required** - `boolean()`
 
-  * `:last_id` - **optional** - `String.t()`
+  * `:last_id` - **required** - `String.t() | nil`
 
-  * `:object` - **required** - `:list`  
+  * `:object` - **required** - `:list`
     Allowed values: `"list"`
   """
   @type t() :: %{
           __struct__: __MODULE__,
-          data: list(ExOpenAI.Components.Certificate.t()),
+          data: list(ExOpenAI.Components.OrganizationCertificate.t()),
           first_id: String.t() | nil,
           has_more: boolean(),
           last_id: String.t() | nil,
           object: :list
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.OrganizationCertificate.input()),
+              required(:first_id) => String.t() | nil,
+              required(:has_more) => boolean(),
+              required(:last_id) => String.t() | nil,
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

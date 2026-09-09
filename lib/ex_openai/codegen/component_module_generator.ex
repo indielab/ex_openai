@@ -4,9 +4,7 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
   """
 
   alias ExOpenAI.Codegen.DocsParser.Schema
-  alias ExOpenAI.Codegen.{TypespecGenerator, SchemaResolver}
-
-  require Logger
+  alias ExOpenAI.Codegen.{SchemaResolver, TypespecGenerator}
 
   @doc """
   Generates an Elixir module from a Schema struct.
@@ -71,6 +69,10 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
         # Generate the full type spec manually since we need the map syntax
         unquote(generate_type_spec(schema, schemas))
 
+        @typedoc "Accepted struct or atom-keyed input map."
+        @type input() ::
+                t() | unquote(TypespecGenerator.schema_to_input_typespec(schema, schemas))
+
         defstruct unquote(struct_fields)
       end
     end
@@ -93,11 +95,10 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
 
     quote do
       defmodule unquote(module_name) do
-        use ExOpenAI.Jason
-
         unquote(moduledoc)
 
         @type t() :: unquote(typespec_ast)
+        @type input() :: unquote(TypespecGenerator.schema_to_input_typespec(schema, schemas))
       end
     end
   end
@@ -166,7 +167,8 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
   """
   @spec generate_comprehensive_moduledoc(Schema.t(), %{optional(String.t()) => Schema.t()}) ::
           String.t()
-  def generate_comprehensive_moduledoc(%Schema{} = schema), do: generate_comprehensive_moduledoc(schema, %{})
+  def generate_comprehensive_moduledoc(%Schema{} = schema),
+    do: generate_comprehensive_moduledoc(schema, %{})
 
   def generate_comprehensive_moduledoc(%Schema{name: name, type: "object"} = schema, schemas) do
     description_part =
@@ -218,10 +220,9 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
     field_docs =
       properties
       |> Enum.sort_by(fn {name, _} -> name end)
-      |> Enum.map(fn {prop_name, prop_schema} ->
+      |> Enum.map_join("\n\n", fn {prop_name, prop_schema} ->
         generate_field_doc(prop_name, prop_schema, prop_name in required_list, schemas)
       end)
-      |> Enum.join("\n\n")
 
     if field_docs != "" do
       "## Fields\n\n#{field_docs}"
@@ -232,7 +233,9 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
 
   def generate_fields_documentation(_, _schemas), do: ""
 
-  @spec generate_field_doc(String.t(), Schema.t(), boolean(), %{optional(String.t()) => Schema.t()}) ::
+  @spec generate_field_doc(String.t(), Schema.t(), boolean(), %{
+          optional(String.t()) => Schema.t()
+        }) ::
           String.t()
   defp generate_field_doc(name, schema, is_required, schemas) do
     field_name = "`:#{name}`"
@@ -254,8 +257,8 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
 
     # Add enum values if present
     parts =
-      if schema.enum && length(schema.enum) > 0 do
-        enum_values = Enum.map(schema.enum, &"`#{inspect(&1)}`") |> Enum.join(", ")
+      if schema.enum && schema.enum != [] do
+        enum_values = Enum.map_join(schema.enum, ", ", &"`#{inspect(&1)}`")
         parts ++ ["  \n  Allowed values: #{enum_values}"]
       else
         parts
@@ -294,116 +297,9 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
 
   @spec type_to_string(Schema.t(), %{optional(String.t()) => Schema.t()}) :: String.t()
   defp type_to_string(schema, schemas) do
-    # Try to generate a readable type string
-    try do
-      typespec_ast = TypespecGenerator.schema_to_typespec(schema, schemas)
-      # Convert the AST to a string representation
-      ast_to_type_string(typespec_ast)
-    rescue
-      _ ->
-        # Fallback to basic type info
-        basic_type_string(schema)
-    end
-  end
-
-  # Convert AST to readable type string
-  defp ast_to_type_string({:|, _, types}) do
-    types
-    |> Enum.map(&ast_to_type_string/1)
-    |> Enum.join(" | ")
-  end
-
-  defp ast_to_type_string({:__aliases__, _, parts}) do
-    Enum.join(parts, ".")
-  end
-
-  defp ast_to_type_string({{:., _, [{:__aliases__, _, mod_parts}, :t]}, _, []}) do
-    module_name = Enum.join(mod_parts, ".")
-    "#{module_name}.t()"
-  end
-
-  defp ast_to_type_string({{:., _, [module, :t]}, _, []}) when is_atom(module) do
-    "#{inspect(module)}.t()"
-  end
-
-  defp ast_to_type_string({:., _, [{:__aliases__, _, mod_parts}, :t]}) do
-    module_name = Enum.join(mod_parts, ".")
-    "#{module_name}.t()"
-  end
-
-  defp ast_to_type_string({fun, _, []}) when is_atom(fun) do
-    "#{fun}()"
-  end
-
-  defp ast_to_type_string({:{}, _, [:map, _]}) do
-    "map()"
-  end
-
-  defp ast_to_type_string({:%, _, [{:__aliases__, _, parts}, {:%{}, _, _fields}]}) do
-    module_name = Enum.join(parts, ".")
-    "#{module_name}.t()"
-  end
-
-  defp ast_to_type_string({:list, _, [type]}) do
-    "[#{ast_to_type_string(type)}]"
-  end
-
-  defp ast_to_type_string([{:|, _, _} = union]) do
-    "[#{ast_to_type_string(union)}]"
-  end
-
-  defp ast_to_type_string([type]) do
-    "[#{ast_to_type_string(type)}]"
-  end
-
-  defp ast_to_type_string(nil) do
-    "nil"
-  end
-
-  # Handle atoms (like :user)
-  defp ast_to_type_string(atom) when is_atom(atom) do
-    inspect(atom)
-  end
-
-  defp ast_to_type_string(other) do
-    # Fallback for complex types - try to make it more readable
-    case other do
-      {{:., _, _}, _, _} -> basic_type_string(%Schema{})
-      _ -> inspect(other)
-    end
-  end
-
-  # Generate basic type string from schema
-  defp basic_type_string(%Schema{ref: "#/components/schemas/" <> name}) do
-    "ExOpenAI.Components.#{name}.t()"
-  end
-
-  defp basic_type_string(%Schema{type: type, nullable: true}) when is_binary(type) do
-    "#{type}() | nil"
-  end
-
-  defp basic_type_string(%Schema{type: type}) when is_binary(type) do
-    "#{type}()"
-  end
-
-  defp basic_type_string(%Schema{one_of: types}) when is_list(types) and types != [] do
-    types
-    |> Enum.map(&basic_type_string/1)
-    |> Enum.join(" | ")
-  end
-
-  defp basic_type_string(%Schema{any_of: types}) when is_list(types) and types != [] do
-    types
-    |> Enum.map(&basic_type_string/1)
-    |> Enum.join(" | ")
-  end
-
-  defp basic_type_string(%Schema{type: "array", items: items}) when not is_nil(items) do
-    "[#{basic_type_string(items)}]"
-  end
-
-  defp basic_type_string(_) do
-    "any()"
+    schema
+    |> TypespecGenerator.schema_to_typespec(schemas)
+    |> TypespecGenerator.type_to_string()
   end
 
   @spec extract_constraints(Schema.t()) :: [String.t()]
@@ -462,8 +358,8 @@ defmodule ExOpenAI.Codegen.ComponentModuleGenerator do
 
     # Add enum values if present
     sections =
-      if schema.enum && length(schema.enum) > 0 do
-        enum_values = Enum.map(schema.enum, &"`#{inspect(&1)}`") |> Enum.join(", ")
+      if schema.enum && schema.enum != [] do
+        enum_values = Enum.map_join(schema.enum, ", ", &"`#{inspect(&1)}`")
         sections ++ ["## Allowed Values\n\n#{enum_values}"]
       else
         sections

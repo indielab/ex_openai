@@ -7,16 +7,16 @@ defmodule ExOpenAI.Components.ImagesUsage do
 
   ## Fields
 
-  * `:input_tokens` - **required** - `integer()`  
+  * `:input_tokens` - **required** - `integer()`
     The number of tokens (images and text) in the input prompt.
 
-  * `:input_tokens_details` - **required** - `{:%{}, [], [{{:required, [], [:image_tokens]}, {:integer, [], []}}, {{:required, [], [:text_tokens]}, {:integer, [], []}}]}`  
+  * `:input_tokens_details` - **required** - `%{required(:image_tokens) => integer(), required(:text_tokens) => integer()}`
     The input tokens detailed information for the image generation.
 
-  * `:output_tokens` - **required** - `integer()`  
+  * `:output_tokens` - **required** - `integer()`
     The number of image tokens in the output image.
 
-  * `:total_tokens` - **required** - `integer()`  
+  * `:total_tokens` - **required** - `integer()`
     The total number of tokens (images and text) used for the image generation.
   """
   @type t() :: %{
@@ -29,5 +29,17 @@ defmodule ExOpenAI.Components.ImagesUsage do
           output_tokens: integer(),
           total_tokens: integer()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:input_tokens) => integer(),
+              required(:input_tokens_details) => %{
+                required(:image_tokens) => integer(),
+                required(:text_tokens) => integer()
+              },
+              required(:output_tokens) => integer(),
+              required(:total_tokens) => integer()
+            }
   defstruct [:input_tokens, :input_tokens_details, :output_tokens, :total_tokens]
 end

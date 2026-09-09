@@ -16,5 +16,15 @@ defmodule ExOpenAI.Components.ListMessagesResponse do
           last_id: String.t(),
           object: String.t()
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.MessageObject.input()),
+              required(:first_id) => String.t(),
+              required(:has_more) => boolean(),
+              required(:last_id) => String.t(),
+              required(:object) => String.t()
+            }
   defstruct [:data, :first_id, :has_more, :last_id, :object]
 end

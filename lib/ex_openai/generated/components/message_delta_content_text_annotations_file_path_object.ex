@@ -6,22 +6,22 @@ defmodule ExOpenAI.Components.MessageDeltaContentTextAnnotationsFilePathObject d
 
   ## Fields
 
-  * `:end_index` - **optional** - `integer()`  
+  * `:end_index` - **optional** - `integer()`
     Constraints: minimum: 0
 
-  * `:file_path` - **optional** - `{:%{}, [], [{{:optional, [], [:file_id]}, {{:., [], [{:__aliases__, [alias: false], [:String]}, :t]}, [], []}}]}`
+  * `:file_path` - **optional** - `%{optional(:file_id) => String.t()}`
 
-  * `:index` - **required** - `integer()`  
+  * `:index` - **required** - `integer()`
     The index of the annotation in the text content part.
 
-  * `:start_index` - **optional** - `integer()`  
+  * `:start_index` - **optional** - `integer()`
     Constraints: minimum: 0
 
-  * `:text` - **optional** - `String.t()`  
+  * `:text` - **optional** - `String.t()`
     The text in the message content that needs to be replaced.
 
-  * `:type` - **required** - `:file_path`  
-    Always `file_path`.  
+  * `:type` - **required** - `:file_path`
+    Always `file_path`.
     Allowed values: `"file_path"`
   """
   @type t() :: %{
@@ -33,5 +33,16 @@ defmodule ExOpenAI.Components.MessageDeltaContentTextAnnotationsFilePathObject d
           text: String.t() | nil,
           type: :file_path
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:end_index) => integer(),
+              optional(:file_path) => %{optional(:file_id) => String.t()},
+              required(:index) => integer(),
+              optional(:start_index) => integer(),
+              optional(:text) => String.t(),
+              required(:type) => :file_path | String.t()
+            }
   defstruct [:end_index, :file_path, :index, :start_index, :text, :type]
 end

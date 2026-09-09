@@ -6,11 +6,18 @@ defmodule ExOpenAI.Components.ListModelsResponse do
 
   ## Fields
 
-  * `:data` - **required** - `[ExOpenAI.Components.Model.t()]`
+  * `:data` - **required** - `list(ExOpenAI.Components.Model.t())`
 
-  * `:object` - **required** - `:list`  
+  * `:object` - **required** - `:list`
     Allowed values: `"list"`
   """
   @type t() :: %{__struct__: __MODULE__, data: list(ExOpenAI.Components.Model.t()), object: :list}
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              required(:data) => list(ExOpenAI.Components.Model.input()),
+              required(:object) => :list | String.t()
+            }
   defstruct [:data, :object]
 end

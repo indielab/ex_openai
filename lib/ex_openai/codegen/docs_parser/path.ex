@@ -6,14 +6,14 @@ defmodule ExOpenAI.Codegen.DocsParser.Path do
   alias ExOpenAI.Codegen.DocsParser.{Operation, Parameter}
 
   @type t :: %__MODULE__{
-    path: String.t(),
-    summary: String.t() | nil,
-    description: String.t() | nil,
-    operations: %{String.t() => Operation.t()},
-    parameters: [Parameter.t()] | nil,
-    servers: [map()] | nil
-  }
-  
+          path: String.t(),
+          summary: String.t() | nil,
+          description: String.t() | nil,
+          operations: %{String.t() => Operation.t()},
+          parameters: [Parameter.t()] | nil,
+          servers: [map()] | nil
+        }
+
   defstruct [
     :path,
     :summary,
@@ -28,6 +28,7 @@ defmodule ExOpenAI.Codegen.DocsParser.Path do
   """
   @spec parse_paths(map() | nil) :: %{String.t() => t()}
   def parse_paths(nil), do: %{}
+
   def parse_paths(paths) do
     Map.new(paths, fn {path_string, path_data} ->
       {path_string, parse_path(path_string, path_data)}
@@ -41,15 +42,15 @@ defmodule ExOpenAI.Codegen.DocsParser.Path do
   def parse_path(path_string, data) when is_map(data) do
     # HTTP methods
     http_methods = ["get", "post", "put", "delete", "patch", "head", "options", "trace"]
-    
+
     # Extract operations (HTTP methods)
-    operations = 
+    operations =
       data
       |> Map.take(http_methods)
       |> Map.new(fn {method, operation_data} ->
         {method, Operation.parse_operation(method, operation_data)}
       end)
-    
+
     %__MODULE__{
       path: path_string,
       summary: data["summary"],
@@ -69,21 +70,21 @@ defmodule ExOpenAI.Codegen.DocsParser.Operation do
   alias ExOpenAI.Codegen.DocsParser.{Parameter, RequestBody, Response}
 
   @type t :: %__MODULE__{
-    method: String.t(),
-    operation_id: String.t() | nil,
-    summary: String.t() | nil,
-    description: String.t() | nil,
-    tags: [String.t()] | nil,
-    parameters: [Parameter.t()] | nil,
-    request_body: RequestBody.t() | nil,
-    responses: %{String.t() => Response.t()},
-    deprecated: boolean() | nil,
-    security: [map()] | nil,
-    servers: [map()] | nil,
-    external_docs: map() | nil,
-    callbacks: map() | nil
-  }
-  
+          method: String.t(),
+          operation_id: String.t() | nil,
+          summary: String.t() | nil,
+          description: String.t() | nil,
+          tags: [String.t()] | nil,
+          parameters: [Parameter.t()] | nil,
+          request_body: RequestBody.t() | nil,
+          responses: %{String.t() => Response.t()},
+          deprecated: boolean() | nil,
+          security: [map()] | nil,
+          servers: [map()] | nil,
+          external_docs: map() | nil,
+          callbacks: map() | nil
+        }
+
   defstruct [
     :method,
     :operation_id,
@@ -128,20 +129,20 @@ defmodule ExOpenAI.Codegen.DocsParser.Parameter do
   Represents an OpenAPI parameter.
   """
   @type t :: %__MODULE__{
-    name: String.t(),
-    in: String.t(),
-    description: String.t() | nil,
-    required: boolean(),
-    schema: map() | nil,
-    deprecated: boolean() | nil,
-    allow_empty_value: boolean() | nil,
-    style: String.t() | nil,
-    explode: boolean() | nil,
-    allow_reserved: boolean() | nil,
-    example: any() | nil,
-    examples: map() | nil
-  }
-  
+          name: String.t(),
+          in: String.t(),
+          description: String.t() | nil,
+          required: boolean(),
+          schema: map() | nil,
+          deprecated: boolean() | nil,
+          allow_empty_value: boolean() | nil,
+          style: String.t() | nil,
+          explode: boolean() | nil,
+          allow_reserved: boolean() | nil,
+          example: any() | nil,
+          examples: map() | nil
+        }
+
   defstruct [
     :name,
     :in,
@@ -162,6 +163,7 @@ defmodule ExOpenAI.Codegen.DocsParser.Parameter do
   """
   @spec parse_parameters([map()] | nil) :: [t()] | nil
   def parse_parameters(nil), do: nil
+
   def parse_parameters(parameters) when is_list(parameters) do
     Enum.map(parameters, &parse_parameter/1)
   end
@@ -193,11 +195,11 @@ defmodule ExOpenAI.Codegen.DocsParser.RequestBody do
   Represents an OpenAPI request body.
   """
   @type t :: %__MODULE__{
-    description: String.t() | nil,
-    required: boolean(),
-    content: %{String.t() => map()}
-  }
-  
+          description: String.t() | nil,
+          required: boolean(),
+          content: %{String.t() => map()}
+        }
+
   defstruct [
     :description,
     content: %{},
@@ -209,6 +211,7 @@ defmodule ExOpenAI.Codegen.DocsParser.RequestBody do
   """
   @spec parse_request_body(map() | nil) :: t() | nil
   def parse_request_body(nil), do: nil
+
   def parse_request_body(data) when is_map(data) do
     %__MODULE__{
       description: data["description"],
@@ -223,13 +226,13 @@ defmodule ExOpenAI.Codegen.DocsParser.Response do
   Represents an OpenAPI response.
   """
   @type t :: %__MODULE__{
-    status_code: String.t(),
-    description: String.t(),
-    content: %{String.t() => map()} | nil,
-    headers: %{String.t() => map()} | nil,
-    links: %{String.t() => map()} | nil
-  }
-  
+          status_code: String.t(),
+          description: String.t(),
+          content: %{String.t() => map()} | nil,
+          headers: %{String.t() => map()} | nil,
+          links: %{String.t() => map()} | nil
+        }
+
   defstruct [
     :status_code,
     :description,
@@ -243,6 +246,7 @@ defmodule ExOpenAI.Codegen.DocsParser.Response do
   """
   @spec parse_responses(map() | nil) :: %{String.t() => t()}
   def parse_responses(nil), do: %{}
+
   def parse_responses(responses) when is_map(responses) do
     Map.new(responses, fn {status_code, response_data} ->
       {status_code, parse_response(status_code, response_data)}

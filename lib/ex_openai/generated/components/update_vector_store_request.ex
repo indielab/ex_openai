@@ -6,11 +6,11 @@ defmodule ExOpenAI.Components.UpdateVectorStoreRequest do
 
   ## Fields
 
-  * `:expires_after` - **optional** - `{:%{}, [], [{{:required, [], [:anchor]}, :last_active_at}, {{:required, [], [:days]}, {:integer, [], []}}]}`
+  * `:expires_after` - **optional** - `%{required(:anchor) => :last_active_at, required(:days) => integer()}`
 
   * `:metadata` - **optional** - `ExOpenAI.Components.Metadata.t()`
 
-  * `:name` - **optional** - `String.t() | nil`  
+  * `:name` - **optional** - `String.t() | nil`
     The name of the vector store.
   """
   @type t() :: %{
@@ -20,5 +20,16 @@ defmodule ExOpenAI.Components.UpdateVectorStoreRequest do
           metadata: ExOpenAI.Components.Metadata.t() | nil,
           name: String.t() | nil
         }
+  @typedoc "Accepted struct or atom-keyed input map."
+  @type input() ::
+          t()
+          | %{
+              optional(:expires_after) => %{
+                required(:anchor) => :last_active_at | String.t(),
+                required(:days) => integer()
+              },
+              optional(:metadata) => ExOpenAI.Components.Metadata.input(),
+              optional(:name) => String.t() | nil
+            }
   defstruct [:expires_after, :metadata, :name]
 end

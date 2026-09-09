@@ -1,6 +1,4 @@
 defmodule ExOpenAI.Components.SearchContentType do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Module for representing the OpenAI schema SearchContentType.
 
@@ -13,4 +11,5 @@ defmodule ExOpenAI.Components.SearchContentType do
   `"text"`, `"image"`
   """
   @type t() :: :text | :image
+  @type input() :: (:text | :image) | String.t()
 end

@@ -1,8 +1,7 @@
 defmodule ExOpenAI.Components.IncludeEnum do
-  use ExOpenAI.Jason
-
   @moduledoc """
   Specify additional output data to include in the model response. Currently supported values are:
+  - `web_search_call.results`: Include the search results of the web search tool call.
   - `web_search_call.action.sources`: Include the sources of the web search tool call.
   - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code interpreter tool call items.
   - `computer_call_output.output.image_url`: Include image urls from the computer call output.
@@ -13,17 +12,27 @@ defmodule ExOpenAI.Components.IncludeEnum do
 
   ## Type
 
-  `:"file_search_call.results" | :"web_search_call.action.sources" | :"message.input_image.image_url" | :"computer_call_output.output.image_url" | :"code_interpreter_call.outputs" | :"reasoning.encrypted_content" | :"message.output_text.logprobs"`
+  `:"file_search_call.results" | :"web_search_call.results" | :"web_search_call.action.sources" | :"message.input_image.image_url" | :"computer_call_output.output.image_url" | :"code_interpreter_call.outputs" | :"reasoning.encrypted_content" | :"message.output_text.logprobs"`
 
   ## Allowed Values
 
-  `"file_search_call.results"`, `"web_search_call.action.sources"`, `"message.input_image.image_url"`, `"computer_call_output.output.image_url"`, `"code_interpreter_call.outputs"`, `"reasoning.encrypted_content"`, `"message.output_text.logprobs"`
+  `"file_search_call.results"`, `"web_search_call.results"`, `"web_search_call.action.sources"`, `"message.input_image.image_url"`, `"computer_call_output.output.image_url"`, `"code_interpreter_call.outputs"`, `"reasoning.encrypted_content"`, `"message.output_text.logprobs"`
   """
   @type t() ::
-          (((((:"file_search_call.results" | :"web_search_call.action.sources")
+          ((((((:"file_search_call.results" | :"web_search_call.results")
+               | :"web_search_call.action.sources")
               | :"message.input_image.image_url")
              | :"computer_call_output.output.image_url")
             | :"code_interpreter_call.outputs")
            | :"reasoning.encrypted_content")
           | :"message.output_text.logprobs"
+  @type input() ::
+          (((((((:"file_search_call.results" | :"web_search_call.results")
+                | :"web_search_call.action.sources")
+               | :"message.input_image.image_url")
+              | :"computer_call_output.output.image_url")
+             | :"code_interpreter_call.outputs")
+            | :"reasoning.encrypted_content")
+           | :"message.output_text.logprobs")
+          | String.t()
 end
