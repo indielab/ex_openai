@@ -26,7 +26,7 @@ Add **_:ex_openai_** as a dependency in your mix.exs file:
 ```elixir
 def deps do
   [
-    {:ex_openai, "~> 2.0.0-beta3"}
+    {:ex_openai, "~> 2.0.0-beta4"}
   ]
 end
 ```
