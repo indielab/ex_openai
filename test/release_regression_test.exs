@@ -147,6 +147,28 @@ defmodule ExOpenAI.ReleaseRegressionTest do
     assert response.logprobs == [%{token: "hello", logprob: -0.1}]
   end
 
+  test "inline map conversion accepts mixed key forms and preserves unknown fields" do
+    schema = %Schema{ref: "#/components/schemas/CreateTranscriptionResponseJson"}
+
+    entries = [
+      %{"token" => "hello", "logprob" => -0.1, "vendor" => %{"id" => "keep"}},
+      %{token: "hello", logprob: -0.1, vendor: %{id: "keep"}},
+      %{:token => "preferred", "token" => "duplicate", :logprob => -0.1, "vendor" => "keep"}
+    ]
+
+    assert {:ok, response} =
+             ResponseConverter.convert_response(
+               {:ok, %{"text" => "hello", "logprobs" => entries}},
+               schema
+             )
+
+    assert response.logprobs == [
+             %{:token => "hello", :logprob => -0.1, "vendor" => %{"id" => "keep"}},
+             %{token: "hello", logprob: -0.1, vendor: %{id: "keep"}},
+             %{:token => "preferred", :logprob => -0.1, "vendor" => "keep"}
+           ]
+  end
+
   test "Responses stream events retain their envelope and concrete type" do
     schema = %Schema{ref: "#/components/schemas/ResponseStreamEvent"}
 

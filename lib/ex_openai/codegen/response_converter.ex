@@ -432,10 +432,14 @@ defmodule ExOpenAI.Codegen.ResponseConverter do
               acc
           end)
 
-        # Merge any remaining keys (atomized) without overriding parsed ones
+        known_keys =
+          base
+          |> Map.keys()
+          |> Enum.flat_map(fn key -> [key, Atom.to_string(key)] end)
+          |> MapSet.new()
+
         Enum.reduce(value, base, fn {key, raw}, acc ->
-          known = Enum.find(Map.keys(base), &(key == &1 or key == Atom.to_string(&1)))
-          if known, do: acc, else: Map.put(acc, key, raw)
+          if MapSet.member?(known_keys, key), do: acc, else: Map.put(acc, key, raw)
         end)
 
       true ->
