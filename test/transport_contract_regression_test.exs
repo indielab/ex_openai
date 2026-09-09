@@ -10,10 +10,12 @@ defmodule ExOpenAI.TransportContractRegressionTest do
         {:ok, socket} = :gen_tcp.accept(listener, 5000)
         request = read(socket, "")
 
+        content_type_header = if content_type, do: "Content-Type: #{content_type}\r\n", else: ""
+
         :ok =
           :gen_tcp.send(
             socket,
-            "HTTP/1.1 #{status} Response\r\nContent-Type: #{content_type}\r\nContent-Length: #{byte_size(body)}\r\nConnection: close\r\n\r\n#{body}"
+            "HTTP/1.1 #{status} Response\r\n#{content_type_header}Content-Length: #{byte_size(body)}\r\nConnection: close\r\n\r\n#{body}"
           )
 
         :gen_tcp.close(socket)
@@ -74,24 +76,61 @@ defmodule ExOpenAI.TransportContractRegressionTest do
   end
 
   test "JSON file downloads preserve every byte" do
-    for bytes <- ["{}\n", "[1,2]\n", "null\n"] do
+    for bytes <- ["{}\n", "[1,2]\n", "null\n"],
+        content_type <- ["application/json", "application/vnd.example+json", nil] do
       assert {{:ok, ^bytes}, _} =
-               serve("application/json", bytes, fn opts ->
+               serve(content_type, bytes, fn opts ->
                  ExOpenAI.Files.download_file("file_1", opts)
                end)
     end
   end
 
   test "raw downloads still decode JSON API errors" do
-    assert {{:error, %{"error" => %{"message" => "missing"}}}, _} =
-             serve(
-               "application/json",
-               ~s({"error":{"message":"missing"}}),
-               fn opts ->
-                 ExOpenAI.Files.download_file("file_missing", opts)
-               end,
-               404
-             )
+    for content_type <- ["application/json", "application/problem+json", nil] do
+      assert {{:error, %{"error" => %{"message" => "missing"}}}, _} =
+               serve(
+                 content_type,
+                 ~s({"error":{"message":"missing"}}),
+                 fn opts ->
+                   ExOpenAI.Files.download_file("file_missing", opts)
+                 end,
+                 404
+               )
+    end
+  end
+
+  test "compatible JSON media types and absent headers produce typed responses" do
+    for content_type <- [
+          "application/json",
+          "Application/Vnd.Example+Json; charset=utf-8",
+          "application/problem+json",
+          nil
+        ] do
+      assert {{:ok, %ExOpenAI.Components.Model{id: "model_test"}}, _} =
+               serve(content_type, ~s({"id":"model_test","object":"model"}), fn opts ->
+                 ExOpenAI.Models.retrieve_model("model_test", opts)
+               end)
+    end
+  end
+
+  test "explicit text responses retain JSON-looking content" do
+    for text <- ["null", "123", "{}"] do
+      assert {{:ok, ^text}, _} =
+               serve("text/plain", text, fn opts ->
+                 ExOpenAI.Audio.create_translation(
+                   {"audio.wav", "test"},
+                   "whisper-1",
+                   [response_format: :text] ++ opts
+                 )
+               end)
+    end
+  end
+
+  test "missing content type preserves bodies that are not JSON" do
+    assert {{:ok, "plain text"}, _} =
+             serve(nil, "plain text", fn opts ->
+               ExOpenAI.Client.api_get("/test", opts, &Function.identity/1)
+             end)
   end
 
   test "audio text formats return bytes and JSON retains its struct" do

@@ -536,7 +536,7 @@ Generated calls pass schema headers in `:request_headers`, raw-body selection in
 
 Response processing has two layers:
 
-1. `Client` interprets HTTP results. It treats 2xx statuses as successful, decodes `application/json` bodies unless the generated call marks a successful response as raw, and preserves bytes for other content types. A downloaded JSON-looking file must retain its exact contents.
+1. `Client` interprets HTTP results. It treats 2xx statuses as successful, decodes `application/json` and `+json` bodies unless the generated call marks a successful response as raw, and preserves bytes for explicit non-JSON content types. When Content-Type is absent, it attempts JSON decoding and retains the body if decoding fails. A downloaded JSON-looking file must retain its exact contents.
 2. The endpoint's converter interprets the successful payload using the schema selected during generation.
 
 **Short Example:**

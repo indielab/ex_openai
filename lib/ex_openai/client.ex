@@ -12,14 +12,7 @@ defmodule ExOpenAI.Client do
        do: response
 
   defp decode_response({:ok, %HTTPoison.Response{headers: headers, body: body} = response}, _) do
-    json? =
-      Enum.any?(headers, fn {name, value} ->
-        String.downcase(name) == "content-type" and
-          String.downcase(value) |> String.split(";") |> hd() |> String.trim() ==
-            "application/json"
-      end)
-
-    if json? do
+    if json_response?(headers) do
       case Jason.decode(body) do
         {:ok, decoded} -> {:ok, %{response | body: decoded}}
         _ -> {:ok, response}
@@ -30,6 +23,24 @@ defmodule ExOpenAI.Client do
   end
 
   defp decode_response(response, _), do: response
+
+  defp json_response?(headers) do
+    content_type =
+      Enum.find_value(headers, fn {name, value} ->
+        if String.downcase(name) == "content-type", do: value
+      end)
+
+    case content_type do
+      nil ->
+        true
+
+      value ->
+        media_type =
+          value |> String.downcase() |> String.split(";", parts: 2) |> hd() |> String.trim()
+
+        media_type == "application/json" or String.ends_with?(media_type, "+json")
+    end
+  end
 
   def handle_response(httpoison_response) do
     case httpoison_response do
